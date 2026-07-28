@@ -119,26 +119,43 @@ def collect_nodes(network_dir: Path) -> list[dict]:
     return nodes
 
 
+# Fixed Compose subnet so enode URLs can use literal IPv4 (Besu rejects DNS
+# names in enode:// without fragile Xdns flags, and p2p-host must be an IP).
+COMPOSE_SUBNET = "172.20.0.0/16"
+COMPOSE_IP_BASE = "172.20.0."
+COMPOSE_IP_OFFSET = 10
+
+
+def node_ip(index: int) -> str:
+    return f"{COMPOSE_IP_BASE}{COMPOSE_IP_OFFSET + index}"
+
+
+def write_static_nodes(path: Path, nodes: list[dict]) -> None:
+    enodes = [
+        f"enode://{nd['enode_pubkey']}@{node_ip(i)}:30303"
+        for i, nd in enumerate(nodes)
+    ]
+    path.write_text(json.dumps(enodes, indent=2) + "\n", encoding="utf-8")
+
+
 def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
                      jvm_heap_mb: int, image: str, rpc_base_port: int) -> str:
-    bootnode = f"enode://{nodes[0]['enode_pubkey']}@validator0:30303"
     lines: list[str] = ["services:"]
     for i, node in enumerate(nodes):
         name = f"validator{i}"
+        ip = node_ip(i)
         common = [
             "--genesis-file=/opt/besu/genesis.json",
             "--node-private-key-file=/opt/besu/key",
             "--data-path=/opt/besu/data",
             "--data-storage-format=BONSAI",
-            "--sync-mode=FULL",
-            # Private n-validator net never has 5 peers; default min-peers=5
-            # would stall block production forever on n<=5.
-            "--sync-min-peers=1",
-            f"--p2p-host={name}",
+            # SNAP avoids FULL sync's hard-coded 5-peer gate, which a private
+            # n<=5 QBFT net can never satisfy.
+            "--sync-mode=SNAP",
+            f"--p2p-host={ip}",
             "--nat-method=NONE",
-            # Allow bootnode enode://...@validator0:30303 (Compose DNS name).
-            "--Xdns-enabled=true",
-            "--Xdns-update-enabled=true",
+            "--discovery-enabled=false",
+            "--static-nodes-file=/opt/besu/static-nodes.json",
             "--host-allowlist=*",
             "--rpc-http-enabled",
             f"--rpc-http-host={RPC_BIND_HOST}",
@@ -148,9 +165,6 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "--p2p-port=30303",
             "--min-gas-price=0",
         ]
-        if i > 0:
-            common.append(f"--bootnodes={bootnode}")
-        # YAML flow sequence requires commas between elements.
         cmd = ", ".join(json.dumps(c) for c in common)
         lines += [
             f"  {name}:",
@@ -163,6 +177,7 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "    volumes:",
             f"      - ./networkFiles/genesis.json:/opt/besu/genesis.json:ro",
             f"      - ./networkFiles/keys/{node['address']}/key:/opt/besu/key:ro",
+            "      - ./static-nodes.json:/opt/besu/static-nodes.json:ro",
             "    ports:",
             f"      - \"{HOST_PUBLISH_ADDR}:{rpc_base_port + i}:8545\"",
             # RNM: identical quota for every validator, independent of n.
@@ -172,9 +187,18 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "    cap_add:",
             "      - NET_ADMIN",
             "    networks:",
-            "      - bftnet",
+            "      bftnet:",
+            f"        ipv4_address: {ip}",
         ]
-    lines += ["", "networks:", "  bftnet:", "    driver: bridge"]
+    lines += [
+        "",
+        "networks:",
+        "  bftnet:",
+        "    driver: bridge",
+        "    ipam:",
+        "      config:",
+        f"        - subnet: {COMPOSE_SUBNET}",
+    ]
     return "\n".join(lines) + "\n"
 
 
@@ -221,6 +245,8 @@ def main() -> int:
     nodes = collect_nodes(out / "networkFiles")
     if len(nodes) != args.n:
         raise SystemExit(f"expected {args.n} key directories, found {len(nodes)}")
+
+    write_static_nodes(out / "static-nodes.json", nodes)
 
     (out / "docker-compose.yml").write_text(
         compose_document(nodes, args.quota, args.mem_limit_mb, args.jvm_heap_mb,
