@@ -1,0 +1,143 @@
+# Copy this file to .github/workflows/experiment.yml in the (PUBLIC) repository.
+#
+# Public repositories get unlimited Actions minutes; private ones get 2000
+# min/month, which is not enough for the full matrix.
+
+name: BFT scaling experiments
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Comma-separated experiment ids to run (e.g. X1,X3). Empty = all."
+        required: false
+        default: "X1"
+      duration:
+        description: "Steady-state measurement seconds per run"
+        required: false
+        default: "300"
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+      count: ${{ steps.gen.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install PyYAML
+      - id: gen
+        run: |
+          python experiments/configs/generate_matrix.py \
+            --config experiments/configs/matrix.yaml \
+            --only "${{ inputs.only }}"
+      - run: echo "planned ${{ steps.gen.outputs.count }} design points"
+
+  measure:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      # A failed design point is itself data: it marks the memory ceiling.
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        point: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r experiments/requirements.txt
+
+      - name: Record runner capacity
+        run: |
+          nproc
+          free -m
+          df -h /
+
+      - name: Pull the Besu image
+        run: docker pull hyperledger/besu:24.10.0
+
+      - name: Run design point
+        run: |
+          python experiments/run_one.py \
+            --experiment "${{ matrix.point.experiment }}" \
+            --n "${{ matrix.point.n }}" \
+            --quota "${{ matrix.point.quota }}" \
+            --concurrency "${{ matrix.point.concurrency }}" \
+            --replicate "${{ matrix.point.replicate }}" \
+            --rtt-ms "${{ matrix.point.rtt_ms }}" \
+            --loss-pct "${{ matrix.point.loss_pct }}" \
+            --duplicate-pct "${{ matrix.point.duplicate_pct }}" \
+            --faulty-nodes "${{ matrix.point.faulty_nodes }}" \
+            --duration "${{ inputs.duration }}" \
+            --workdir "network" \
+            --out "data/raw/${{ matrix.point.id }}.json"
+
+      - name: Upload measurement
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-${{ matrix.point.id }}
+          path: |
+            data/raw/${{ matrix.point.id }}.json
+            network/besu.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  aggregate:
+    needs: measure
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r experiments/requirements.txt
+
+      - name: Download all measurements
+        uses: actions/download-artifact@v4
+        with:
+          pattern: run-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Collect raw records
+        run: |
+          mkdir -p data/raw data/processed figures
+          find artifacts -name '*.json' -exec cp {} data/raw/ \;
+          ls -1 data/raw | wc -l
+
+      - name: Analyse
+        run: |
+          python experiments/analysis/fit_bifactor.py --in data/raw --out data/processed
+          python experiments/analysis/bootstrap_pi.py --in data/processed --out data/processed
+          python experiments/analysis/sizing.py       --in data/processed --out data/processed
+          python experiments/analysis/simulate.py     --in data/processed --out data/processed
+          python experiments/analysis/make_figures.py --in data/processed --raw data/raw --out figures
+          python experiments/analysis/emit_numbers_tex.py --in data/processed --out numbers.tex
+
+      - name: Upload analysis bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis
+          path: |
+            data/raw
+            data/processed
+            figures
+            numbers.tex
+          retention-days: 90

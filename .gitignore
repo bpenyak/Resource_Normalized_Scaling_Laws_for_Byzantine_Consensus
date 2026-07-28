@@ -1,0 +1,42 @@
+# LaTeX build products
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+paper3.pdf
+build/
+
+# Experiment artefacts
+network/
+networkFiles/
+*.key
+key
+key.pub
+accounts.json
+data/raw/*.json
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+figures/*.pdf
+figures/*.png
+!figures/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

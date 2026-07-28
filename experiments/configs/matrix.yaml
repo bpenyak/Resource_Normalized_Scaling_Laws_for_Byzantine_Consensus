@@ -1,0 +1,74 @@
+# configs/matrix.yaml
+# Experimental design matrix. Consumed by generate_matrix.py -> GitHub Actions
+# matrix, and by run_one.py for a single design point.
+
+defaults:
+  besu_image: hyperledger/besu:24.10.0
+  block_period_seconds: 2
+  request_timeout_seconds: 10
+  chain_id: 1337
+  gas_limit: "0x1fffffffffffff"
+  jvm_heap_mb: 512
+  mem_limit_mb: 900          # n * mem_limit must stay well under 16 GB
+  warmup_seconds: 60
+  drain_seconds: 30
+  duration_seconds: 300      # steady-state measurement window
+  quota: 0.25                # RNM: CPU cores per validator, independent of n
+  concurrency: 16            # independent senders, each with its own nonce pool
+  rtt_ms: 0
+  loss_pct: 0
+  duplicate_pct: 0
+  faulty_nodes: 0
+  replicates: 3
+  detector_window_blocks: 30
+  detector_threshold: 0.5    # fraction of the expected 1/n proposal share
+
+experiments:
+
+  # X1 -- consensus exponent beta
+  X1:
+    purpose: "consensus exponent beta"
+    replicates: 3
+    grid:
+      n: [4, 5, 7, 9, 11, 13, 16]
+    notes: "n=16 is best-effort; fail-fast must be false"
+
+  # X2 -- q-invariance of beta (Statement st:qinvariance)
+  X2:
+    purpose: "q-invariance test"
+    replicates: 3
+    grid:
+      n: [4, 7, 13]
+      quota: [0.20, 0.25, 0.33]
+
+  # X3 -- client factor gamma, saturation c*, sharpness theta
+  X3:
+    purpose: "client concurrency factor"
+    replicates: 3
+    grid:
+      n: [7]
+      concurrency: [1, 2, 4, 8, 16, 32, 64]
+
+  # X4 -- latency sensitivity beta(RTT)
+  X4:
+    purpose: "wide-area latency sensitivity"
+    replicates: 2
+    grid:
+      n: [7, 13]
+      rtt_ms: [0, 25, 50, 100, 200]
+
+  # X5 -- detector characterization p_d, p_f, rho
+  # Fault class: omission + duplication (RLPx is encrypted; see README).
+  X5:
+    purpose: "detector characterization"
+    replicates: 3
+    grid:
+      n: [7, 13]
+      loss_pct: [0, 10, 20, 25]
+    derived:
+      duplicate_pct: "loss_pct / 2"
+      faulty_nodes: "floor((n - 1) / 3)"
+
+# X3b (confounding-theorem check), X6 (simulation), X7 (coverage) and
+# X8 (sizing ablation) require no new runs -- they are post-hoc analyses over
+# the data produced above and are executed by the scripts in analysis/.

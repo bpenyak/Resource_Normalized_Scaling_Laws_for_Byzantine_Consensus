@@ -1,0 +1,128 @@
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Motivation}
+
+Permissioned Byzantine Fault Tolerant (BFT) consensus underpins a growing class
+of e-governance systems: electronic voting, land and business registries, and
+digital identity services. Deploying such a system at national scale requires
+answering one concrete engineering question before a single node is procured:
+\emph{how many validators should the network have?}
+
+The question has no obvious answer because the validator count~$\n$ acts in two
+opposite directions simultaneously.
+
+\begin{itemize}
+\item \textbf{Throughput argues for small~$\n$.} In a replicated state machine
+every validator executes every transaction, and PBFT-family protocols exchange
+$O(\n^{2})$ messages per block. System throughput therefore \emph{decreases}
+as validators are added.
+\item \textbf{Safety argues for large~$\n$.} The ability to detect a coordinated
+Byzantine minority is a statistical estimation problem whose concentration
+bounds tighten exponentially in~$\n$. Detection reliability therefore
+\emph{increases} as validators are added.
+\end{itemize}
+
+These two regimes have so far been studied separately, and their joint treatment
+is the subject of this paper.
+
+\subsection{Two obstacles}
+
+\paragraph{Obstacle 1: scaling exponents are not reproducible.}
+Published power-law fits of the form $\TPS(\n)\propto\n^{\alpha}$ report values
+that disagree in magnitude, and sometimes in sign. Reported exponents range
+from clearly negative to clearly positive for what is nominally the same class
+of protocol. Our own two earlier studies are an instance of this: extrapolated
+to sixty validators they differ by roughly an order of magnitude.
+
+One cause, which Section~\ref{sec:bifactor} makes precise, is mundane. The
+client-side offered concurrency is rarely held fixed while~$\n$ is varied --- a
+larger network is usually driven by a larger load generator. The fitted
+exponent then mixes a client-parallelism effect with the consensus-overhead
+effect. What looks like a property of the protocol is partly a property of how
+the measurement was taken.
+
+\paragraph{Obstacle 2: large testbeds are unavailable.}
+Calibrating a scaling law is usually assumed to require a testbed of the target
+size. For an academic group this is not realistic. Worse, running many
+validators on one host confounds consensus overhead with contention for the
+host CPU, which is precisely the quantity one is trying to isolate.
+
+\subsection{Contributions}
+
+The central result is the first one; the remaining three exist because it is
+not useful on its own.
+
+\begin{enumerate*}
+\item \textbf{An identifiability theorem for the consensus exponent}
+(Section~\ref{sec:bifactor}). Assume throughput is governed by two factors,
+\begin{equation}
+\TPS(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta},\qquad \beta>0,
+\label{eq:bifactor-intro}
+\end{equation}
+and suppose a campaign varies the client concurrency together with the network
+along a path $\log\cc=\lambda\log\n+\mathrm{const}$. Then the ordinary
+least-squares fit of the single-factor model converges in probability to
+$\ahat=\gamma\lambda-\beta$ (Theorem~\ref{thm:identifiability}). Two readings
+follow. A positive single-factor exponent is evidence about~$\lambda$, not
+about the protocol. And exponents measured on different testbeds are not
+comparable unless their concurrency paths are, which is rarely reported.
+
+\item \textbf{A measurement protocol that makes the theorem usable}
+(Section~\ref{sec:rnm}). Setting $\lambda=0$ requires a factorial design, and a
+factorial design over~$\n$ on one host runs into a second confound: with $\n$
+validators sharing $Q$ cores, the per-validator compute budget itself depends
+on~$\n$. We fix a CPU quota~$\q$ per validator irrespective of~$\n$ and report
+$\TPSn=\TPS/\q$. The resulting invariance property
+(Statement~\ref{st:qinvariance}) is stated as a falsifiable prediction and
+tested, not assumed.
+
+\item \textbf{Prediction intervals validated by coverage}
+(Section~\ref{sec:pi}). Extrapolation from a small testbed is only honest if it
+carries uncertainty. We use a lognormal predictive distribution, separating
+estimation variance from residual variance, and check its \emph{empirical
+coverage} on held-out validator counts. An average percentage error, which is
+what this literature usually reports, cannot be checked this way.
+
+\item \textbf{Sizing as a chance-constrained program}
+(Section~\ref{sec:sizing}). Combining the calibrated law with a detection
+requirement gives
+\begin{equation*}
+\min_{\n}\ \Cost(\n)
+\quad\text{s.t.}\quad
+\Prob\bigl(\TPS(\n,\cc)\ge\Dpk\bigr)\ge1-\epsp,
+\qquad
+\pmiss(\n,\w)\le\epss .
+\end{equation*}
+The two constraints move in opposite directions, so the feasible set is a closed
+interval $[\nmin,\nmax]$ (Theorem~\ref{thm:window}) and the optimum is found in
+$O(\log\n)$ evaluations. When the interval is empty, no validator-set size
+satisfies the requirement.
+\end{enumerate*}
+
+A word on what is \emph{not} claimed as new. The detection bound of
+Section~\ref{sec:safety} is Hoeffding's inequality with a design-effect
+correction --- standard machinery. Its role here is to supply the second
+constraint in a form whose parameters we can measure rather than postulate.
+
+\subsection{Scope}
+
+We model \emph{throughput and detection reliability only}. Cryptographic
+protocol design, endpoint security, and coercion resistance are outside the
+scope and are not addressed by any result in this paper. Absolute throughput
+values reported here are specific to the constrained execution environment; all
+claims concern scaling exponents and the sizing decisions derived from them.
+
+The measurements come from one consensus implementation on one host. This is a
+real limitation and we return to it in Section~\ref{sec:limitations}, where we
+also state the cross-platform prediction that Theorem~\ref{thm:identifiability}
+makes and that a second implementation can be used to falsify.
+
+The remainder of the paper is organized as follows.
+Section~\ref{sec:related} reviews related work.
+Sections~\ref{sec:rnm}--\ref{sec:sizing} develop the method.
+Sections~\ref{sec:experiments}--\ref{sec:results} describe the experimental
+campaign and its results.
+Section~\ref{sec:case} applies the method to an e-governance workload.
+Sections~\ref{sec:limitations}--\ref{sec:conclusions} discuss limitations and
+conclude.

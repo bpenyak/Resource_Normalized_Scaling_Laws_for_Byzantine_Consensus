@@ -1,0 +1,117 @@
+\section{Experimental campaign}
+\label{sec:experiments}
+
+\subsection{Execution environment}
+
+The entire campaign runs as a matrix of jobs in a public continuous-integration
+workflow on a single standard runner with four virtual CPUs, 16~GB of RAM and
+local SSD storage. No dedicated hardware, cloud credits or multi-host cluster
+are used. This is a deliberate design choice: it makes the campaign
+reproducible by any reader at zero cost, and it exercises the \RNM{} protocol of
+Section~\ref{sec:rnm} in exactly the regime it was designed for.
+
+The consensus platform is Hyperledger Besu with QBFT, deployed as containers
+from a generated genesis file. Each validator container is granted a fixed CPU
+quota~$\q$ and memory limit, and the JVM heap is capped so that
+$\n$~validators fit within the host memory. The CI matrix dimension maps
+one-to-one onto the experimental design matrix, and every job uploads its raw
+measurements as an artefact; a final aggregation job assembles the dataset.
+
+\subsection{Load generation}
+
+Client concurrency is realized by $\cc$ independent asynchronous senders, each
+owning a distinct externally-owned account and maintaining its own nonce pool.
+Per-sender nonce ownership removes the single-threaded submission bottleneck
+that limits naive load generators and would otherwise saturate the measurement
+before the consensus layer is stressed. Throughput is computed from on-chain
+block contents rather than from client acknowledgements, so that submission
+failures cannot inflate the reported value. The first and last windows of each
+run are discarded as warm-up and drain.
+
+\subsection{Fault injection and detection}
+
+\paragraph{Injection.}
+Faulty behaviour follows Definition~\ref{def:faults} and is injected at the
+network layer with kernel traffic-control queueing disciplines applied to the
+selected containers: a loss probability implements omission, and a duplication
+probability implements message repetition. Because the peer-to-peer transport is
+encrypted, injection cannot be made selective with respect to message type; we
+therefore claim only the omission/duplication fault class and state this
+limitation explicitly in Section~\ref{sec:limitations}.
+
+\paragraph{Detection.}
+The monitor polls the platform's signer-metrics interface, which reports the
+number of blocks proposed by each validator over a range of block heights. A
+validator whose participation over the window falls below a threshold is
+flagged. Because the set of degraded containers is known by construction, every
+run yields ground-truth labels, from which we estimate the detection
+probability~$\pd$, the false-positive rate~$\pf$, the receiver operating
+characteristic, and the exchangeable correlation~$\rho$ of
+Assumption~\ref{as:rho}. This procedure requires no modification of the
+consensus software.
+
+\subsection{Design matrix}
+
+Table~\ref{tab:design} lists the experiments. Each cell is replicated three
+times and each run measures a fixed steady-state interval after warm-up.
+
+\begin{table}[!t]
+\caption{Experimental design. $\q$ is the per-validator CPU quota in cores,
+$\cc$ the number of independent senders, RTT the emulated round-trip latency,
+and $\ell$ the injected loss/duplication level}
+\label{tab:design}
+\centering
+\small
+\begin{tabular}{llp{74mm}}
+\headline
+Id & Purpose & Factor levels \\
+\headline
+X1 & Consensus exponent $\beta$
+   & $\n\in\{4,5,7,9,11,13,16\}$; $\q$ fixed; $\cc$ fixed \\
+X2 & $\q$-invariance (Statement~\ref{st:qinvariance})
+   & $\n\in\{4,7,13\}\times\q\in\{0.20,0.25,0.33\}$ \\
+X3 & Client factor $\gamma,\csat,\theta$
+   & $\cc\in\{1,2,4,8,16,32,64\}$; $\n$ fixed \\
+X4 & Latency sensitivity $\beta(\text{RTT})$
+   & RTT $\in\{0,25,50,100,200\}$~ms $\times\ \n\in\{7,13\}$ \\
+X5 & Detector characterization $\pd,\pf,\rho$
+   & $\ell\in\{0,10,20,25\}\%$ $\times\ \n\in\{7,13\}$ \\
+X6 & Extrapolation to large $\n$
+   & discrete-event simulation calibrated on X1--X4 \\
+X7 & Coverage validation
+   & calibrate on $\n\le9$, predict held-out $\n\in\{13,16\}$ \\
+X8 & Sizing ablation
+   & linear, single-factor~\cite{peniak2026a}, USL~\cite{gunther2007}, ours \\
+X9 & Cross-implementation replication
+   & X1 and X3 repeated on a second QBFT-family client \\
+\headline
+\end{tabular}
+\end{table}
+
+\subsection{Confounding test}
+
+Theorem~\ref{thm:identifiability} is tested directly rather than argued. From
+the factorial grid of X1 and X3 we estimate $\beta$ and $\gamma$ with
+orthogonal factors. We then \emph{re-sample} the same measurements along an
+artificial concurrency path $\log\cc=\lambda\log\n+\mu$ for several values of
+$\lambda$, fit the single-factor model to each resampled subset, and compare the
+resulting $\ahat$ against the prediction $\gamma\lambda-\beta$
+of~\eqref{eq:confounding}. Agreement over a range of $\lambda$, including a
+value at which $\ahat$ changes sign, constitutes an empirical confirmation of
+the theorem.
+
+Experiment X9 repeats the exercise on a second client of the same protocol
+family. The coefficients $(\beta,\gamma)$ are expected to differ; the line
+$\ahat=\gamma\lambda-\beta$ is not, since the theorem concerns the estimator and
+not the system. This separates a claim about least squares from a claim about
+Hyperledger Besu, and it is the cheapest available check that our conclusions
+are not an artefact of one implementation.
+
+\subsection{Reproducibility}
+
+The workflow definition, network generator, load generator, fault-injection
+scripts, detector, analysis code and raw measurement artefacts are published
+together with the paper. All numeric values quoted in
+Section~\ref{sec:results} are emitted by the analysis pipeline into a generated
+file that the manuscript includes, so that no reported number is transcribed by
+hand.
