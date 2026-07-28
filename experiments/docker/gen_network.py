@@ -143,7 +143,8 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
         ]
         if i > 0:
             common.append(f"--bootnodes={bootnode}")
-        cmd = " ".join(f'"{c}"' for c in common)
+        # YAML flow sequence requires commas between elements.
+        cmd = ", ".join(json.dumps(c) for c in common)
         lines += [
             f"  {name}:",
             f"    image: {image}",
@@ -158,7 +159,7 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "    ports:",
             f"      - \"{HOST_PUBLISH_ADDR}:{rpc_base_port + i}:8545\"",
             # RNM: identical quota for every validator, independent of n.
-            f"    cpus: \"{quota}\"",
+            f"    cpus: {quota}",
             f"    mem_limit: {mem_limit_mb}m",
             # Required so that faults/apply_netem.sh can attach a qdisc.
             "    cap_add:",
