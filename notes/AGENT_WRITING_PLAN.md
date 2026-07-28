@@ -36,22 +36,35 @@
 
 ---
 
-## Фаза 1. Валідація каркаса
+## Фаза 1. Валідація каркаса (ГОТОВО з зауваженням щодо обсягу)
 
 **Дія:**
 ```powershell
 cd c:\pol\paper_3
+# pdflatex з MiKTeX: %LOCALAPPDATA%\Programs\MiKTeX\miktex\bin\x64
 pdflatex -interaction=nonstopmode paper3.tex
 pdflatex -interaction=nonstopmode paper3.tex   # для перехресних посилань
 ```
 
 **Перевірити:**
-- [ ] Немає `Undefined control sequence`
-- [ ] Немає `Citation ... undefined` (усі ключі з секцій є в `bib/references.tex`)
-- [ ] Немає `Reference ... undefined` (усі `\ref` мають `\label`)
-- [ ] Обсяг ≤ 10 сторінок (без урахування зростання від рисунків)
+- [x] Немає `Undefined control sequence` (exit 0, 0× `!` у `.log`)
+- [x] Немає `Citation ... undefined` (усі ключі з секцій є в `bib/references.tex`)
+- [x] Немає `Reference ... undefined` (усі `\ref` мають `\label`)
+- [ ] Обсяг ≤ 10 сторінок — **НЕ виконано**: 14 PDF-сторінок
+  (= 11 EN тіло+висновки + 2 бібліографія + 1 UKR-титул).
+  Без заглушок рисунків обсяг той самий → проблема в тексті, не у figures.
+  Потрібне додаткове скорочення ≈ 3 стор. EN+refs (див. `PAGE_BUDGET.md`).
 
-**Критерій:** чистий `.log`, PDF згенеровано.
+**Виправлення під час фази 1 (у `macros.tex`):**
+- `\renewcommand` для `\Prob`/`\Var` (конфлікт із `babel-russian`)
+- `\zq` → символ `z` (текст пише `\zq_{...}`, не `\zq{...}`)
+- math-safe `\TODO` (MMC `\marginpar` ламається в `$...$`)
+- патч `\Ukrainian` (баг `babel-ukrainian` 1.5a: `\selectlanguage{\ukrainian}`)
+- дрібне: `$-\zq_{1-\epsp}\hat{V}^{1/2}$` у доведенні леми
+
+**Критерій:** чистий `.log`, PDF згенеровано — **виконано**.
+Обсяг ≤ 10 — **відкрито**; блокує подачу, не блокує перехід до Фази 2
+(експерименти не залежать від подальшого скорочення тексту).
 
 ---
 

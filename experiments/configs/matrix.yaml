@@ -25,6 +25,14 @@ defaults:
 
 experiments:
 
+  # SMOKE -- single design point to verify Docker/Besu/loadgen on CI
+  SMOKE:
+    purpose: "toolchain smoke test"
+    replicates: 1
+    grid:
+      n: [4]
+      concurrency: [4]
+
   # X1 -- consensus exponent beta
   X1:
     purpose: "consensus exponent beta"

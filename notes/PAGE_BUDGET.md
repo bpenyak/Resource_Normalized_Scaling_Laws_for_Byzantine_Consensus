@@ -8,32 +8,24 @@
 
 ---
 
-## Розподіл
+## Розподіл (після Cutting paper → 7 секцій; факт після Фази 1)
 
-| # | Секція | Файл | Бюджет, стор. | Факт |
+| # | Секція | Файл | Бюджет | Факт (стор.) |
 |---|---|---|---|---|
-| — | Титул + анотація EN | `paper3.tex` | 0.5 | |
-| 1 | Introduction | `01_introduction.tex` | 1.0 | |
-| 2 | Related work | `02_related_work.tex` | 1.0 | |
-| 3 | RNM protocol | `03_rnm_protocol.tex` | 1.0 | |
-| 4 | Bi-factor model + Theorem 1 + Alg. 1 | `04_bifactor_model.tex` | 1.8 | |
-| 5 | Prediction intervals | `05_prediction_intervals.tex` | 0.5 | |
-| 6 | Safety model | `06_safety_model.tex` | 0.4 | |
-| 7 | Sizing + Theorem 2 + Alg. 2 | `07_sizing_problem.tex` | 1.5 | |
-| 8 | Experiments | `08_experiments.tex` | 0.9 | |
-| 9 | Results | `09_results.tex` | 1.2 | |
-| 10 | Case study | `10_case_study.tex` | 0.5 | |
-| 11 | Limitations | `11_limitations.tex` | 0.5 | |
-| 12 | Conclusions | `12_conclusions.tex` | 0.4 | |
-| — | References (36) | `bib/references.tex` | 1.3 | |
-| | **Разом** | | **12.5** | |
+| — | Титул + анотація EN | `paper3.tex` | 0.5 | 1 |
+| 1 | Introduction | `01_introduction.tex` | 1.0 | 1 |
+| 2 | Related work | `02_related_work.tex` | 1.0 | 1 |
+| 3 | RNM + bi-factor + Thm.1 | `03_model.tex` | 2.5 | 3 (с.3–5) |
+| 4 | PI + detection + sizing | `04_sizing.tex` | 2.0 | 3 (с.5–7) |
+| 5 | Experiments + results | `05_experiments.tex` | 1.5 | 2 (с.8–9) |
+| 6 | Case study + Limitations | `06_case_study.tex` | 0.8 | 1 (с.10) |
+| 7 | Conclusions | `07_conclusions.tex` | 0.4 | 1 (с.11) |
+| — | References | `bib/references.tex` | 1.3 | 2 (с.12–13) |
+| — | UKR титул (`\maketitleUkr`) | `paper3.tex` | поза лімітом | 1 (с.14) |
+| | **Разом EN+refs** | | **≈10** | **13** |
+| | **PDF total** | | | **14** |
 
-**12.5 > 10.0.** Потрібне скорочення на ~2.5 сторінки. План нижче.
-
-> Зміна проти першої версії: §4 виріс (умови регулярності, повне доведення,
-> абзац інтуїції, Remark про порядок величини), §6 стиснуто (сама межа —
-> класична, тримати її розгорнутою немає сенсу), §11 і §8 виросли через X9.
-> Це правильний обмін: центральний результат має займати найбільше місця.
+**13 > 10.** Потрібне скорочення ще ≈ 3 стор. EN+refs. UKR не зараховується.
 
 ---
 

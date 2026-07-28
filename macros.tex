@@ -41,11 +41,14 @@
 \newcommand{\Feas}{\mathcal{F}}
 
 %------------------------------------------------------------------- statistics
+% \Prob and \Var are pre-defined by babel-russian (mathsf forms); renew to the
+% blackboard / roman forms used throughout the paper.
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\Prob}{\mathbb{P}}
-\newcommand{\Var}{\mathrm{Var}}
+\renewcommand{\Prob}{\mathbb{P}}
+\renewcommand{\Var}{\mathrm{Var}}
 \newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\zq}[1]{z_{#1}}
+% Used as \zq_{1-\varepsilon}: bare symbol, not a one-argument macro.
+\newcommand{\zq}{z}
 \newcommand{\PI}{\mathrm{PI}}
 
 %------------------------------------------------------------------- shorthands
@@ -53,3 +56,13 @@
 \newcommand{\RNM}{RNM}
 \newcommand{\ie}{i.\,e.}
 \newcommand{\eg}{e.\,g.}
+
+% Math-/tabular-safe TODO: MMC's \TODO uses \marginpar (fails in $...$ and
+% floats). Arguments may contain `_` (e.g. n_max); \detokenize keeps them literal.
+\renewcommand\TODO[1]{\mbox{\normalfont\color{red}\sffamily[TODO:\detokenize{#1}]}}
+
+% babel-ukrainian 1.5a defines \Ukrainian as \selectlanguage{\ukrainian}
+% (control sequence), but \ukrainian is never defined; russianb correctly uses
+% the string form. Restore the working switch for MMC's \maketitleUkr.
+\DeclareRobustCommand{\Ukrainian}{\selectlanguage{ukrainian}}
+\providecommand{\English}{\selectlanguage{english}}
