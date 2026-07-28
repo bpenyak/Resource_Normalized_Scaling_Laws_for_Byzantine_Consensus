@@ -131,6 +131,14 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "--data-path=/opt/besu/data",
             "--data-storage-format=BONSAI",
             "--sync-mode=FULL",
+            # Private n-validator net never has 5 peers; default min-peers=5
+            # would stall block production forever on n<=5.
+            "--sync-min-peers=1",
+            f"--p2p-host={name}",
+            "--nat-method=NONE",
+            # Allow bootnode enode://...@validator0:30303 (Compose DNS name).
+            "--Xdns-enabled=true",
+            "--Xdns-update-enabled=true",
             "--host-allowlist=*",
             "--rpc-http-enabled",
             f"--rpc-http-host={RPC_BIND_HOST}",
