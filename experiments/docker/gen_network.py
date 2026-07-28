@@ -149,9 +149,9 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "--node-private-key-file=/opt/besu/key",
             "--data-path=/opt/besu/data",
             "--data-storage-format=BONSAI",
-            # SNAP avoids FULL sync's hard-coded 5-peer gate, which a private
-            # n<=5 QBFT net can never satisfy.
-            "--sync-mode=SNAP",
+            # FULL is required for QBFT (SNAP is rejected). With static-nodes and
+            # fixed IPs all n validators peer; alone, a node cannot make progress.
+            "--sync-mode=FULL",
             f"--p2p-host={ip}",
             "--nat-method=NONE",
             "--discovery-enabled=false",
