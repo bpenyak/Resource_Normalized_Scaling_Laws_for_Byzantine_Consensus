@@ -189,6 +189,12 @@ def main() -> int:
 
     if args.n < 4:
         raise SystemExit("QBFT requires at least 4 validators")
+    if "besu" not in args.image:
+        raise SystemExit(
+            f"image {args.image!r} is not supported: genesis generation here "
+            "calls 'besu operator generate-blockchain-config'. Cross-client "
+            "replication (experiment X9) needs a separate genesis path -- see "
+            "notes/EXPERIMENT_PROTOCOL.md.")
 
     out = args.out
     if out.exists():

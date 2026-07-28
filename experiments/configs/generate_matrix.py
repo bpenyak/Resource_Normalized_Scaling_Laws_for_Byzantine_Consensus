@@ -42,6 +42,7 @@ def expand(cfg: dict, only: list[str] | None) -> list[dict]:
                                             defaults["concurrency"]),
                     "rtt_ms": base.get("rtt_ms", defaults["rtt_ms"]),
                     "loss_pct": base.get("loss_pct", defaults["loss_pct"]),
+                    "image": spec.get("image", defaults["besu_image"]),
                     "replicate": r,
                 }
                 derived = spec.get("derived", {})

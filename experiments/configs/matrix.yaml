@@ -69,6 +69,20 @@ experiments:
       duplicate_pct: "loss_pct / 2"
       faulty_nodes: "floor((n - 1) / 3)"
 
+  # X9 -- cross-implementation replication.
+  # Answers the "is this an artefact of one client?" objection. Theorem 1
+  # predicts the SAME line alpha = gamma*lambda - beta with THIS client's
+  # coefficients; (beta, gamma) themselves are expected to differ.
+  # Note: qbft_getSignerMetrics is Besu-specific, so X9 covers throughput
+  # (X1/X3) only, not the detector.
+  X9:
+    purpose: "cross-implementation replication of X1 and X3"
+    replicates: 2
+    image: quorumengineering/quorum:24.4.0
+    grid:
+      n: [4, 7, 13]
+      concurrency: [1, 4, 16, 64]
+
 # X3b (confounding-theorem check), X6 (simulation), X7 (coverage) and
 # X8 (sizing ablation) require no new runs -- they are post-hoc analyses over
 # the data produced above and are executed by the scripts in analysis/.

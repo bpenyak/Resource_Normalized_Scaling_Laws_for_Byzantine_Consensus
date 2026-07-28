@@ -65,8 +65,8 @@ jobs:
           free -m
           df -h /
 
-      - name: Pull the Besu image
-        run: docker pull hyperledger/besu:24.10.0
+      - name: Pull the client image
+        run: docker pull "${{ matrix.point.image }}"
 
       - name: Run design point
         run: |
@@ -80,6 +80,7 @@ jobs:
             --loss-pct "${{ matrix.point.loss_pct }}" \
             --duplicate-pct "${{ matrix.point.duplicate_pct }}" \
             --faulty-nodes "${{ matrix.point.faulty_nodes }}" \
+            --image "${{ matrix.point.image }}" \
             --duration "${{ inputs.duration }}" \
             --workdir "network" \
             --out "data/raw/${{ matrix.point.id }}.json"

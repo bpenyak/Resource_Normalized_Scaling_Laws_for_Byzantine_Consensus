@@ -16,19 +16,24 @@
 | 1 | Introduction | `01_introduction.tex` | 1.0 | |
 | 2 | Related work | `02_related_work.tex` | 1.0 | |
 | 3 | RNM protocol | `03_rnm_protocol.tex` | 1.0 | |
-| 4 | Bi-factor model + Theorem 1 + Alg. 1 | `04_bifactor_model.tex` | 1.5 | |
+| 4 | Bi-factor model + Theorem 1 + Alg. 1 | `04_bifactor_model.tex` | 1.8 | |
 | 5 | Prediction intervals | `05_prediction_intervals.tex` | 0.5 | |
-| 6 | Safety model | `06_safety_model.tex` | 0.5 | |
+| 6 | Safety model | `06_safety_model.tex` | 0.4 | |
 | 7 | Sizing + Theorem 2 + Alg. 2 | `07_sizing_problem.tex` | 1.5 | |
-| 8 | Experiments | `08_experiments.tex` | 0.8 | |
+| 8 | Experiments | `08_experiments.tex` | 0.9 | |
 | 9 | Results | `09_results.tex` | 1.2 | |
 | 10 | Case study | `10_case_study.tex` | 0.5 | |
-| 11 | Limitations | `11_limitations.tex` | 0.3 | |
+| 11 | Limitations | `11_limitations.tex` | 0.5 | |
 | 12 | Conclusions | `12_conclusions.tex` | 0.4 | |
 | — | References (36) | `bib/references.tex` | 1.3 | |
-| | **Разом** | | **12.0** | |
+| | **Разом** | | **12.5** | |
 
-**12.0 > 10.0.** Потрібне скорочення на ~2 сторінки. План нижче.
+**12.5 > 10.0.** Потрібне скорочення на ~2.5 сторінки. План нижче.
+
+> Зміна проти першої версії: §4 виріс (умови регулярності, повне доведення,
+> абзац інтуїції, Remark про порядок величини), §6 стиснуто (сама межа —
+> класична, тримати її розгорнутою немає сенсу), §11 і §8 виросли через X9.
+> Це правильний обмін: центральний результат має займати найбільше місця.
 
 ---
 
@@ -56,7 +61,14 @@
 ### Крок 5. Introduction (−0.2 стор.)
 Підрозділ Scope злити з Contributions.
 
-**Разом: −2.0 стор. → 10.0.**
+### Крок 6. §6 (−0.2 стор.)
+`Lemma~\ref{lem:hoeffding}` і її доведення — в одне речення всередині
+доведення `Statement~\ref{st:rho}`, без окремого середовища. Робити це
+**лише в крайньому разі**: окрема лема робить видимим, що саме запозичено
+з класики, а що додано.
+
+**Разом: −2.2 стор. → 10.3.** Залишок — за рахунок `\baselineskip` у таблицях
+та стискання Case study до 0.35 стор.
 
 ---
 

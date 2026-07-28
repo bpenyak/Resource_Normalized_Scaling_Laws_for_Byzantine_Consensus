@@ -34,35 +34,28 @@ from Commodity-CI Measurements}
 \textbf{Problem.} Sizing the validator set of a permissioned Byzantine Fault
 Tolerant (BFT) network for a national-scale e-governance workload requires
 reconciling two opposing forces: consensus throughput degrades as the validator
-count~$\n$ grows, whereas the statistical power of Byzantine-behaviour detection
-improves with~$\n$. Existing work treats these two regimes in isolation, and
-published single-factor scaling coefficients are not reproducible across
-testbeds.
+count~$\n$ grows, whereas the statistical power of fault detection improves
+with~$\n$. Published single-factor scaling coefficients are moreover not
+reproducible across testbeds.
 %
-\textbf{Contributions.} (1)~A \emph{resource-normalized measurement} (RNM)
-protocol that fixes the per-validator CPU quota~$\q$ independently of~$\n$,
-making the scaling exponent identifiable from a single commodity host;
-(2)~a \emph{bi-factor scaling law} $\TPS(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta}$
-separating client concurrency from consensus overhead, together with an
-\emph{identifiability theorem} showing that the single-factor exponent
-$\ahat=\gamma\lambda-\beta$ is a confounded projection and therefore not an
-intrinsic protocol property; (3)~calibrated lognormal \emph{prediction
-intervals} replacing heuristic point-error guidelines; (4)~a
-\emph{chance-constrained validator-set sizing problem} coupling the throughput
-law with a Hoeffding-type detection bound, and a \emph{feasibility-window
+\textbf{Contributions.} (1)~An \emph{identifiability theorem} showing that the
+single-factor exponent converges to $\ahat=\gamma\lambda-\beta$, where
+$\lambda$ describes how client concurrency was scaled with the network, so that
+$\ahat$ is a confounded projection rather than an intrinsic protocol property;
+(2)~a \emph{resource-normalized measurement} protocol fixing the per-validator
+CPU quota~$\q$ independently of~$\n$, which is what makes the required
+factorial design feasible on a single commodity host; (3)~calibrated lognormal
+\emph{prediction intervals} validated by empirical coverage; (4)~a
+\emph{chance-constrained sizing problem} and a \emph{feasibility-window
 theorem} proving that the admissible validator counts form a closed interval
-$[\nmin,\nmax]$ computable in $O(\log \n)$.
+$[\nmin,\nmax]$ computable in $O(\log \n)$, an empty interval certifying that
+no validator count meets the requirement.
 %
-\textbf{Validation.} The full experimental campaign executes inside a public
+\textbf{Validation.} The full campaign executes inside a public
 continuous-integration workflow on a single four-core runner, covering
 $\n\in\{4,\dots,16\}$, client concurrency $\cc\in[1,64]$, emulated wide-area
 latency, and omission/duplication fault injection with an empirically
 characterized detector.
-%
-\textbf{Impact.} The method turns validator-set sizing from an engineering guess
-into a solvable optimization problem with explicit confidence levels, and gives
-a formal criterion for when a BFT architecture cannot meet a given workload at
-any validator count.
 %
 \keywords{Byzantine fault tolerance, consensus, scaling law, capacity planning,
 chance-constrained optimization, e-governance}
@@ -116,16 +109,11 @@ CI-середовищі на одному чотириядерному вузл�
 
 \input{sections/01_introduction}
 \input{sections/02_related_work}
-\input{sections/03_rnm_protocol}
-\input{sections/04_bifactor_model}
-\input{sections/05_prediction_intervals}
-\input{sections/06_safety_model}
-\input{sections/07_sizing_problem}
-\input{sections/08_experiments}
-\input{sections/09_results}
-\input{sections/10_case_study}
-\input{sections/11_limitations}
-\input{sections/12_conclusions}
+\input{sections/03_model}
+\input{sections/04_sizing}
+\input{sections/05_experiments}
+\input{sections/06_case_study}
+\input{sections/07_conclusions}
 
 \input{bib/references}
 

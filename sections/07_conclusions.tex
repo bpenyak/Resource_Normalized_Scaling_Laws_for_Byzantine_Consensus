@@ -1,0 +1,59 @@
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have addressed the problem of choosing the size of a permissioned BFT
+validator set for an e-governance workload in the realistic setting where no
+large testbed is available. \emph{First}, the identifiability theorem shows that
+a single-factor scaling exponent converges to $\gamma\lambda-\beta$, where
+$\lambda$ is a property of the measurement design rather than of the protocol; a
+positive exponent is therefore consistent with a load generator scaled alongside
+the network and is not by itself evidence that throughput grows with the
+validator count. This offers a concrete explanation for the discrepancy between
+the predictions of our earlier work~\cite{peniak2026a,peniak2026b} and indicates
+which of the two designs was affected. \emph{Second}, the resource-normalized
+measurement protocol fixes the per-validator compute budget independently of the
+validator count, separating consensus overhead from host contention and making
+the required factorial design --- and hence the theorem --- usable on a single
+commodity machine. \emph{Third}, calibrated lognormal prediction intervals,
+validated by empirical coverage on held-out validator counts, replace point
+accuracy figures with a falsifiable statement. \emph{Fourth}, coupling the
+throughput law with a Hoeffding-type detection bound turns sizing into a
+chance-constrained program whose feasible set is a closed interval
+$[\nmin,\nmax]$ computable in $O(\log\n)$ evaluations; the detection bound
+itself is standard, and what it contributes is a constraint monotone in the
+direction opposite to throughput, so that an empty interval certifies a
+structural rather than a provisioning failure.
+
+Of the four, we regard the first as the one most likely to outlive the specific
+measurements reported here, since it is a statement about estimation rather than
+about any particular system. The entire campaign executes in a public
+continuous-integration workflow on one four-core runner, so every result can be
+reproduced without dedicated infrastructure.
+
+\paragraph{Future work.}
+Protocol-level instrumentation covering equivocation faults; validation across
+several consensus implementations; extension of the feasibility window to
+latency and finality constraints; and online recalibration of $\beta$ as a
+deployment grows.
+
+\subsection*{Conflict of interest}
+The authors declare no conflict of interest.
+
+\subsection*{Funding}
+The research was conducted without financial support.
+
+\subsection*{Data availability}
+The workflow definition, network and load generators, fault-injection scripts,
+detector, analysis code and raw measurement artefacts are available in the
+project repository.
+
+\subsection*{Use of artificial intelligence}
+AI-assisted tools were used for language editing and typesetting. All scientific
+results, proofs, experimental design and analysis were produced by the authors.
+
+\subsection*{Contributions of authors}
+\textbf{Peniak B.\,O.}: conceptualization, methodology, formal analysis,
+software, investigation, data curation, writing --- original draft,
+visualization.
+\textbf{Liubinskyj B.\,B.}: supervision, validation, writing --- review and
+editing.

@@ -1,0 +1,177 @@
+\section{Prediction intervals, detection, and the sizing problem}
+\label{sec:sizing}
+
+\subsection{Calibrated prediction intervals}
+
+A point estimate of throughput at an unmeasured validator count is not
+actionable: capacity planning needs a lower bound holding with a stated
+probability. Two sources of uncertainty matter --- parameter uncertainty in
+$(\gamma,\beta)$, which grows with the extrapolation distance, and residual
+dispersion, which does not. With $\mathbf{z}=(1,\log\cc,-\log\n)^{\!\top}$ and
+$\hat\vartheta=(\log\Tzero,\gamma,\beta)^{\!\top}$, the delta
+method~\cite{seber2003} gives the log-space predictive variance
+$\hat{V}(\n,\cc)=\mathbf{z}^{\!\top}\widehat{\Cov}(\hat\vartheta)\mathbf{z}
++\hat\sigma^{2}$.
+
+\begin{State}[Lognormal prediction interval]
+\label{st:pi}
+If the log-space residuals are approximately normal, an approximate
+$(1-\epsp)$ prediction interval for $\TPS(\n,\cc)$ is
+$\exp\{\log\widehat{\TPS}(\n,\cc)\mp\zq_{1-\epsp/2}\hat{V}^{1/2}(\n,\cc)\}$,
+with one-sided lower endpoint $\underline{\TPS}_{1-\epsp}(\n,\cc)$ obtained by
+replacing $\zq_{1-\epsp/2}$ with $\zq_{1-\epsp}$.
+\end{State}
+
+Normality of log-residuals is an assumption and heteroscedasticity across $\n$
+is expected, so we do not rely on it: a residual bootstrap~\cite{efron1993}
+resamples log-residuals, refits~\eqref{eq:ols} and reports empirical quantiles
+of the predictive distribution. The interval is then validated rather than
+asserted --- fitting on $\n\in\{4,6,8,10\}$ and measuring the fraction of
+held-out observations at $\n\in\{12,16\}$ falling inside the nominal $90\%$ and
+$95\%$ intervals. Coverage substantially below nominal falsifies the interval,
+and we report it whichever way it comes out; this replaces the mean absolute
+percentage error customary in this literature, which cannot be checked against a
+target.
+
+\subsection{Detection of coordinated omission faults}
+
+The bound below is Hoeffding's inequality with a design-effect correction and we
+claim no novelty for it; its role is to supply a constraint whose monotonicity
+in~$\n$ opposes that of throughput, with parameters we measure rather than
+postulate.
+
+\begin{Def}[Fault class and detector]
+\label{def:faults}
+A validator subset $B$ with $|B|=\kf$ is \emph{faulty} if each member fails to
+contribute to a proposal round independently with probability $\pd>\pf$, where
+$\pf$ is the corresponding rate for a correct validator; this is the
+\emph{omission} class, realized at the network level and excluding equivocation.
+The detector observes each validator's participation over a window of $\w$
+rounds and flags~$i$ when its participation rate falls below a threshold
+$\thr\in(\pf,\pd)$; detection succeeds when at least one member of $B$ is
+flagged.
+\end{Def}
+
+For a single validator, Hoeffding's inequality~\cite{hoeffding1963} bounds the
+probability that $\w$ independent observations place the empirical rate on the
+wrong side of $\thr$ by $\exp\{-2\w(\pd-\thr)^{2}\}$. Validators controlled by
+one adversary do not, however, fail independently.
+
+\begin{Assumption}[Exchangeable correlation]
+\label{as:rho}
+Participation indicators of validators in $B$ are exchangeable with pairwise
+correlation $\rho\in[0,1)$, so the variance of their mean carries the design
+effect $1+(\kf-1)\rho$.
+\end{Assumption}
+
+Exchangeability is a modelling choice, not a fact about adversaries: a real
+attacker may correlate failures in a structured, time-varying way that no single
+$\rho$ describes. We adopt it because it yields a closed form with one
+interpretable parameter, we estimate $\rho$ from injected faults rather than
+assuming a value, and we treat the result as a design heuristic calibrated on
+the omission class rather than as a worst-case guarantee.
+
+\begin{State}[Miss probability and the minimum validator count]
+\label{st:rho}
+Under Definition~\ref{def:faults} and Assumption~\ref{as:rho}, with
+$\kf=\lceil\phi\n\rceil$ for an assumed faulty fraction $\phi$,
+\begin{equation}
+\pmiss(\n,\w)\le\exp\!\left\{-\frac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\right\}.
+\label{eq:pmiss}
+\end{equation}
+The bound is nonincreasing in $\n$ and in $\w$, and $\pmiss(\n,\w)\le\epss$
+holds for all $\n\ge\nmin$ with
+\begin{equation}
+\nmin=\left\lceil\frac{1}{\phi}\cdot
+\frac{\bigl(1+(\kf-1)\rho\bigr)\log(1/\epss)}{2\w(\pd-\thr)^{2}}\right\rceil .
+\label{eq:nmin}
+\end{equation}
+\end{State}
+
+\begin{Proof}
+A miss requires every member of $B$ to remain unflagged. Under
+Assumption~\ref{as:rho} the effective number of independent observations is
+$\neff=\kf\w/(1+(\kf-1)\rho)$, and Hoeffding's inequality applied to the
+exchangeable mean with this effective sample size gives~\eqref{eq:pmiss}. The
+exponent is proportional to $\kf/(1+(\kf-1)\rho)$, whose derivative in $\kf$ has
+the sign of $1-\rho>0$; since $\kf$ is nondecreasing in $\n$ and the exponent is
+increasing in $\w$, the bound is nonincreasing in both. Solving
+$\pmiss\le\epss$ for $\kf$ and substituting $\kf=\phi\n$ yields~\eqref{eq:nmin},
+and monotonicity makes the constraint a half-line.
+\end{Proof}
+
+\subsection{Chance-constrained sizing and the feasibility window}
+
+\begin{Problem}[Validator-set sizing]
+\label{prob:sizing}
+Given a peak demand $\Dpk$, a confidence level $1-\epsp$, a safety target
+$\epss$, a window $\w$, a faulty fraction $\phi$ and a nondecreasing cost
+$\Cost(\n)$, find
+\begin{equation}
+\nopt\in\arg\min_{\n\in\mathbb{N}}\ \Cost(\n)
+\quad\text{s.t.}\quad
+\Prob\bigl[\TPS(\n,\cc^{\star})\ge\Dpk\bigr]\ge1-\epsp,
+\quad \pmiss(\n,\w)\le\epss ,
+\label{eq:sizing}
+\end{equation}
+where $\cc^{\star}=\arg\max_{\cc}\gfun(\cc)$.
+\end{Problem}
+
+\begin{Lemma}[Deterministic equivalent and monotonicity]
+\label{lem:detequiv}
+The chance constraint in~\eqref{eq:sizing} is equivalent to
+\begin{equation}
+h(\n)\eqdef\log\Tzero+\log\gfun(\cc^{\star})-\beta\log\n
+-\zq_{1-\epsp}\hat{V}^{1/2}(\n,\cc^{\star})-\log\Dpk\ \ge 0 .
+\label{eq:detequiv}
+\end{equation}
+If $\hat{V}$ is nondecreasing in $\log\n$ over the extrapolation region, then
+$h$ is strictly decreasing there.
+\end{Lemma}
+
+\begin{Proof}
+By Statement~\ref{st:pi} the event $\TPS\ge\Dpk$ has probability at least
+$1-\epsp$ exactly when $\underline{\TPS}_{1-\epsp}\ge\Dpk$; taking logarithms
+gives~\eqref{eq:detequiv}. The first three terms strictly decrease in $\log\n$
+because $\beta>0$, and $-\zq\hat{V}^{1/2}$ is nonincreasing by hypothesis. That
+hypothesis holds whenever the design is centred at or below the operating range,
+since $\hat{V}$ is quadratic in $\log\n$ with minimum at the design centroid.
+\end{Proof}
+
+\begin{Theorem}[Feasibility window]
+\label{thm:window}
+Under the hypotheses of Lemma~\ref{lem:detequiv} and Statement~\ref{st:rho}, the
+feasible set of Problem~\ref{prob:sizing} is the integer interval
+$\Feas=\{\n:\nmin\le\n\le\nmax\}$ with $\nmin$ given by~\eqref{eq:nmin} and
+$\nmax=\lfloor\sup\{\n:h(\n)\ge0\}\rfloor$. If $\Feas\ne\emptyset$ and $\Cost$
+is nondecreasing then $\nopt=\nmin$, and both endpoints are computable in
+$O(\log\nmax)$ evaluations of $h$ by bisection.
+\end{Theorem}
+
+\begin{Proof}
+By Statement~\ref{st:rho} the detection constraint holds exactly on
+$\{\n\ge\nmin\}$; by Lemma~\ref{lem:detequiv} $h$ is strictly decreasing, so
+$\{\n:h(\n)\ge0\}$ is a down-set and the throughput constraint holds exactly on
+$\{\n\le\nmax\}$. The feasible set is the intersection of two opposing
+half-lines, hence an interval; it is finite, so a minimizer exists whenever it
+is nonempty, and monotonicity of $\Cost$ places it at the left endpoint.
+Bisection on the monotone $h$ locates $\nmax$ in $O(\log\nmax)$ evaluations, and
+$\nmin$ is closed-form.
+\end{Proof}
+
+\begin{Corollary}[Infeasibility certificate]
+\label{cor:infeasible}
+If $\nmin>\nmax$ then no validator-set size satisfies both requirements, and the
+deployment must change its architecture --- sharding, delegation, or a weaker
+safety target --- rather than its provisioning.
+\end{Corollary}
+
+Chance-constrained programming is classical~\cite{charnes1959,nemirovski2007};
+what is specific here is that the two constraints are monotone in opposite
+directions, so the feasible set is bounded on both sides and infeasibility is
+certified rather than merely observed. We are not aware of an equivalent
+statement for validator-set sizing. The resulting procedure --- evaluate
+$\cc^{\star}$, compute $\nmin$ in closed form, reject immediately if
+$h(\nmin)<0$ by Corollary~\ref{cor:infeasible}, otherwise bisect on
+$[\nmin,N_{\max}]$ for $\nmax$ and return $\nopt=\nmin$ --- is what
+Section~\ref{sec:case} applies.
