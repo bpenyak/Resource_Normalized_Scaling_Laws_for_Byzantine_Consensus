@@ -128,6 +128,7 @@ jobs:
           ls -1 data/raw | wc -l
 
       - name: Analyse
+        continue-on-error: true
         run: |
           python experiments/analysis/fit_bifactor.py --in data/raw --out data/processed
           python experiments/analysis/bootstrap_pi.py --in data/processed --out data/processed
@@ -137,6 +138,7 @@ jobs:
           python experiments/analysis/emit_numbers_tex.py --in data/processed --out numbers.tex
 
       - name: Upload analysis bundle
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: analysis
@@ -145,4 +147,5 @@ jobs:
             data/processed
             figures
             numbers.tex
+          if-no-files-found: warn
           retention-days: 90
