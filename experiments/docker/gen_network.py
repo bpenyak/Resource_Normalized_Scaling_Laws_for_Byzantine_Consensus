@@ -139,7 +139,6 @@ def compose_document(nodes: list[dict], quota: float, mem_limit_mb: int,
             "--rpc-http-cors-origins=all",
             "--p2p-port=30303",
             "--min-gas-price=0",
-            "--tx-pool-max-size=40000",
         ]
         if i > 0:
             common.append(f"--bootnodes={bootnode}")
