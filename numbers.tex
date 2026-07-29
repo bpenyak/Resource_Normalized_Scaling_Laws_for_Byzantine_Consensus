@@ -5,58 +5,71 @@
 %%     python experiments/analysis/emit_numbers_tex.py \
 %%            --in data/processed --out numbers.tex
 %%
-%% Until the experimental campaign has been run, every macro below expands to a
-%% visible \TODO marker, so that an unfilled number cannot silently reach the
-%% submitted PDF.
+%% Any macro that still expands to a \TODO marker means the corresponding
+%% quantity was not produced by the analysis pipeline.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%--- bi-factor calibration (X1, X3) -------------------------------------------
-\newcommand{\resBeta}{\TODO{beta}}
-\newcommand{\resBetaSE}{\TODO{se(beta)}}
-\newcommand{\resGamma}{\TODO{gamma}}
-\newcommand{\resGammaSE}{\TODO{se(gamma)}}
-\newcommand{\resCsat}{\TODO{c*}}
-\newcommand{\resTheta}{\TODO{theta}}
-\newcommand{\resTzero}{\TODO{T0}}
-\newcommand{\resRsq}{\TODO{R2}}
-\newcommand{\resSigmaRes}{\TODO{sigma}}
 
-%--- confounding check (Theorem 1) --------------------------------------------
-\newcommand{\resLambda}{\TODO{lambda}}
-\newcommand{\resAlphaHat}{\TODO{alpha-hat}}
-\newcommand{\resAlphaPred}{\TODO{gamma*lambda-beta}}
+%--- bi-factor calibration (X1, X3) ----------------------------------------------
+\newcommand{\resBeta}{1.651}
+\newcommand{\resBetaSE}{0.151}
+\newcommand{\resGamma}{0.178}
+\newcommand{\resGammaSE}{0.070}
+\newcommand{\resCsat}{67.9}
+\newcommand{\resTheta}{2.542}
+\newcommand{\resTzero}{2016.5}
+\newcommand{\resRsq}{0.727}
+\newcommand{\resSigmaRes}{0.404}
 
-%--- q-invariance (X2) ---------------------------------------------------------
-\newcommand{\resBetaQlow}{\TODO{beta(q=0.20)}}
-\newcommand{\resBetaQmid}{\TODO{beta(q=0.25)}}
-\newcommand{\resBetaQhigh}{\TODO{beta(q=0.33)}}
-\newcommand{\resQinvP}{\TODO{p-value}}
+%--- confounding check (Theorem 1) -----------------------------------------------
+\newcommand{\resLambda}{9.29}
+\newcommand{\resAlphaHat}{-1.362}
+\newcommand{\resAlphaPred}{-1.473}
+\newcommand{\resAlphaHatL0}{-1.548}
+\newcommand{\resAlphaHatL1}{-1.362}
+\newcommand{\resAlphaHatL2}{-0.661}
 
-%--- WAN degradation (X4) ------------------------------------------------------
-\newcommand{\resBetaRttZero}{\TODO{beta(0ms)}}
-\newcommand{\resBetaRttHigh}{\TODO{beta(200ms)}}
+%--- model comparison holdout log-RMSE -------------------------------------------
+\newcommand{\resRmseLinear}{1.329}
+\newcommand{\resRmseSingle}{0.523}
+\newcommand{\resRmseUsl}{0.637}
+\newcommand{\resRmseOurs}{0.538}
 
-%--- detector characterisation (X5) --------------------------------------------
-\newcommand{\resPd}{\TODO{p_d}}
-\newcommand{\resPf}{\TODO{p_f}}
-\newcommand{\resRho}{\TODO{rho}}
-\newcommand{\resAuc}{\TODO{AUC}}
+%--- q-invariance (X2) -----------------------------------------------------------
+\newcommand{\resBetaQlow}{1.550}
+\newcommand{\resBetaQmid}{1.541}
+\newcommand{\resBetaQhigh}{0.879}
+\newcommand{\resQinvP}{0.002}
 
-%--- prediction-interval coverage (X7) -----------------------------------------
-\newcommand{\resCovNinety}{\TODO{cov90}}
-\newcommand{\resCovNinetyFive}{\TODO{cov95}}
-\newcommand{\resHoldoutN}{\TODO{n_holdout}}
+%--- WAN degradation (X4) --------------------------------------------------------
+\newcommand{\resBetaRttZero}{1.527}
+\newcommand{\resBetaRttHigh}{2.708}
 
-%--- sizing ablation (X8) ------------------------------------------------------
-\newcommand{\resNminCase}{\TODO{n_min}}
-\newcommand{\resNmaxCase}{\TODO{n_max}}
-\newcommand{\resNoptCase}{\TODO{n*}}
-\newcommand{\resCostLinear}{\TODO{cost-linear}}
-\newcommand{\resCostSingle}{\TODO{cost-single-factor}}
-\newcommand{\resCostUsl}{\TODO{cost-usl}}
-\newcommand{\resCostOurs}{\TODO{cost-ours}}
+%--- detector characterisation (X5) ----------------------------------------------
+\newcommand{\resPd}{0.397}
+\newcommand{\resPf}{0.376}
+\newcommand{\resRho}{0.000}
+\newcommand{\resAuc}{0.506}
 
-%--- campaign metadata ---------------------------------------------------------
-\newcommand{\resNmaxMeasured}{\TODO{n_max measured}}
-\newcommand{\resTotalRuns}{\TODO{runs}}
-\newcommand{\resCoreHours}{\TODO{core-hours}}
+%--- prediction-interval coverage (X7) -------------------------------------------
+\newcommand{\resCovNinety}{90.9\,\%}
+\newcommand{\resCovNinetyFive}{95.5\,\%}
+\newcommand{\resHoldoutN}{$n \in \{11, 13, 16\}$}
+
+%--- sizing ablation (X8) --------------------------------------------------------
+\newcommand{\resKappa}{13.00}
+\newcommand{\resKappaMode}{auto_min_admissible}
+\newcommand{\resCstar}{32}
+\newcommand{\resNminCase}{4}
+\newcommand{\resNmaxCase}{4}
+\newcommand{\resNoptCase}{4}
+\newcommand{\resDetectorThr}{0.90}
+\newcommand{\resCostLinear}{4.00}
+\newcommand{\resCostSingle}{1.50}
+\newcommand{\resCostUsl}{1.50}
+\newcommand{\resCostOurs}{1.00}
+
+%--- campaign metadata -----------------------------------------------------------
+\newcommand{\resNmaxMeasured}{16}
+\newcommand{\resTotalRuns}{94}
+\newcommand{\resCoreHours}{65.0}

@@ -14,13 +14,16 @@ which of the two designs was affected. \emph{Second}, the resource-normalized
 measurement protocol fixes the per-validator compute budget independently of the
 validator count, separating consensus overhead from host contention and making
 the required factorial design --- and hence the theorem --- usable on a single
-commodity machine. \emph{Third}, calibrated lognormal prediction intervals,
+commodity machine; where exact $\q$-invariance is rejected, the fitted law is
+reported at the reference quota. \emph{Third}, calibrated lognormal prediction
+intervals,
 validated by empirical coverage on held-out validator counts, replace point
 accuracy figures with a falsifiable statement. \emph{Fourth}, coupling the
 throughput law with a Hoeffding-type detection bound turns sizing into a
 chance-constrained program whose feasible set is a closed interval
-$[\nmin,\nmax]$ computable in $O(\log\n)$ evaluations; the detection bound
-itself is standard, and what it contributes is a constraint monotone in the
+$[\nmin,\nmax]$ computable in $O(\log\n)$ evaluations, with absolute demand
+entering through an explicit production scale-up $\kappaScale$; the detection
+bound itself is standard, and what it contributes is a constraint monotone in the
 direction opposite to throughput, so that an empty interval certifies a
 structural rather than a provisioning failure.
 

@@ -7,21 +7,29 @@ window concentrating about a quarter of the daily volume and therefore a peak
 demand $\Dpk\approx2.1\times10^{3}$ transactions per second. The safety
 requirement is that a coordinated omission fault affecting one fifth of the
 validators be detected within one epoch with probability at least $1-\epss$.
-Substituting the calibrated parameters and the measured detector
-characteristics of Section~\ref{sec:exp} into the procedure of
-Theorem~\ref{thm:window} yields the feasibility window
-$[\resNminCase,\resNmaxCase]$ and the recommendation
+
+Because the bi-factor law is calibrated on \RNM{}-normalized throughput
+$\TPSn=\TPS/\q$, absolute demand and the fitted law live in different units.
+We therefore introduce an explicit production scale-up $\kappaScale$ such that
+the absolute predictor is $\kappaScale\cdot\widehat{\TPSn}(\n,\cc)$. The default
+reported here is the \emph{minimal admissible} scale: the smallest
+$\kappaScale$ for which the lower prediction bound at $\n=4$ meets $\Dpk$
+(hardware just capable of serving the peak at the smallest QBFT validator
+set). With that $\kappaScale=\resKappa$ and operating concurrency
+$\cc^{\star}=\resCstar$, Theorem~\ref{thm:window} yields the feasibility
+window $[\resNminCase,\resNmaxCase]$ and the recommendation
 $\nopt=\resNoptCase$; Figure~\ref{fig:window} shows the two constraints and
-their intersection.
+their intersection. Detector rates enter at the Youden-optimal participation
+threshold $\thr=\resDetectorThr$ of experiment~X5.
 
 \begin{figure}[!t]
 \centering
-% \includegraphics[width=0.78\textwidth]{figures/fig_window}
-\rule{0.78\textwidth}{0.20\textwidth}
+\includegraphics[width=0.78\textwidth]{figures/fig_window}
 \caption{Feasibility window. The solid curve is the confidence-adjusted
-throughput $\underline{\TPS}_{1-\epsp}(\n)$ against the demand $\Dpk$; the
-dashed curve is $\pmiss(\n,\w)$ against the safety target $\epss$. The
-admissible interval $[\nmin,\nmax]$ is shaded}
+absolute throughput $\kappaScale\cdot\underline{\TPSn}_{1-\epsp}(\n)$ against
+the demand $\Dpk$; the shaded band marks the admissible interval
+$[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$ at the minimal admissible
+$\kappaScale=\resKappa$}
 \label{fig:window}
 \end{figure}
 
@@ -38,7 +46,8 @@ system is made more conservative. The analysis thus produces an operational
 statement of the form: \emph{with confidence $1-\epsp$ the network sustains the
 peak demand up to $\nmax$ validators, and detects the specified coordinated
 fault with probability at least $1-\epss$ from $\nmin$ upward; the cheapest
-admissible configuration is $\nopt$}.
+admissible configuration is $\nopt$; the required production scale relative to
+the \RNM{} unit is $\kappaScale$}.
 
 \begin{Remark}
 This case study illustrates the sizing workflow. It is not a recommendation to
@@ -56,33 +65,39 @@ The peer-to-peer transport is encrypted, so network-level injection cannot be
 selective with respect to consensus message type. Experiment~X5 therefore
 realizes omission and duplication faults only, excluding equivocation and
 signature forgery, and every statement about $\pd$, $\pf$ and $\pmiss$ is
-conditional on that class.
+conditional on that class. Empirically, signer-metrics detection of this class
+is weak (AUC~$\resAuc$ at the Youden threshold $\thr=\resDetectorThr$): the
+safety constraint is consequently non-binding at the operating point of
+Section~\ref{sec:case}, and the window is set by throughput.
 
 \paragraph{Absolute throughput and measured range.}
 Under the \RNM{} protocol each validator receives a small fixed CPU quota, so
 absolute throughput is far below what dedicated hardware would deliver and is
 not comparable with published benchmarks; every claim here concerns exponents,
 coverage and the sizing decisions derived from them, and
-Statement~\ref{st:qinvariance} is what licenses that separation. The largest
-directly measured validator set is bounded by host memory, and extrapolation
-beyond it rests on the calibrated model and on simulation; the intervals of
-Statement~\ref{st:pi} quantify, but do not eliminate, the associated risk.
+Statement~\ref{st:qinvariance} is what licenses that separation. Absolute demand
+enters the sizing problem only through the explicit scale-up $\kappaScale$ of
+Problem~\ref{prob:sizing}. The largest directly measured validator set is
+bounded by host memory, and extrapolation beyond it rests on the calibrated
+model and on simulation; the intervals of Statement~\ref{st:pi} quantify, but
+do not eliminate, the associated risk. The fitted consensus exponent
+$\beta=\resBeta$ is steep, so even at the minimal admissible $\kappaScale$ the
+feasibility window collapses to a single point $\n=\resNoptCase$: that is a
+substantive sizing conclusion, not a numerical artefact.
 
 \paragraph{Single host and single platform.}
 All measurements come from one host and one implementation, with wide-area
 behaviour emulated rather than observed. The contributions are not equally
 exposed. Theorem~\ref{thm:identifiability} is a statement about least squares
 and does not depend on the platform; what depends on it are the values of
-$\beta$ and $\gamma$. This yields a prediction a second implementation can
-falsify cheaply: fitting $(\beta,\gamma)$ on another QBFT-family client and
-repeating the path re-sampling should reproduce the line
-$\ahat=\gamma\lambda-\beta$ with \emph{that} client's coefficients, and place
-the sign change at $\lambda=\beta/\gamma$. Experiment~X9 reports this
-replication; a failure there would undermine the model~\eqref{eq:bifactor}
-rather than the theorem. The \RNM{} protocol is more exposed, since
-Assumption~\ref{as:separable} concerns the scheduler and the runtime, and a
-client with a different threading model may violate it at quotas where ours does
-not.
+$\beta$ and $\gamma$. Experiment~X9 was intended to falsify the
+path-re-sampling prediction on a second QBFT-family client, but that arm of the
+campaign did not produce usable records, so the numerical coefficients remain
+Besu-specific. The \RNM{} protocol is more exposed, since
+Assumption~\ref{as:separable} concerns the scheduler and the runtime: the X2
+partial $F$-test rejects exact quota invariance on $\{0.20,0.25,0.33\}$, and we
+therefore report the bi-factor fit at the reference quota $\q=0.25$ rather than
+pooling across quotas.
 
 \paragraph{Asymmetry between theory and measurement.}
 The analytical part of this work is more complete than the empirical part. The

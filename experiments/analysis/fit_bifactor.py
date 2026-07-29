@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -107,12 +108,28 @@ def ols_logspace(df: pd.DataFrame) -> dict:
 
 
 def unsaturated_subset(df: pd.DataFrame) -> pd.DataFrame:
-    """Keep concurrency levels below the empirical throughput knee."""
+    """Keep the unsaturated c-sweep without dropping the n-sweep.
+
+    Cutting at the empirical knee ``c <= c_peak`` alone removes the X1
+    n-sweep when its fixed concurrency sits past the knee (here ``c=16``
+    while ``c_peak=8``). The resulting design then has almost no variation
+    in ``n``, so the OLS slope on ``log n`` is unidentified and can flip
+    sign. We therefore always retain the concurrency level that spans the
+    most distinct validator counts (the n-sweep reference).
+    """
     by_c = df.groupby("c")["tps_norm"].median().sort_index()
     if len(by_c) < 3:
         return df
     peak_c = by_c.idxmax()
-    return df[df["c"] <= peak_c].copy()
+    c_ref = df.groupby("c")["n"].nunique().idxmax()
+    return df[(df["c"] <= peak_c) | (df["c"] == c_ref)].copy()
+
+
+def reference_quota_subset(df: pd.DataFrame, quota: float = 0.25,
+                           atol: float = 1e-9) -> pd.DataFrame:
+    """Restrict the bi-factor fit to the RNM reference quota."""
+    sub = df[np.isclose(df["quota"].to_numpy(dtype=float), quota, atol=atol)]
+    return sub if len(sub) >= 8 else df
 
 
 def fit_saturation(df: pd.DataFrame, log_T0: float, gamma: float,
@@ -199,10 +216,14 @@ def q_invariance(df: pd.DataFrame) -> dict:
 # --------------------------------------------------------------------------- #
 
 def confounding_check(df: pd.DataFrame, gamma: float, beta: float,
-                      lambdas=(0.0, 0.25, 0.5, 0.75, 1.0, 1.5)) -> pd.DataFrame:
+                      lambdas=(0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0)) -> pd.DataFrame:
     """Re-sample along log c = lambda*log n + mu and fit the single-factor model.
 
     Theorem 1 predicts that the fitted exponent converges to gamma*lambda - beta.
+    The intercept mu is chosen so the path passes through the design anchor
+    (n_ref, c_ref), where c_ref is the concurrency with the richest n-sweep
+    (X1) and n_ref is its median validator count. That keeps lambda=0 equal to
+    the measured n-sweep rather than collapsing onto a single X3 point.
     """
     rows = []
     ns = np.array(sorted(df["n"].unique()), dtype=float)
@@ -210,12 +231,17 @@ def confounding_check(df: pd.DataFrame, gamma: float, beta: float,
     if len(ns) < 3 or len(cs) < 2:
         return pd.DataFrame(rows)
 
+    c_ref = float(df.groupby("c")["n"].nunique().idxmax())
+    n_ref = float(np.median(ns))
+    mu = math.log(c_ref) - 0.0  # overwritten per lambda below
+
     for lam in lambdas:
+        mu = math.log(c_ref) - lam * math.log(n_ref)
         picked = []
         for n in ns:
-            target = lam * np.log(n)                     # mu absorbed by scaling
-            c_star = cs[np.argmin(np.abs(np.log(cs) - (target + np.log(cs[0]))))]
-            d = df[(df["n"] == n) & (df["c"] == c_star)]
+            target = lam * math.log(n) + mu
+            c_star = float(cs[np.argmin(np.abs(np.log(cs) - target))])
+            d = df[(df["n"] == n) & (np.isclose(df["c"], c_star))]
             if not d.empty:
                 picked.append(d)
         if len(picked) < 3:
@@ -294,6 +320,75 @@ def compare_models(df: pd.DataFrame, holdout_n: list[int]) -> pd.DataFrame:
     return pd.DataFrame(out)
 
 
+def characterize_detector(raw_dir: Path, df: pd.DataFrame) -> dict:
+    """Pool X5 ROC curves and pick the Youden-optimal operating threshold.
+
+    Returns p_d, p_f, rho, auc and the selected participation threshold thr.
+    rho is only available at the threshold used online during the run; when the
+    selected thr differs we keep the base-threshold rho if finite, else NaN
+    (sizing treats non-finite rho as 0).
+    """
+    by_tau: dict[float, list[tuple[float, float]]] = {}
+    base_rows = df[df["p_d"].notna()]
+    for path in sorted(raw_dir.glob("*.json")):
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        if rec.get("status") != "ok":
+            continue
+        if float(rec.get("loss_pct") or 0.0) <= 0:
+            continue
+        det = rec.get("detector") or {}
+        for pt in det.get("roc") or []:
+            thr = float(pt["tau"])
+            by_tau.setdefault(thr, []).append(
+                (float(pt["p_d"]), float(pt["p_f"])))
+
+    if not by_tau:
+        return {
+            "p_d": float(base_rows["p_d"].mean()) if len(base_rows) else float("nan"),
+            "p_f": float(base_rows["p_f"].mean()) if len(base_rows) else float("nan"),
+            "rho": float(base_rows["rho"].mean()) if len(base_rows) else float("nan"),
+            "auc": float("nan"),
+            "thr": float("nan"),
+            "runs": int(len(base_rows)),
+            "note": "no ROC points; used base-threshold averages",
+        }
+
+    scored = []
+    for thr, pts in by_tau.items():
+        pd_ = float(np.mean([a for a, _ in pts]))
+        pf_ = float(np.mean([b for _, b in pts]))
+        scored.append((pd_ - pf_, thr, pd_, pf_, len(pts)))
+    scored.sort(reverse=True)
+    youden, thr, pd_, pf_, npts = scored[0]
+
+    # Trapezoidal AUC over the mean ROC ordered by false-positive rate.
+    roc_mean = sorted(
+        ((float(np.mean([b for _, b in pts])),
+          float(np.mean([a for a, _ in pts])))
+         for pts in by_tau.values()),
+        key=lambda x: x[0])
+    xs = [0.0] + [p for p, _ in roc_mean] + [1.0]
+    ys = [0.0] + [r for _, r in roc_mean] + [1.0]
+    auc = float(np.trapezoid(ys, xs)) if len(xs) >= 2 else float("nan")
+
+    rho = float(base_rows["rho"].mean()) if len(base_rows) else float("nan")
+    if not np.isfinite(rho):
+        # Exchangeable correlation is unidentified when flags are too rare at
+        # the online base threshold; sizing then uses the independent case.
+        rho = 0.0
+
+    return {
+        "p_d": pd_,
+        "p_f": pf_,
+        "rho": rho,
+        "auc": auc,
+        "thr": float(thr),
+        "youden": float(youden),
+        "runs": int(npts),
+        "note": "operating point = argmax_thr (p_d - p_f) on pooled X5 ROC",
+    }
+
+
 # --------------------------------------------------------------------------- #
 
 def main() -> int:
@@ -309,12 +404,23 @@ def main() -> int:
     df.to_csv(args.out / "dataset.csv", index=False)
 
     clean = df[(df["loss_pct"] == 0) & (df["rtt_ms"] == 0)]
-    core = unsaturated_subset(clean)
+    # Main bi-factor calibration at the RNM reference quota (q-invariance is
+    # tested separately on the full clean set including X2 quota levels).
+    ref = reference_quota_subset(clean, quota=0.25)
+    core = unsaturated_subset(ref)
     fit = ols_logspace(core)
-    fit.update(fit_saturation(clean, fit["log_T0"], fit["gamma"], fit["beta"]))
+    if fit["beta"] <= 0:
+        raise SystemExit(
+            f"calibrated beta={fit['beta']:.4f} <= 0 on {fit['n_obs']} points; "
+            "replicated-state-machine semantics require beta > 0 — check that "
+            "the n-sweep survived unsaturated_subset")
+    fit.update(fit_saturation(ref, fit["log_T0"], fit["gamma"], fit["beta"]))
     fit["T0"] = float(np.exp(fit["log_T0"]))
     fit["n_max_measured"] = int(df["n"].max())
     fit["total_runs"] = int(len(df))
+    fit["calibration_n_obs"] = int(fit["n_obs"])
+    fit["calibration_c"] = sorted(int(x) for x in core["c"].unique())
+    fit["calibration_n"] = sorted(int(x) for x in core["n"].unique())
 
     # beta as a function of emulated round-trip latency (experiment X4).
     beta_by_rtt = {}
@@ -324,14 +430,10 @@ def main() -> int:
             beta_by_rtt[str(int(rtt))] = float(-slope)
     fit["beta_by_rtt"] = beta_by_rtt
 
-    # Detector characteristics, pooled over fault-injection runs (experiment X5).
-    faulty_runs = df[df["p_d"].notna()]
-    fit["detector"] = {
-        "p_d": float(faulty_runs["p_d"].mean()) if len(faulty_runs) else float("nan"),
-        "p_f": float(faulty_runs["p_f"].mean()) if len(faulty_runs) else float("nan"),
-        "rho": float(faulty_runs["rho"].mean()) if len(faulty_runs) else float("nan"),
-        "runs": int(len(faulty_runs)),
-    }
+    # Detector characteristics from X5. Prefer the ROC operating point that
+    # maximises Youden's J = p_d - p_f (paper operating-point selection);
+    # fall back to the per-record base threshold if no ROC is available.
+    fit["detector"] = characterize_detector(args.inp, df)
 
     (args.out / "fit.json").write_text(json.dumps(fit, indent=2),
                                        encoding="utf-8")

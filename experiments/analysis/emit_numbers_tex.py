@@ -88,6 +88,7 @@ def main() -> int:
     sizing = load_json(args.inp / "sizing.json")
     conf = load_csv(args.inp / "confounding.csv")
     abl = load_csv(args.inp / "sizing_ablation.csv")
+    cmp = load_csv(args.inp / "model_comparison.csv")
 
     e = Emitter()
 
@@ -105,17 +106,42 @@ def main() -> int:
 
     # -- confounding check (Theorem 1) ----------------------------------------
     e.section("confounding check (Theorem 1)")
-    if not conf.empty:
-        # Report the path slope whose fitted exponent is closest to zero:
-        # the sign change is the most striking single number.
-        row = conf.iloc[(conf["alpha_hat"].abs()).argmin()]
-        e.num("resLambda", float(row["lambda"]), "{:.2f}")
-        e.num("resAlphaHat", float(row["alpha_hat"]))
-        e.num("resAlphaPred", float(row["alpha_predicted"]))
+    beta = fit.get("beta")
+    gamma = fit.get("gamma")
+    if (isinstance(beta, (int, float)) and isinstance(gamma, (int, float))
+            and math.isfinite(beta) and math.isfinite(gamma) and gamma > 0):
+        e.num("resLambda", beta / gamma, "{:.2f}")  # predicted sign-change
     else:
-        e.num("resLambda", None, todo="lambda")
+        e.num("resLambda", None, todo="beta/gamma")
+    if not conf.empty:
+        # Prefer the lambda=1 path (load scaled with n): the classical confound.
+        row1 = conf.loc[(conf["lambda"] - 1.0).abs().idxmin()]
+        e.num("resAlphaHat", float(row1["alpha_hat"]))
+        e.num("resAlphaPred", float(row1["alpha_predicted"]))
+        for lam, macro in ((0.0, "resAlphaHatL0"), (1.0, "resAlphaHatL1"),
+                           (2.0, "resAlphaHatL2")):
+            hit = conf.loc[(conf["lambda"] - lam).abs() < 1e-9]
+            e.num(macro,
+                  float(hit.iloc[0]["alpha_hat"]) if len(hit) else None,
+                  todo=f"alpha(lambda={lam:g})")
+    else:
         e.num("resAlphaHat", None, todo="alpha-hat")
         e.num("resAlphaPred", None, todo="gamma*lambda-beta")
+        e.num("resAlphaHatL0", None, todo="alpha(lambda=0)")
+        e.num("resAlphaHatL1", None, todo="alpha(lambda=1)")
+        e.num("resAlphaHatL2", None, todo="alpha(lambda=2)")
+
+    # Model-comparison holdout log-RMSE (X8 ablation costs are separate).
+    e.section("model comparison holdout log-RMSE")
+    def rmse(model: str):
+        if cmp.empty or "holdout_log_rmse" not in cmp.columns:
+            return None
+        sel = cmp[cmp["model"] == model]["holdout_log_rmse"]
+        return float(sel.iloc[0]) if len(sel) and math.isfinite(sel.iloc[0]) else None
+    e.num("resRmseLinear", rmse("linear"), todo="rmse-linear")
+    e.num("resRmseSingle", rmse("single_factor"), todo="rmse-single")
+    e.num("resRmseUsl", rmse("usl"), todo="rmse-usl")
+    e.num("resRmseOurs", rmse("bifactor"), todo="rmse-bifactor")
 
     # -- q-invariance ----------------------------------------------------------
     e.section("q-invariance (X2)")
@@ -161,9 +187,14 @@ def main() -> int:
 
     # -- sizing ----------------------------------------------------------------
     e.section("sizing ablation (X8)")
+    e.num("resKappa", sizing.get("kappa"), "{:.2f}", todo="kappa")
+    e.raw("resKappaMode", sizing.get("kappa_mode"), todo="kappa_mode")
+    e.num("resCstar", sizing.get("concurrency"), "{:.0f}", todo="c*")
     e.num("resNminCase", sizing.get("n_min"), "{:.0f}", todo="n_min")
     e.num("resNmaxCase", sizing.get("n_max"), "{:.0f}", todo="n_max")
     e.num("resNoptCase", sizing.get("n_opt"), "{:.0f}", todo="n*")
+    e.num("resDetectorThr", (fit.get("detector") or {}).get("thr"),
+          "{:.2f}", todo="detector-thr")
 
     def rel_cost(model: str):
         if abl.empty or "relative_cost" not in abl.columns:

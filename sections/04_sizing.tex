@@ -105,23 +105,27 @@ and monotonicity makes the constraint a half-line.
 \begin{Problem}[Validator-set sizing]
 \label{prob:sizing}
 Given a peak demand $\Dpk$, a confidence level $1-\epsp$, a safety target
-$\epss$, a window $\w$, a faulty fraction $\phi$ and a nondecreasing cost
-$\Cost(\n)$, find
+$\epss$, a window $\w$, a faulty fraction $\phi$, a production scale-up
+$\kappaScale>0$ from \RNM{}-normalized throughput to absolute units, and a
+nondecreasing cost $\Cost(\n)$, find
 \begin{equation}
 \nopt\in\arg\min_{\n\in\mathbb{N}}\ \Cost(\n)
 \quad\text{s.t.}\quad
-\Prob\bigl[\TPS(\n,\cc^{\star})\ge\Dpk\bigr]\ge1-\epsp,
+\Prob\bigl[\kappaScale\cdot\TPSn(\n,\cc^{\star})\ge\Dpk\bigr]\ge1-\epsp,
 \quad \pmiss(\n,\w)\le\epss ,
 \label{eq:sizing}
 \end{equation}
-where $\cc^{\star}=\arg\max_{\cc}\gfun(\cc)$.
+where $\cc^{\star}=\arg\max_{\cc}\gfun(\cc)$. When $\kappaScale$ is not fixed by
+the deployment, the minimal admissible choice is the smallest $\kappaScale$ for
+which the throughput constraint holds at $\n=4$; Section~\ref{sec:case} reports
+that value alongside the window.
 \end{Problem}
 
 \begin{Lemma}[Deterministic equivalent and monotonicity]
 \label{lem:detequiv}
 The chance constraint in~\eqref{eq:sizing} is equivalent to
 \begin{equation}
-h(\n)\eqdef\log\Tzero+\log\gfun(\cc^{\star})-\beta\log\n
+h(\n)\eqdef\log\kappaScale+\log\Tzero+\log\gfun(\cc^{\star})-\beta\log\n
 -\zq_{1-\epsp}\hat{V}^{1/2}(\n,\cc^{\star})-\log\Dpk\ \ge 0 .
 \label{eq:detequiv}
 \end{equation}
@@ -130,12 +134,14 @@ $h$ is strictly decreasing there.
 \end{Lemma}
 
 \begin{Proof}
-By Statement~\ref{st:pi} the event $\TPS\ge\Dpk$ has probability at least
-$1-\epsp$ exactly when $\underline{\TPS}_{1-\epsp}\ge\Dpk$; taking logarithms
-gives~\eqref{eq:detequiv}. The first three terms strictly decrease in $\log\n$
-because $\beta>0$, and $-\zq_{1-\epsp}\hat{V}^{1/2}$ is nonincreasing by hypothesis. That
-hypothesis holds whenever the design is centred at or below the operating range,
-since $\hat{V}$ is quadratic in $\log\n$ with minimum at the design centroid.
+By Statement~\ref{st:pi} the event $\kappaScale\cdot\TPSn\ge\Dpk$ has
+probability at least $1-\epsp$ exactly when
+$\kappaScale\cdot\underline{\TPSn}_{1-\epsp}\ge\Dpk$; taking logarithms
+gives~\eqref{eq:detequiv}. The terms that involve $\n$ strictly decrease in
+$\log\n$ because $\beta>0$, and $-\zq_{1-\epsp}\hat{V}^{1/2}$ is nonincreasing
+by hypothesis. That hypothesis holds whenever the design is centred at or below
+the operating range, since $\hat{V}$ is quadratic in $\log\n$ with minimum at
+the design centroid.
 \end{Proof}
 
 \begin{Theorem}[Feasibility window]
