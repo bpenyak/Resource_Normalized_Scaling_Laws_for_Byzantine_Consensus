@@ -70,7 +70,7 @@
 
 ## D. Дані та відтворюваність
 
-- [x] D1. https://github.com/bpenyak/paper_3 — у Data availability
+- [x] D1. https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_for_Byzantine_Consensus — у Data availability
 - [x] D2. `data/raw/` — 134 JSON (94 ok)
 - [x] D3. `make analyze` + `CORE_HOURS=` для emit (Makefile оновлено)
 - [x] D4. `experiments/requirements.txt` існує

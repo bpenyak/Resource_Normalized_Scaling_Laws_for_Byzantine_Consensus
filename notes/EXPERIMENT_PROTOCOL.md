@@ -279,7 +279,7 @@ $(\beta,\gamma)$ декларуються як Besu/QBFT-specific (див. Limit
 | X9 | 24 | **0/24** | Quorum genesis path не реалізований |
 | **Разом** | **137** | **94 ok / 40 fail** (**134 JSON** у `data/raw/`) | |
 
-CI run: https://github.com/bpenyak/paper_3/actions/runs/30359901702
+CI run: https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_for_Byzantine_Consensus/actions/runs/30359901702
 Workflow status: `failure` (через X9 + aggregate), артефакти збережені.
 
 > Ліміт матриці GitHub Actions — 256 jobs. 137 вкладається, але

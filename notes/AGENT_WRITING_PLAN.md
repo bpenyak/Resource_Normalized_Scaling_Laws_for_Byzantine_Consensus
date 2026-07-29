@@ -72,10 +72,10 @@ pdflatex -interaction=nonstopmode paper3.tex   # для перехресних �
 **Вхід:** `notes/EXPERIMENT_PROTOCOL.md`, код у `experiments/`.
 
 **Дії:**
-1. [x] Публічний GitHub-репозиторій: https://github.com/bpenyak/paper_3
+1. [x] Публічний GitHub-репозиторій: https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_for_Byzantine_Consensus
 2. [x] Workflow: `.github/workflows/experiment.yml` (+ SMOKE у `matrix.yaml`)
 3. [x] Smoke-тест на CI: status=`ok`, TPS≈35.3
-4. [x] Повна матриця: run https://github.com/bpenyak/paper_3/actions/runs/30359901702
+4. [x] Повна матриця: run https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_for_Byzantine_Consensus/actions/runs/30359901702
    (137 measure jobs; workflow `failure` через X9 + aggregate, але артефакти збережені)
 5. [x] Артефакти завантажені: `gh run download 30359901702`
 6. [x] `data/raw/`: спочатку 130 JSON; зараз **134 JSON** (94 ok, 40 fail; X9 = 0/24)
@@ -142,7 +142,7 @@ q-інваріантність відхилена (p=0.002); AUC=0.506;
 - [x] Немає шаблонів `Vol.x` / `\received{xx…}`
 - [x] `peniak2026b` DOI + стор. 255--261; `peniak2026a` accepted + URL MMC
 - [x] Клас відмов — omission + duplication
-- [x] Data availability → https://github.com/bpenyak/paper_3
+- [x] Data availability → https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_for_Byzantine_Consensus
 
 **Залишок перед подачею (людина):** вичитати `\abstractUkr` носієм; підставити том/сторінки `peniak2026a` після виходу.
 
