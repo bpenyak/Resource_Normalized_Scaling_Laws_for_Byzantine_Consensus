@@ -1,0 +1,167 @@
+{
+  "experiment": "X5",
+  "n": 7,
+  "quota": 0.25,
+  "concurrency": 16,
+  "replicate": 0,
+  "rtt_ms": 0,
+  "loss_pct": 20.0,
+  "duplicate_pct": 10.0,
+  "faulty_nodes": 2,
+  "block_period": 2,
+  "image": "hyperledger/besu:24.10.0",
+  "status": "ok",
+  "load": {
+    "start_block": 60,
+    "end_block": 97,
+    "blocks": 38,
+    "total_tx": 2086,
+    "chain_seconds": 83,
+    "wall_seconds": 90.28030896186829,
+    "tps": 25.132530120481928,
+    "block_interval_mean": 2.2432432432432434,
+    "block_interval_stdev": 0.6326864816605203,
+    "tx_per_block_mean": 54.89473684210526,
+    "concurrency": 16,
+    "submitted": 6419,
+    "submit_errors_sampled": [
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}",
+      "{'code': -32000, 'message': 'Transaction nonce is too distant from current sender nonce'}"
+    ]
+  },
+  "tps": 25.132530120481928,
+  "tps_normalized": 100.53012048192771,
+  "detector": {
+    "tau": 0.5,
+    "window": 30,
+    "windows": 8,
+    "validators": [
+      "0x0e990cd58bd7bf5c0df00e19452810c8c3876279",
+      "0x17e1adb00f7afc1c9f3cacd2f3a6ead80d9a337c",
+      "0x2530189d594aac2ef2139ad4f98b66a45911b086",
+      "0x3d859c4b6c1c9d0c692945b965baec69382f5f93",
+      "0x70350171f18ec2302533819c201d4534a6a395cf",
+      "0xb501f7a7222e7bf66603523c906f52a47018a658",
+      "0xd1c29c991438e603ef337730f671f3e9070611b6"
+    ],
+    "faulty": [
+      "0x17e1adb00f7afc1c9f3cacd2f3a6ead80d9a337c",
+      "0x2530189d594aac2ef2139ad4f98b66a45911b086"
+    ],
+    "faulty_indices": [
+      1,
+      2
+    ],
+    "p_d": 0.0,
+    "p_f": 0.0,
+    "rho": NaN,
+    "n_faulty": 2,
+    "n_honest": 5,
+    "b_hat_mean": 0.0,
+    "b_hat_series": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "roc": [
+      {
+        "tau": 0.1,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.2,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.3,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.4,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.5,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.6,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.7,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.8,
+        "p_d": 0.0,
+        "p_f": 0.0
+      },
+      {
+        "tau": 0.9,
+        "p_d": 0.0,
+        "p_f": 0.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "experiment": "SMOKE",
+  "n": 4,
+  "quota": 0.25,
+  "concurrency": 4,
+  "replicate": 0,
+  "rtt_ms": 0,
+  "loss_pct": 0.0,
+  "duplicate_pct": 0.0,
+  "faulty_nodes": 0,
+  "block_period": 2,
+  "image": "hyperledger/besu:24.10.0",
+  "status": "ok",
+  "load": {
+    "start_block": 28,
+    "end_block": 73,
+    "blocks": 46,
+    "total_tx": 3178,
+    "chain_seconds": 90,
+    "wall_seconds": 90.08569955825806,
+    "tps": 35.31111111111111,
+    "block_interval_mean": 2.0,
+    "block_interval_stdev": 0.0,
+    "tx_per_block_mean": 69.08695652173913,
+    "concurrency": 4,
+    "submitted": 5662,
+    "submit_errors_sampled": []
+  },
+  "tps": 35.31111111111111,
+  "tps_normalized": 141.24444444444444
+}

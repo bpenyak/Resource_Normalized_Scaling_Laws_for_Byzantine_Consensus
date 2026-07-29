@@ -1,0 +1,15 @@
+{
+  "experiment": "X5",
+  "n": 7,
+  "quota": 0.25,
+  "concurrency": 16,
+  "replicate": 1,
+  "rtt_ms": 0,
+  "loss_pct": 20.0,
+  "duplicate_pct": 10.0,
+  "faulty_nodes": 2,
+  "block_period": 2,
+  "image": "hyperledger/besu:24.10.0",
+  "status": "failed",
+  "error": "['/opt/hostedtoolcache/Python/3.12.13/x64/bin/python', '/home/runner/work/paper_3/paper_3/experiments/load/loadgen.py', '--rpc', 'http://localhost:8545', '--accounts', 'network/accounts.json', '--concurrency', '16', '--chain-id', '1337', '--warmup', '60', '--duration', '300', '--drain', '30', '--out', 'network/load.json'] exited with 1"
+}

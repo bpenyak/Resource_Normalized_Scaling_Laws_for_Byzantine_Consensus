@@ -10,22 +10,21 @@
 *.synctex.gz
 *.fdb_latexmk
 *.fls
-paper3.pdf
+texput.pdf
+texput.*
 build/
 
-# Experiment artefacts
+# Transient Docker / key material — never commit
 network/
 networkFiles/
 *.key
 key
 key.pub
 accounts.json
-data/raw/*.json
-data/processed/*
+
+# Keep directory placeholders
 !data/raw/.gitkeep
 !data/processed/.gitkeep
-figures/*.pdf
-figures/*.png
 !figures/.gitkeep
 
 # Python

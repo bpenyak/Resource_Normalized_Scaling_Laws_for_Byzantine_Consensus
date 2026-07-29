@@ -1,0 +1,5 @@
+model,n,meets_demand,achieved_tps,cost,relative_cost
+linear,16,False,434.99788537511495,16.0,4.0
+single_factor,6,True,2196.295114904213,6.0,1.5
+usl,6,True,2196.295114904213,6.0,1.5
+chance_constrained,4,True,4289.316420258063,4.0,1.0
