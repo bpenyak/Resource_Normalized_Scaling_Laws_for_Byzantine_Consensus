@@ -19,6 +19,7 @@ defaults:
   loss_pct: 0
   duplicate_pct: 0
   faulty_nodes: 0
+  faulty_fraction: 0.20     # assumed coordinated-omission fraction (φ) for detector/sizing
   replicates: 3
   detector_window_blocks: 30
   detector_threshold: 0.5    # fraction of the expected 1/n proposal share
@@ -75,7 +76,7 @@ experiments:
       loss_pct: [0, 10, 20, 25]
     derived:
       duplicate_pct: "loss_pct / 2"
-      faulty_nodes: "floor((n - 1) / 3)"
+      faulty_nodes: "ceil(faulty_fraction * n)"
 
   # X9 -- cross-implementation replication.
   # Answers the "is this an artefact of one client?" objection. Theorem 1

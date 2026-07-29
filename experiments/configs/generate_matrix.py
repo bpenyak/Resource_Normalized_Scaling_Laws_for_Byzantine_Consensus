@@ -51,9 +51,20 @@ def expand(cfg: dict, only: list[str] | None) -> list[dict]:
                 else:
                     point["duplicate_pct"] = defaults["duplicate_pct"]
                 if "faulty_nodes" in derived:
-                    point["faulty_nodes"] = (
-                        math.floor((point["n"] - 1) / 3)
-                        if point["loss_pct"] > 0 else 0)
+                    # Coordinate omission+duplication injection degrades only
+                    # a fraction φ of validators; the case study in the paper
+                    # assumes φ=0.20.
+                    #
+                    # Note: previously this was hard-coded to ~1/3 of nodes via
+                    # floor((n-1)/3), which breaks mathematical consistency
+                    # between detector characterization and the sizing model.
+                    faulty_fraction = float(defaults.get("faulty_fraction", 1 / 3))
+                    if point["loss_pct"] > 0:
+                        k = math.ceil(faulty_fraction * point["n"])
+                        # Keep k in [0, n-1] for safety (QBFT needs n>=4 anyway).
+                        point["faulty_nodes"] = min(point["n"] - 1, max(0, int(k)))
+                    else:
+                        point["faulty_nodes"] = 0
                 else:
                     point["faulty_nodes"] = defaults["faulty_nodes"]
                 point["id"] = (f"{name}-n{point['n']}-q{point['quota']}"

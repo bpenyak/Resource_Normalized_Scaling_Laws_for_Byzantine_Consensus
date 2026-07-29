@@ -166,7 +166,7 @@ def main() -> int:
     ap.add_argument("--eps-p", type=float, default=0.05)
     ap.add_argument("--eps-s", type=float, default=0.01)
     ap.add_argument("--window", type=int, default=30)
-    ap.add_argument("--tau", type=float, default=0.10,
+    ap.add_argument("--tau", type=float, default=0.50,
                     help="alarm threshold on the estimated faulty fraction")
     ap.add_argument("--faulty-fraction", type=float, default=0.20)
     ap.add_argument("--cost-per-node", type=float, default=1.0)
