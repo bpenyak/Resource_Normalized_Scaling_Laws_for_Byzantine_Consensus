@@ -1,48 +1,33 @@
 \section{Related work}
 \label{sec:related}
 
-\emph{BFT protocols.} Classical Practical Byzantine Fault
-Tolerance~\cite{castro1999} tolerates $f<\n/3$ faulty replicas at $O(\n^{2})$
-messages per decision, on the foundations of~\cite{lamport1982,dwork1988}.
-HotStuff~\cite{yin2019} reduces this to $O(\n)$; Tendermint~\cite{buchman2016}
-gives instant finality; Algorand~\cite{gilad2017} and
-HoneyBadgerBFT~\cite{miller2016} employ randomization;
-Vukoli\'{c}~\cite{vukolic2015} argues that no protocol dominates across
-operating regimes. All fix the validator set at deployment time and none
-supplies a procedure for choosing its size.
+\emph{BFT and benchmarking.} Classical PBFT~\cite{castro1999} tolerates
+$f<\n/3$ at $O(\n^{2})$ messages~\cite{lamport1982,dwork1988};
+HotStuff~\cite{yin2019}, Tendermint~\cite{buchman2016},
+Algorand~\cite{gilad2017} and HoneyBadgerBFT~\cite{miller2016} vary latency and
+randomization, while Vukoli\'{c}~\cite{vukolic2015} argues that no protocol
+dominates. All fix the validator set at deployment and none supplies a sizing
+procedure. Empirical characterizations of Fabric~\cite{androulaki2018,thakkar2018},
+BLOCKBENCH~\cite{dinh2017} and BFT-SMaRt~\cite{sousa2018} report throughput at
+fixed configurations without separating offered load from validator count ---
+exactly the confounding of Theorem~\ref{thm:identifiability} --- and do not
+extrapolate.
 
-\emph{Benchmarking.} Empirical characterizations of permissioned ledgers include
-Hyperledger Fabric~\cite{androulaki2018,thakkar2018},
-BLOCKBENCH~\cite{dinh2017} and the BFT-SMaRt ordering service~\cite{sousa2018}.
-They report throughput at a handful of fixed configurations, do not separate
-offered load from validator count --- exactly the confounding formalized in
-Theorem~\ref{thm:identifiability} --- and do not extrapolate.
+\emph{Scaling, statistics, optimization.} Amdahl~\cite{amdahl1967} and
+Gustafson~\cite{gustafson1988} bound speedup under a fixed serial fraction;
+Gunther's Universal Scalability Law~\cite{gunther2007} adds a coherency term
+and is our closest baseline, but does not separate the concurrency factor and
+has not been calibrated for BFT. Concentration
+bounds~\cite{hoeffding1963,boucheron2013}, delta-method
+intervals~\cite{seber2003}, the residual bootstrap~\cite{efron1993} and
+chance-constrained programming~\cite{charnes1959,nemirovski2007} are used as
+standard tools; what is specific here is the opposing monotonicity of throughput
+and detection, which turns the feasible set into a closed interval.
 
-\emph{Scaling laws.} Amdahl~\cite{amdahl1967} and Gustafson~\cite{gustafson1988}
-bound speedup under a fixed serial fraction. Gunther's Universal Scalability
-Law~\cite{gunther2007} adds a quadratic coherency term,
-$C(\n)=\n/(1+\sigma(\n-1)+\kappa\n(\n-1))$, and is the closest existing model to
-ours: it describes capacity as a function of the number of workers sharing one
-workload, but does not separate the offered-concurrency dimension and has not
-been calibrated for BFT consensus. We use it as a baseline in
-Section~\ref{sec:exp}.
-
-\emph{Statistics and optimization.} Hoeffding's inequality~\cite{hoeffding1963}
-and the concentration toolkit~\cite{boucheron2013} bound the probability that a
-faulty minority escapes detection; predictive intervals follow the delta
-method~\cite{seber2003} and the residual bootstrap~\cite{efron1993}.
-Chance-constrained programming is due to Charnes and Cooper~\cite{charnes1959},
-with convex approximations surveyed in~\cite{nemirovski2007}. The formulation is
-standard and we use it as such; what is specific to validator-set sizing is the
-opposing monotonicity of the two constraints, which turns the feasible set into
-a closed interval instead of a half-line.
-
-\emph{E-governance.} Security analyses of deployed remote-voting
-systems~\cite{springall2014,specter2020} and the assessment in~\cite{park2021}
-establish that consensus-layer guarantees resolve neither endpoint nor coercion
-threats. Our earlier work developed a single-factor throughput
-calibration~\cite{peniak2026a} and an adaptive consensus-switching mechanism
-with detection-based bounds~\cite{peniak2026b}. This paper unifies and corrects
-both: it identifies the confounding that inflated the exponent
-of~\cite{peniak2026a} and supplies the detector characterization
-that~\cite{peniak2026b} assumed.
+\emph{E-governance and prior work.} Remote-voting
+analyses~\cite{springall2014,specter2020,park2021} show that consensus-layer
+guarantees resolve neither endpoint nor coercion threats. Our earlier
+single-factor calibration~\cite{peniak2026a} and detection-based adaptive
+switching~\cite{peniak2026b} are unified and corrected here: we identify the
+confounding that inflated the exponent of~\cite{peniak2026a} and measure the
+detector rates that~\cite{peniak2026b} assumed.

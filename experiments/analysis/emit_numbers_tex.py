@@ -118,8 +118,8 @@ def main() -> int:
         row1 = conf.loc[(conf["lambda"] - 1.0).abs().idxmin()]
         e.num("resAlphaHat", float(row1["alpha_hat"]))
         e.num("resAlphaPred", float(row1["alpha_predicted"]))
-        for lam, macro in ((0.0, "resAlphaHatL0"), (1.0, "resAlphaHatL1"),
-                           (2.0, "resAlphaHatL2")):
+        for lam, macro in ((0.0, "resAlphaHatLzero"), (1.0, "resAlphaHatLone"),
+                           (2.0, "resAlphaHatLtwo")):
             hit = conf.loc[(conf["lambda"] - lam).abs() < 1e-9]
             e.num(macro,
                   float(hit.iloc[0]["alpha_hat"]) if len(hit) else None,
@@ -127,9 +127,9 @@ def main() -> int:
     else:
         e.num("resAlphaHat", None, todo="alpha-hat")
         e.num("resAlphaPred", None, todo="gamma*lambda-beta")
-        e.num("resAlphaHatL0", None, todo="alpha(lambda=0)")
-        e.num("resAlphaHatL1", None, todo="alpha(lambda=1)")
-        e.num("resAlphaHatL2", None, todo="alpha(lambda=2)")
+        e.num("resAlphaHatLzero", None, todo="alpha(lambda=0)")
+        e.num("resAlphaHatLone", None, todo="alpha(lambda=1)")
+        e.num("resAlphaHatLtwo", None, todo="alpha(lambda=2)")
 
     # Model-comparison holdout log-RMSE (X8 ablation costs are separate).
     e.section("model comparison holdout log-RMSE")
@@ -180,8 +180,9 @@ def main() -> int:
     e.num("resCovNinety", pct(c90), "{:.1f}\\,\\%", todo="cov90")
     e.num("resCovNinetyFive", pct(c95), "{:.1f}\\,\\%", todo="cov95")
     holdout = cov.get("holdout_n")
+    # No $...$: callers wrap as $\resHoldoutN$ (and \n is a letter macro).
     e.raw("resHoldoutN",
-          "$n \\in \\{" + ", ".join(str(x) for x in holdout) + "\\}$"
+          "n \\in \\{" + ", ".join(str(x) for x in holdout) + "\\}"
           if holdout else None,
           todo="n_holdout")
 

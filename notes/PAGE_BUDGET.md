@@ -8,24 +8,28 @@
 
 ---
 
-## Розподіл (після Cutting paper → 7 секцій; факт після Фази 1)
+## Розподіл (після стискання математики + 3 рисунки; факт)
 
 | # | Секція | Файл | Бюджет | Факт (стор.) |
 |---|---|---|---|---|
-| — | Титул + анотація EN | `paper3.tex` | 0.5 | 1 |
-| 1 | Introduction | `01_introduction.tex` | 1.0 | 1 |
-| 2 | Related work | `02_related_work.tex` | 1.0 | 1 |
-| 3 | RNM + bi-factor + Thm.1 | `03_model.tex` | 2.5 | 3 (с.3–5) |
-| 4 | PI + detection + sizing | `04_sizing.tex` | 2.0 | 3 (с.5–7) |
-| 5 | Experiments + results | `05_experiments.tex` | 1.5 | 2 (с.8–9) |
-| 6 | Case study + Limitations | `06_case_study.tex` | 0.8 | 1 (с.10) |
-| 7 | Conclusions | `07_conclusions.tex` | 0.4 | 1 (с.11) |
-| — | References | `bib/references.tex` | 1.3 | 2 (с.12–13) |
-| — | UKR титул (`\maketitleUkr`) | `paper3.tex` | поза лімітом | 1 (с.14) |
-| | **Разом EN+refs** | | **≈10** | **13** |
-| | **PDF total** | | | **14** |
+| — | Титул + анотація EN | `paper3.tex` | 0.5 | ~1 (с.1) |
+| 1 | Introduction | `01_introduction.tex` | 1.0 | ~1 (с.1) |
+| 2 | Related work | `02_related_work.tex` | 1.0 | ~0.5 (с.2) |
+| 3 | RNM + bi-factor + Thm.1 | `03_model.tex` | 2.5 | ~2 (с.2–4) |
+| 4 | PI + detection + sizing | `04_sizing.tex` | 2.0 | ~1.5 (с.4–5) |
+| 5 | Experiments + results | `05_experiments.tex` | 1.5 | ~1.5 (с.5–7; 2 fig + tab) |
+| 6 | Case study + Limitations | `06_case_study.tex` | 0.8 | ~1 (с.6–8; fig_window) |
+| 7 | Conclusions | `07_conclusions.tex` | 0.4 | ~0.5 (с.8) |
+| — | References | `bib/references.tex` | 1.3 | 2 (с.9–10) |
+| — | UKR титул (`\maketitleUkr`) | `paper3.tex` | поза лімітом | 1 (с.11) |
+| | **Разом EN+refs** | | **≈10** | **10** |
+| | **PDF total** | | | **11** |
 
-**13 > 10.** Потрібне скорочення ще ≈ 3 стор. EN+refs. UKR не зараховується.
+**Критерій ліміту виконано:** EN+refs = 10; UKR не зараховується (с.11).
+
+Стискання (2026-07-29): прибрано розгорнуті display-рівняння (path/OLS/reduced),
+скорочено доведення до sketch, злито Scope з Contributions, стиснуто related work /
+case / conclusions; додано `fig_roc` (тепер 3 рисунки + 1 таблиця).
 
 ---
 
@@ -70,7 +74,7 @@
 |---|---|
 | `Theorem~\ref{thm:identifiability}` + повне доведення | Це вся новизна статті |
 | `Theorem~\ref{thm:window}` + повне доведення | Другий стовп новизни |
-| `11_limitations.tex` | Чесність щодо класу відмов — критично для рецензування |
+| `06_case_study.tex` (Limitations) | Чесність щодо класу відмов — критично для рецензування |
 | Кількість джерел (≥ 25) | Вимога користувача |
 | Український `\abstractUkr` | Вимога видання |
 
@@ -95,6 +99,6 @@ pdflatex -interaction=nonstopmode paper3.tex | Select-String "Output written"
 
 ## Аварійний план, якщо після всіх скорочень > 10 стор.
 
-1. Перенести `10_case_study.tex` у додаток / supplementary → −0.5
-2. Скоротити `08_experiments.tex` до таблиці `tab:design` + 3 абзаци → −0.4
-3. Перевести `Algorithm~\ref{alg:calibration}` у нумерований список у тексті → −0.3
+1. Перенести case study з `06_case_study.tex` у додаток / supplementary → −0.5
+2. Скоротити `05_experiments.tex` до `tab:results` + 3 абзаци → −0.4
+3. Перевести алгоритми калібрування/sizing у нумерований список у тексті → −0.3

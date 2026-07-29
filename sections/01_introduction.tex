@@ -1,75 +1,46 @@
 \section{Introduction}
 \label{sec:intro}
 
-Permissioned Byzantine Fault Tolerant (BFT) consensus underpins a growing class
-of e-governance systems: electronic voting, land and business registries,
-digital identity. Deploying one at national scale requires answering a concrete
-question before any node is procured: \emph{how many validators should the
-network have?}
+Permissioned Byzantine Fault Tolerant (BFT) consensus underpins e-governance
+systems --- voting, registries, digital identity --- and forces a concrete
+procurement question: \emph{how many validators should the network have?}
 
-The validator count~$\n$ acts in two opposite directions. Throughput argues for
-small~$\n$: every validator executes every transaction and PBFT-family
-protocols exchange $O(\n^{2})$ messages per block. Safety argues for
-large~$\n$: detecting a coordinated faulty minority is a statistical estimation
-problem whose concentration bounds tighten exponentially in~$\n$. The two
-regimes have so far been studied separately; their joint treatment is the
-subject of this paper.
+The count~$\n$ pulls in opposite directions. Throughput argues for small~$\n$
+(every validator executes every transaction; PBFT-family protocols exchange
+$O(\n^{2})$ messages per block). Safety argues for large~$\n$ (detecting a
+coordinated faulty minority concentrates exponentially in~$\n$). The two
+regimes have been studied separately; their joint treatment is the subject of
+this paper.
 
-Two obstacles stand in the way. First, \emph{scaling exponents are not
-reproducible}: published power-law fits $\TPS(\n)\propto\n^{\alpha}$ disagree in
-magnitude and sometimes in sign, and our own two earlier studies are an
-instance --- extrapolated to sixty validators they differ by roughly an order of
-magnitude. One cause is mundane. Client-side offered concurrency is rarely held
-fixed while~$\n$ is varied, since a larger network is usually driven by a larger
-load generator, so the fitted exponent mixes a client-parallelism effect with
-the consensus-overhead effect. Second, \emph{large testbeds are unavailable}:
-calibrating a scaling law is assumed to require a testbed of the target size,
-and running many validators on one host confounds consensus overhead with
-contention for the host CPU --- precisely the quantity one is trying to isolate.
+Two obstacles intervene. Published power-law fits
+$\TPS(\n)\propto\n^{\alpha}$ disagree in magnitude and sometimes in sign ---
+our own earlier studies, extrapolated to sixty validators, differ by roughly an
+order of magnitude --- because client concurrency is rarely held fixed while
+$\n$ varies, so the fitted exponent mixes load-generator scaling with consensus
+overhead. And large testbeds are unavailable: packing many validators onto one
+host confounds consensus cost with contention for the host CPU.
 
 \paragraph{Contributions.}
-The first result is central; the other three exist because it is not useful on
-its own.
-
-\begin{enumerate*}
-\item \textbf{An identifiability theorem} (Section~\ref{sec:model}). If
-throughput obeys $\TPS(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta}$ with $\beta>0$
-and the campaign varies concurrency together with the network along a path
-$\log\cc=\lambda\log\n+\mathrm{const}$, then the single-factor least-squares fit
-converges in probability to $\ahat=\gamma\lambda-\beta$
-(Theorem~\ref{thm:identifiability}). A positive single-factor exponent is thus
-evidence about~$\lambda$, not about the protocol, and exponents from different
-testbeds are incomparable unless their concurrency paths are --- which is rarely
-reported.
-
-\item \textbf{A measurement protocol that makes it usable}
-(Section~\ref{sec:model}). Setting $\lambda=0$ requires a factorial design, and
-on one host $\n$ validators sharing $Q$ cores receive a per-validator budget
-that itself depends on~$\n$. We fix a CPU quota~$\q$ per validator irrespective
-of~$\n$ and report $\TPSn=\TPS/\q$; the resulting invariance
-(Statement~\ref{st:qinvariance}) is tested, not assumed.
-
-\item \textbf{Prediction intervals validated by coverage}
-(Section~\ref{sec:sizing}), replacing the average percentage error that this
-literature usually reports and that cannot be checked.
-
-\item \textbf{Sizing as a chance-constrained program}
-(Section~\ref{sec:sizing}). The throughput and detection constraints move in
-opposite directions, so the feasible set is a closed interval $[\nmin,\nmax]$
-(Theorem~\ref{thm:window}) located in $O(\log\n)$ evaluations; an empty interval
-certifies that no validator-set size satisfies the requirement.
-\end{enumerate*}
-
-We claim nothing new for the detection bound itself: it is Hoeffding's
-inequality with a design-effect correction, and its role is to supply the second
-constraint with parameters we measure rather than postulate.
-
-\paragraph{Scope.}
-We model throughput and detection reliability only; cryptographic design,
-endpoint security and coercion resistance are outside the scope. Absolute
-throughput values are specific to the constrained environment, and every claim
-concerns exponents and the sizing decisions derived from them. All measurements
-come from one implementation on one host, which is a real limitation;
-Section~\ref{sec:case} states the cross-platform prediction that
-Theorem~\ref{thm:identifiability} makes and that a second implementation can
-falsify.
+(1)~An \textbf{identifiability theorem} (Section~\ref{sec:model}): if
+throughput follows a bi-factor law and concurrency is scaled along a path of
+slope~$\lambda$, the single-factor least-squares fit converges to
+$\ahat=\gamma\lambda-\beta$; a positive exponent is therefore evidence
+about~$\lambda$, not about the protocol
+(Theorem~\ref{thm:identifiability}).
+(2)~A \textbf{resource-normalized measurement} (\RNM{}) protocol that fixes a
+CPU quota~$\q$ per validator independently of~$\n$ and reports
+$\TPSn=\TPS/\q$, making the required factorial design feasible on one commodity
+host; $\q$-invariance is tested, not assumed.
+(3)~Lognormal \textbf{prediction intervals} validated by empirical coverage
+rather than by unchecked percentage error.
+(4)~Validator-set \textbf{sizing as a chance-constrained program} whose
+feasible set is a closed interval $[\nmin,\nmax]$
+(Theorem~\ref{thm:window}); an empty interval certifies that no size meets the
+requirement.
+The detection bound itself is Hoeffding's inequality with a design-effect
+correction; we claim nothing new for it beyond supplying the opposing
+constraint with measured parameters. Scope is limited to throughput and
+detection reliability: cryptography, endpoint security and coercion lie
+outside, absolute TPS values are environment-specific, and all measurements
+come from one implementation (Hyperledger Besu/QBFT) on one host; cross-client
+replication is out of scope (Section~\ref{sec:case}).

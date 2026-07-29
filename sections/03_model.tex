@@ -3,191 +3,110 @@
 
 \subsection{The \RNM{} protocol}
 
-If $\n$ validator processes share a host offering $Q$ cores under a fair
-scheduler, each receives $Q/\n$ cores, so the per-validator compute budget
-shrinks as $\n$ grows. Measured throughput then falls for two unrelated
-reasons --- growing consensus communication and a shrinking compute budget ---
-and an exponent fitted to such data is a property of the host, not of the
+If $\n$ validators share a host of $Q$ cores, each receives $Q/\n$ cores, so
+measured throughput mixes growing consensus cost with a shrinking compute
+budget. An exponent fitted to such data is a property of the host, not of the
 protocol.
 
 \begin{Def}[Resource-normalized measurement]
 \label{def:rnm}
-A campaign satisfies the \emph{\RNM{} protocol} with quota~$\q$ if every
-validator container is granted the same CPU quota~$\q$ and memory limit
-independently of~$\n$, and the aggregate reservation $\n\q$ stays below host
-capacity with headroom. The \emph{normalized throughput} is
-$\TPSn(\n,\q)\eqdef\TPS(\n,\q)/\q$.
+A campaign follows the \emph{\RNM{} protocol} with quota~$\q$ if every validator
+container receives the same CPU quota and memory limit independently of~$\n$,
+with aggregate reservation $\n\q$ below host capacity. Normalized throughput is
+$\TPSn\eqdef\TPS/\q$.
 \end{Def}
-
-This is implemented with control-group quotas in a container runtime and
-requires no modification of the consensus software.
 
 \begin{Assumption}[Separable compute budget]
 \label{as:separable}
-On the operating range considered,
-$\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+O(\q))$: the per-validator compute
-budget enters multiplicatively and does not interact with the validator count to
-first order.
+$\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+O(\q))$ on the operating range:
+the quota enters multiplicatively and does not interact with~$\n$ to first
+order.
 \end{Assumption}
 
-Everything downstream rests on this. It should hold because a validator's work
-per block --- message verification and transaction execution --- is CPU-bound
-and throttled by the same cgroup quota, which delivers $\q$ core-seconds per
-wall second regardless of how many siblings exist: the validator count sets
-\emph{how much} work there is, the quota \emph{how fast} it is retired. It
-should fail when fixed per-process overhead such as garbage collection consumes
-a share of $\q$ that does not shrink with $\q$ (the residual $O(\q)$ term, which
-dominates below some quota floor), when $\n\q$ approaches host capacity and
-contention reappears through memory bandwidth, cache or the network stack, or
-when block production is paced by a fixed period rather than by compute. It is a
-working hypothesis with a stated domain of validity, not a law.
+The assumption is expected for CPU-bound verification and execution under a
+cgroup quota; it fails when fixed per-process overhead (e.g.\ GC) dominates a
+small~$\q$, when $\n\q$ saturates host bandwidth, or when block production is
+paced by a fixed period. It is a working hypothesis with a stated domain, not a
+law.
 
-\begin{State}[$\q$-invariance of the consensus exponent]
+\begin{State}[$\q$-invariance]
 \label{st:qinvariance}
-Under Assumption~\ref{as:separable} and the model
-$\Phi(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta}$, the least-squares estimate of
-$\beta$ obtained by regressing $\log\TPSn$ on $\log\n$ at fixed~$\cc$ does not
-depend on the quota~$\q$ used in the campaign.
+Under Assumption~\ref{as:separable} and
+$\Phi(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta}$, the OLS slope of
+$\log\TPSn$ on $\log\n$ at fixed~$\cc$ does not depend on~$\q$.
 \end{State}
 
 \begin{Proof}
-$\log\TPSn(\n,\q)=\log\Phi(\n,\cc)+O(\q)$ by Definition~\ref{def:rnm} and
-Assumption~\ref{as:separable}. At fixed~$\q$ the term $O(\q)$ is constant across
-the regression in $\log\n$ and is absorbed by the intercept, so the slope equals
-$-\beta$ for every~$\q$.
+$\log\TPSn=\log\Phi+O(\q)$; at fixed~$\q$ the $O(\q)$ term is absorbed by the
+intercept, so the slope equals $-\beta$ for every~$\q$.
 \end{Proof}
 
-The quota thus becomes an experimental control: a small~$\q$ lowers absolute
-throughput but leaves the quantity of interest unchanged, which is what allows a
-validator set far larger than the number of physical cores to be studied on one
-machine. Two falsifiable tests follow. Fitting $\log\TPSn$ on $\log\n$ across
-three quota levels with quota dummies and quota\,$\times\log\n$ interactions,
-invariance is the hypothesis that the interaction coefficients vanish, tested by
-a partial $F$-test; and raw throughput at fixed $(\n,\cc)$ should be
-proportional to $\q$ with zero intercept, a positive intercept indicating a
-latency-bound regime and a negative one fixed overhead. If either test rejects,
-the response is to restrict the protocol to the quota interval on which
-invariance survives and to report the exponent together with that interval.
+Invariance is tested by a partial $F$-test on quota\,$\times\log\n$
+interactions across three quota levels
+(Section~\ref{sec:exp}); if rejected, the exponent is reported only on the
+surviving quota interval.
 
 \subsection{The bi-factor law and its identifiability}
 
-Two mechanisms govern throughput: more independent submitters~$\cc$ fill the
-pool and the block, raising throughput until saturation, whereas more
-validators~$\n$ add communication rounds and signature verification, lowering
-it. We model them multiplicatively.
+More submitters~$\cc$ raise throughput until saturation; more validators~$\n$
+add communication and verification, lowering it. We model the two
+multiplicatively.
 
 \begin{Def}[Bi-factor scaling law]
 \label{def:bifactor}
-For a permissioned BFT network under the \RNM{} protocol,
+Under the \RNM{} protocol,
 \begin{equation}
 \TPS(\n,\cc)=\Tzero\cdot\gfun(\cc)\cdot\n^{-\beta},
-\qquad
-\gfun(\cc)=\frac{\cc^{\gamma}}{1+\bigl(\cc/\csat\bigr)^{\theta}} ,
+\quad
+\gfun(\cc)=\frac{\cc^{\gamma}}{1+(\cc/\csat)^{\theta}},
 \label{eq:bifactor}
 \end{equation}
 with $\Tzero>0$, $\beta>0$, $\gamma\in(0,1]$, $\theta>\gamma$, $\csat>0$.
+In the unsaturated regime $\cc\ll\csat$ this is log-linear:
+$\log\TPS=\log\Tzero+\gamma\log\cc-\beta\log\n$.
 \end{Def}
 
-The constraint $\beta>0$ encodes replicated-state-machine semantics: every
-validator executes every transaction, so adding validators cannot raise
-aggregate throughput. The constraint $\theta>\gamma$ makes $\gfun$ unimodal,
-reproducing the collapse once the pool overflows. In the unsaturated regime
-$\cc\ll\csat$ the law is log-linear in both factors,
-\begin{equation}
-\log\TPS=\log\Tzero+\gamma\log\cc-\beta\log\n ,
-\label{eq:loglinear}
-\end{equation}
-and it contains the coherency-dominated regime of the Universal Scalability
-Law as the case $\beta=1$, while allowing batching and pipelining to give
-$\beta<1$.
-
-Single-factor studies report $\TPS(\n)\propto\n^{\alpha}$. How such a fit can
-yield $\alpha>0$ despite $\beta>0$ is simple to state: an experimenter doubles
-the network and, quite reasonably, doubles the load generator with it, so
-throughput moves down because consensus costs more and up because more
-transactions are offered. A regression on $\log\n$ alone cannot separate the two
-and attributes the net movement to $\n$. The theorem supplies the exact
-bookkeeping.
+Constraint $\beta>0$ encodes replicated-state-machine semantics; $\theta>\gamma$
+makes $\gfun$ unimodal. Single-factor fits $\TPS\propto\n^{\alpha}$ can still
+report $\alpha>0$ when the load generator is scaled with the network: the
+regression attributes the net movement to~$\n$ alone.
 
 \begin{Theorem}[Identifiability of the consensus exponent]
 \label{thm:identifiability}
-Let $\{(\n_{i},\cc_{i},\TPS_{i})\}_{i=1}^{m}$ be generated
-by~\eqref{eq:loglinear} with additive noise $\epsilon_{i}$,
-$\E[\epsilon_{i}\mid\n_{i}]=0$, $\Var(\epsilon_{i})=\sigma^{2}<\infty$, and let
-the campaign follow a \emph{concurrency path}
-\begin{equation}
-\log\cc_{i}=\lambda\log\n_{i}+\mu+\eta_{i},
-\qquad
-\E[\eta_{i}\mid\n_{i}]=0,\quad \Var(\eta_{i})<\infty ,
-\label{eq:path}
-\end{equation}
-for some real $\lambda$. Assume that, with $x_{i}=\log\n_{i}$, the empirical
-moments converge: $\bar{x}_{m}\to\bar{x}$ and
-$m^{-1}\sum_{i}(x_{i}-\bar{x}_{m})^{2}\to s_{x}^{2}>0$, which holds for any
-design revisiting a fixed finite set of at least two validator counts with
-stable proportions. Let $\ahat_{m}$ be the least-squares slope from regressing
-$\log\TPS_{i}$ on $x_{i}$ alone. Then
-\begin{equation}
-\ahat_{m}\ \xrightarrow{\ \Prob\ }\ \gamma\lambda-\beta .
-\label{eq:confounding}
-\end{equation}
-In particular $\ahat>0$ if and only if $\lambda>\beta/\gamma$, and
-$\ahat=-\beta$ if and only if $\lambda=0$, \ie{} only when client concurrency is
-held fixed.
+Let observations follow the unsaturated bi-factor law with additive noise of
+mean zero and finite variance, along a concurrency path
+$\log\cc_{i}=\lambda\log\n_{i}+\mu+\eta_{i}$
+($\E[\eta_{i}\mid\n_{i}]=0$). If the empirical second moment of
+$x_{i}=\log\n_{i}$ converges to a positive limit, the OLS slope $\ahat_{m}$ of
+$\log\TPS_{i}$ on $x_{i}$ alone satisfies
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$.
+In particular $\ahat>0\iff\lambda>\beta/\gamma$, and $\ahat=-\beta\iff\lambda=0$.
 \end{Theorem}
 
 \begin{Proof}
-Substituting~\eqref{eq:path} into~\eqref{eq:loglinear} and writing
-$y_{i}=\log\TPS_{i}$,
-\begin{equation}
-y_{i}=\underbrace{\bigl(\log\Tzero+\gamma\mu\bigr)}_{\eqdef\,a}
-+\bigl(\gamma\lambda-\beta\bigr)x_{i}
-+\underbrace{\gamma\eta_{i}+\epsilon_{i}}_{\eqdef\,\xi_{i}} ,
-\label{eq:reduced}
-\end{equation}
-a correctly specified simple linear regression with slope $\gamma\lambda-\beta$,
-$\E[\xi_{i}\mid x_{i}]=0$ and
-$\Var(\xi_{i})\le2\gamma^{2}\Var(\eta_{i})+2\sigma^{2}<\infty$. Inserting
-\eqref{eq:reduced} into the least-squares slope, the constant $a$ cancels
-against the centring and $\ahat_{m}=(\gamma\lambda-\beta)+N_{m}/D_{m}$ with
-$N_{m}=m^{-1}\sum_{i}(x_{i}-\bar{x}_{m})(\xi_{i}-\bar{\xi}_{m})$ and
-$D_{m}=m^{-1}\sum_{i}(x_{i}-\bar{x}_{m})^{2}$. The summands of $N_{m}$ have zero
-mean by the law of iterated expectations and finite variance, so
-$N_{m}\to0$ in probability while $D_{m}\to s_{x}^{2}>0$; the continuous mapping
-theorem applied to the ratio yields~\eqref{eq:confounding}. Since $\gamma>0$,
-$\gamma\lambda-\beta>0\iff\lambda>\beta/\gamma$ and
-$\gamma\lambda-\beta=-\beta\iff\lambda=0$.
+Substituting the path into the log-linear law yields a simple regression with
+slope $\gamma\lambda-\beta$ and mean-zero noise. The OLS slope therefore equals
+that constant plus a ratio $N_{m}/D_{m}$ whose numerator converges to zero in
+probability (zero-mean finite-variance summands) while the denominator converges
+to a positive second moment; continuous mapping gives the claim. The sign
+statements follow from $\gamma>0$.
 \end{Proof}
 
-\begin{Remark}[Order of magnitude]
-The bias is not a second-order correction. With $\gamma=0.8$, $\beta=0.5$ and a
-load generator scaled proportionally to the network ($\lambda=1$), the theorem
-gives $\ahat=+0.3$: the same measurements that contain a genuine $-0.5$ decay
-report growth. Extrapolated from $\n=5$ to $\n=60$ the two exponents differ by
-a factor $12^{0.8}\approx7.3$, which is the order of the discrepancy we set out
-to explain, and which we conjecture is the mechanism behind previously reported
-positive exponents including our own~\cite{peniak2026a}.
+\begin{Remark}
+The bias is first-order: with $\gamma=0.8$, $\beta=0.5$ and $\lambda=1$ one
+obtains $\ahat=+0.3$, and extrapolating from $\n=5$ to $\n=60$ the two exponents
+differ by a factor $\approx7$, the order of the discrepancy between our earlier
+studies~\cite{peniak2026a}.
 \end{Remark}
 
 \begin{Corollary}[Non-transferability]
 \label{cor:sign}
-Two laboratories measuring the same implementation along paths
-$\lambda_{1}\ne\lambda_{2}$ obtain exponents differing by
-$\gamma(\lambda_{1}-\lambda_{2})$, and predictions extrapolated to $\n_{t}$
-differ by the factor $\n_{t}^{\gamma(\lambda_{1}-\lambda_{2})}$. Published
-exponents are therefore not comparable unless the concurrency paths are
-reported.
+Laboratories measuring along $\lambda_{1}\ne\lambda_{2}$ obtain exponents
+differing by $\gamma(\lambda_{1}-\lambda_{2})$; published exponents are
+incomparable unless concurrency paths are reported.
 \end{Corollary}
 
-Estimation is straightforward. On a factorial grid the unsaturated subset is
-fitted by ordinary least squares in log-space,
-\begin{equation}
-\min_{\log\Tzero,\gamma,\beta}\ \sum_{i=1}^{m}
-\bigl(\log\TPS_{i}-\log\Tzero-\gamma\log\cc_{i}+\beta\log\n_{i}\bigr)^{2} ,
-\label{eq:ols}
-\end{equation}
-a two-regressor problem with a closed-form solution; $(\csat,\theta)$ then
-follow from nonlinear least squares on the full $\cc$-sweep, and $\hat\sigma$ is
-the standard deviation of the log-space residuals. A factorial design guarantees
-$\Cov(\log\n,\log\cc)=0$, so the effects are orthogonal by construction and
-Theorem~\ref{thm:identifiability} applies with $\lambda=0$.
+On a factorial grid ($\lambda=0$ by construction) we estimate
+$(\log\Tzero,\gamma,\beta)$ by OLS in log-space and $(\csat,\theta)$ by
+nonlinear least squares on the full $\cc$-sweep
+(Section~\ref{sec:exp}).

@@ -1,43 +1,24 @@
 \section{Conclusions}
 \label{sec:conclusions}
 
-We have addressed the problem of choosing the size of a permissioned BFT
-validator set for an e-governance workload in the realistic setting where no
-large testbed is available. \emph{First}, the identifiability theorem shows that
-a single-factor scaling exponent converges to $\gamma\lambda-\beta$, where
-$\lambda$ is a property of the measurement design rather than of the protocol; a
-positive exponent is therefore consistent with a load generator scaled alongside
-the network and is not by itself evidence that throughput grows with the
-validator count. This offers a concrete explanation for the discrepancy between
-the predictions of our earlier work~\cite{peniak2026a,peniak2026b} and indicates
-which of the two designs was affected. \emph{Second}, the resource-normalized
-measurement protocol fixes the per-validator compute budget independently of the
-validator count, separating consensus overhead from host contention and making
-the required factorial design --- and hence the theorem --- usable on a single
-commodity machine; where exact $\q$-invariance is rejected, the fitted law is
-reported at the reference quota. \emph{Third}, calibrated lognormal prediction
-intervals,
-validated by empirical coverage on held-out validator counts, replace point
-accuracy figures with a falsifiable statement. \emph{Fourth}, coupling the
-throughput law with a Hoeffding-type detection bound turns sizing into a
-chance-constrained program whose feasible set is a closed interval
-$[\nmin,\nmax]$ computable in $O(\log\n)$ evaluations, with absolute demand
-entering through an explicit production scale-up $\kappaScale$; the detection
-bound itself is standard, and what it contributes is a constraint monotone in the
-direction opposite to throughput, so that an empty interval certifies a
-structural rather than a provisioning failure.
-
-Of the four, we regard the first as the one most likely to outlive the specific
-measurements reported here, since it is a statement about estimation rather than
-about any particular system. The entire campaign executes in a public
-continuous-integration workflow on one four-core runner, so every result can be
-reproduced without dedicated infrastructure.
+We addressed validator-set sizing for permissioned BFT when no large testbed is
+available. The identifiability theorem shows that a single-factor exponent
+converges to $\gamma\lambda-\beta$, so a positive fit is consistent with a load
+generator scaled alongside the network and explains the discrepancy between our
+earlier predictions~\cite{peniak2026a,peniak2026b}. The \RNM{} protocol makes
+the required factorial design usable on one commodity host; where exact
+$\q$-invariance fails, the law is reported at the reference quota. Coverage-
+validated prediction intervals replace unchecked point accuracy, and coupling
+the throughput law with a Hoeffding-type detection bound yields a
+chance-constrained program whose feasible set is the closed interval
+$[\nmin,\nmax]$, with absolute demand entering through $\kappaScale$. Of the
+four results, the first --- a statement about estimation --- is the most likely
+to outlive the specific measurements. The full campaign runs in a public CI
+workflow on one four-core runner.
 
 \paragraph{Future work.}
-Protocol-level instrumentation covering equivocation faults; validation across
-several consensus implementations; extension of the feasibility window to
-latency and finality constraints; and online recalibration of $\beta$ as a
-deployment grows.
+Equivocation-capable instrumentation; multi-client validation; latency/finality
+constraints in the window; online recalibration of~$\beta$.
 
 \subsection*{Conflict of interest}
 The authors declare no conflict of interest.
@@ -46,13 +27,13 @@ The authors declare no conflict of interest.
 The research was conducted without financial support.
 
 \subsection*{Data availability}
-The workflow definition, network and load generators, fault-injection scripts,
-detector, analysis code and raw measurement artefacts are available in the
-project repository.
+Workflow definition, generators, fault-injection and analysis code, and raw
+artefacts are available at
+\url{https://github.com/bpenyak/paper_3}.
 
 \subsection*{Use of artificial intelligence}
-AI-assisted tools were used for language editing and typesetting. All scientific
-results, proofs, experimental design and analysis were produced by the authors.
+AI-assisted tools were used for language editing and typesetting. All
+scientific results, proofs, design and analysis were produced by the authors.
 
 \subsection*{Contributions of authors}
 \textbf{Peniak B.\,O.}: conceptualization, methodology, formal analysis,

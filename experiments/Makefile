@@ -36,8 +36,11 @@ simulate:
 figures: sizing
 	$(PY) $(EXP)/analysis/make_figures.py --in $(PROC) --out $(FIGS)
 
+# CORE_HOURS is optional campaign metadata (wall_seconds * nproc / 3600).
+CORE_HOURS ?=
 numbers: sizing
-	$(PY) $(EXP)/analysis/emit_numbers_tex.py --in $(PROC) --out numbers.tex
+	$(PY) $(EXP)/analysis/emit_numbers_tex.py --in $(PROC) --out numbers.tex \
+	    $(if $(CORE_HOURS),--core-hours $(CORE_HOURS),)
 
 paper:
 	pdflatex -interaction=nonstopmode paper3.tex

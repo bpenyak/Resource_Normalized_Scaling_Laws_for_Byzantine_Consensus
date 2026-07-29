@@ -1,110 +1,57 @@
 # REFERENCE_LIST.md
 
-Реєстр джерел. Джерело істини — `bib/references.tex`. Цей файл відстежує
-**де цитується** і **чи перевірено**.
+Реєстр джерел. Джерело істини — `bib/references.tex`.
+Статус URL: `OK` — перевірено (GET 200 або канонічний DOI).
 
-Статус: `?` — не перевірено, `OK` — DOI/URL відкрито і підтверджено,
-`FIX` — потребує виправлення.
-
----
-
-## BFT-консенсус (10)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `castro1999` | PBFT, OSDI'99 | 02 | ? |
-| `lamport1982` | Byzantine Generals, TOPLAS | 02 | ? |
-| `dwork1988` | Partial synchrony, JACM | 02 | ? |
-| `yin2019` | HotStuff, PODC'19 | 02 | ? |
-| `buchman2016` | Tendermint, MSc thesis | 02 | ? |
-| `gilad2017` | Algorand, SOSP'17 | 02 | ? |
-| `miller2016` | HoneyBadgerBFT, CCS'16 | 02 | ? |
-| `stathakopoulou2019` | Mir-BFT, arXiv | 02 | ? |
-| `vukolic2015` | PoW vs BFT | 02 | ? |
-| `kiayias2017` | Ouroboros, CRYPTO'17 | 02 | ? |
-
-## Бенчмаркінг (5)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `androulaki2018` | Hyperledger Fabric, EuroSys'18 | 02 | ? |
-| `thakkar2018` | Fabric benchmarking, MASCOTS'18 | 02 | ? |
-| `baliga2018` | Quorum performance, arXiv | 02 | ? |
-| `dinh2017` | BLOCKBENCH, SIGMOD'17 | 02 | ? |
-| `sousa2018` | BFT-SMaRt ordering, DSN'18 | 02 | ? |
-
-## Закони масштабування (4)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `amdahl1967` | Amdahl's law | 02, 09 | ? |
-| `gustafson1988` | Reevaluating Amdahl, CACM | 02 | ? |
-| `gunther2007` | USL, Guerrilla Capacity Planning | 02, 09 | ? |
-| `gunther2015` | Hadoop superlinear scalability | 02 | ? |
-
-## Концентрація та статистика (6)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `hoeffding1963` | Hoeffding inequality, JASA | 02, 06 | ? |
-| `boucheron2013` | Concentration inequalities | 02 | ? |
-| `efron1993` | Introduction to the bootstrap | 02 | ? |
-| `davison1997` | Bootstrap methods | 02 | ? |
-| `seber2003` | Nonlinear regression | 02 | ? |
-| `bates1988` | Nonlinear regression analysis | 02 | ? |
-
-## Оптимізація за невизначеності (3)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `charnes1959` | Chance-constrained programming | 02, 07 | ? |
-| `nemirovski2007` | Convex approximations of CC programs | 02 | ? |
-| `bental2009` | Robust optimization | 02 | ? |
-
-## Е-урядування та е-голосування (4)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `springall2014` | Estonian i-voting, CCS'14 | 02, 10 | ? |
-| `specter2020` | Voatz, USENIX Sec'20 | 02, 10 | ? |
-| `park2021` | Bad to worse, J. Cybersecurity | 02, 10 | ? |
-| `bensasson2014` | Zerocash, S&P'14 | 02 | ? |
-
-## Інструменти (2)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `pedregosa2011` | scikit-learn, JMLR | 02 | ? |
-| `besu` | Hyperledger Besu docs | 02, 08 | ? |
-
-## Власні попередні роботи (2)
-
-| Ключ | Джерело | Цитується в | Статус |
-|---|---|---|---|
-| `peniak2026a` | α-calibration, MMC | 01, 02, 04, 09, 12 | **FIX** — потрібні том/номер/сторінки |
-| `peniak2026b` | Adaptive hybrid consensus, НВ УжНУ 49(2) 1–8, DOI 10.24144/2616-7700.2026.49(2).1-8 | 01, 02, 06, 09, 10, 12 | ? |
+Оновлено: Фаза 5 (2026-07-29). Усі 27 ключів цитовані в тексті.
 
 ---
 
-**Разом: 36.** Вимога: ≥ 25. Запас на випадок вилучення непідтверджених.
+## BFT-консенсус
 
----
+| Ключ | URL | Статус |
+|---|---|---|
+| `castro1999` | https://www.usenix.org/conference/osdi-99/practical-byzantine-fault-tolerance | OK |
+| `lamport1982` | https://doi.org/10.1145/357172.357176 | OK (DOI) |
+| `dwork1988` | https://doi.org/10.1145/42282.42283 | OK (DOI) |
+| `yin2019` | DOI + https://arxiv.org/abs/1803.05069 | OK |
+| `buchman2016` | https://hdl.handle.net/10214/9769 | OK |
+| `gilad2017` | DOI + https://arxiv.org/abs/1607.01341 | OK |
+| `miller2016` | DOI + https://eprint.iacr.org/2016/199 | OK |
+| `vukolic2015` | https://doi.org/10.1007/978-3-319-39028-4_9 | OK |
 
-## Кандидати на додавання (якщо потрібно збільшити)
+## Бенчмаркінг
 
-- Ongaro & Ousterhout, Raft, USENIX ATC'14 — контраст crash-fault vs BFT
-- Bessani et al., BFT-SMaRt, DSN'14
-- Nakamoto, Bitcoin whitepaper — історичний контекст
-- Wood, Ethereum Yellow Paper — платформа
-- Hemmerlé et al. / інші роботи з capacity planning для розподілених БД
+| Ключ | URL | Статус |
+|---|---|---|
+| `androulaki2018` | DOI + https://arxiv.org/abs/1801.10228 | OK |
+| `thakkar2018` | https://doi.org/10.1109/MASCOTS.2018.00034 | OK |
+| `dinh2017` | DOI + https://arxiv.org/abs/1703.04057 | OK |
+| `sousa2018` | https://doi.org/10.1109/DSN.2018.00018 | OK |
 
-## Кандидати на вилучення (якщо треба скоротити обсяг)
+## Масштабування / статистика / оптимізація
 
-Порядок вилучення (найменш критичні першими):
-1. `bensasson2014` — приватність не є темою статті
-2. `gunther2015` — `gunther2007` покриває USL
-3. `bates1988` — дублює `seber2003`
-4. `davison1997` — дублює `efron1993`
-5. `bental2009` — дублює `nemirovski2007`
+| Ключ | URL | Статус |
+|---|---|---|
+| `amdahl1967` | https://doi.org/10.1145/1465482.1465560 | OK (DOI) |
+| `gustafson1988` | https://doi.org/10.1145/42411.42415 | OK (DOI) |
+| `gunther2007` | https://doi.org/10.1007/978-3-540-31010-5 | OK |
+| `hoeffding1963` | https://doi.org/10.1080/01621459.1963.10500830 | OK (DOI) |
+| `boucheron2013` | https://doi.org/10.1093/acprof:oso/9780199535255.001.0001 | OK |
+| `efron1993` | https://doi.org/10.1201/9780429246593 | OK |
+| `seber2003` | https://doi.org/10.1002/0471725315 | OK (DOI) |
+| `charnes1959` | https://doi.org/10.1287/mnsc.6.1.73 | OK (DOI) |
+| `nemirovski2007` | https://doi.org/10.1137/050622328 + open PDF | OK |
 
-Після вилучення всіх п'яти лишається 31 — все ще > 25.
+## Е-урядування / інструменти / власні
+
+| Ключ | URL | Статус |
+|---|---|---|
+| `springall2014` | DOI + https://jhalderm.com/pub/papers/ivoting-ccs14.pdf | OK |
+| `specter2020` | https://www.usenix.org/system/files/sec20-specter.pdf | OK |
+| `park2021` | https://doi.org/10.1093/cybsec/tyaa025 | OK |
+| `besu` | https://github.com/hyperledger/besu | OK |
+| `peniak2026a` | https://science.lpnu.ua/mmc (accepted; vol/pages після виходу) | OK |
+| `peniak2026b` | https://doi.org/10.24144/2616-7700.2026.49(2).255-261 | OK |
+
+**Разом: 27.** Вимога ≥ 25.
