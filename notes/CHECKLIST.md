@@ -98,4 +98,4 @@
 - [x] A2. UDC 004.75:519.2
 - [x] A3. `\received{29 July 2026}`
 - [x] A4. Афіліація LPNU + email
-- [x] A5. Conflict / Funding / Data / AI / Contributions заповнені
+- [x] A5. Conflict / Funding / Data / Contributions заповнені
