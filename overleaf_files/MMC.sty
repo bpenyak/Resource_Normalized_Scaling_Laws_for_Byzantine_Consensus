@@ -1,0 +1,1295 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%           The style file of Mathematical Modeling and Computing           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                         B.Markovych, 2014                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{MMC}[2014/04/01 Mathematical Modeling and Computing (MMC)]
+
+\newif\ifdraft\draftfalse
+\DeclareOption{draft}{\drafttrue}
+
+
+\newif\ifwritebat\writebatfalse
+\DeclareOption{writebat}{\writebattrue}
+
+
+\newif\ifwritetab\writetabfalse
+\DeclareOption{writetab}{\writetabtrue}
+
+
+\newif\ifwritehtml\writehtmlfalse
+\DeclareOption{writehtml}{\writehtmltrue}
+
+\ProcessOptions
+
+
+\RequirePackage[T2A]{fontenc}
+\RequirePackage{amssymb}
+\RequirePackage{amsmath}
+\RequirePackage{mathrsfs}
+\RequirePackage{euscript}
+\RequirePackage{upgreek}
+\RequirePackage[russian,ukrainian,english]{babel}%
+\RequirePackage{array}
+\RequirePackage{theorem}
+\RequirePackage[ruled]{algorithm}
+\RequirePackage[noend]{algorithmic}
+\RequirePackage[all]{xy}
+\RequirePackage{graphicx}
+\RequirePackage{setspace}
+\RequirePackage{tikz}%\usetikzlibrary{positioning}   % yangel
+\RequirePackage{wrapfig}
+\RequirePackage{color}
+\RequirePackage{longtable}
+\RequirePackage{multicol}
+\RequirePackage{multirow}
+\RequirePackage{ifthen}
+\RequirePackage{url}
+\RequirePackage{makeidx}
+\RequirePackage{pb-diagram}
+\RequirePackage{balance}
+\usepackage{caption}
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{\textit{\alph{subfigure}}}
+
+
+
+
+\def\hvsf{\sffamily\upshape}
+\newcommand{\MMClogo}{\textsf
+  {\Huge\bf\textsf M}\nolinebreak\hspace{-.1667em}\raisebox{-.5ex}{\scriptsize\textsf{athematical}}\nolinebreak
+  \hspace{-4em}\raisebox{2.5ex}{\Huge\bf\textsf M}\nolinebreak
+  \hspace{-0.1667em}\raisebox{6ex}{\scriptsize\textsf{odeling}}\nolinebreak
+  \hspace{-2.4em}\raisebox{1.3ex}{\Huge\bf\textsf C}\nolinebreak
+  \hspace{-1.1667em}\raisebox{2.9ex}{\scriptsize\textsf{omputing}}
+  }
+
+\newcommand{\rik}{2017}
+\newcommand{\tom}{x}
+\newcommand{\nomer}{x}
+\newcommand{\MMC}{Mathematical Modeling and Computing}
+\newcommand{\MMCukr}{Математичне моделювання та інформаційні технології}
+\newcommand{\NULP}{Lviv Polytechnic National University}
+\newcommand{\CMM}{\hspace{6.5mm}CMM IAPMM NASU}
+
+
+\renewcommand{\baselinestretch}{1}
+
+
+\textheight=240mm
+\textwidth=170mm
+\oddsidemargin=0mm
+\evensidemargin=0mm
+\topmargin=-8mm
+\headsep=5mm
+\footskip=9mm
+\footnotesep=3ex
+\columnsep=6mm
+
+\hoffset=-6mm
+
+\marginparwidth=5mm
+\parindent=3.5ex
+\tolerance=9000
+\hbadness=2000
+\flushbottom
+\clubpenalty=10000
+\widowpenalty=10000
+
+\setcounter{tocdepth}{1}
+
+
+
+
+
+\newcommand{\ukreng}[2]{\iflanguage{ukrainian}{#1}\relax\iflanguage{english}{#2}\relax}
+
+
+\newlength\vskipBeforeTitle
+\newlength\vskipAfterTitle
+
+
+\newcommand\unstretchspaces{\catcode`~=\active\def~{\;}}
+
+\setlength{\parskip}{0cm}
+\setlength\vskipBeforeTitle{3ex}
+\setlength\vskipAfterTitle{3ex}
+\newcommand\typeTitle[1]{{\Large\sffamily\bfseries #1}}
+\newcommand\typeAuthor[1]{{#1}}
+\newcommand\typeOrganization[1]{{\small\itshape#1}}
+\newcommand\typeEmail[1]{{\ttfamily\small#1}}
+\newcommand\typeTocAuthorTitle[2]{{\unstretchspaces\scshape #1}\\ #2}
+\newcommand\typeAbstract[1]{%
+    \par\vskip\vskipAfterTitle
+    \noindent\parbox{137mm}{\small\indent #1}%
+}
+
+\newcommand\keywords[1]{\medskip\par\hspace{3mm}\small{\sffamily\textbf{Keywords:}} {\itshape#1}}
+\newcommand\pacs[1]{\smallskip\par\hspace{3mm}\small{\sffamily\textbf{PACS:}} #1}
+\newcommand\MSC[1]{\smallskip\par\hspace{3mm}\small{\sffamily\textbf{2000 MSC:}} #1}
+\newcommand\udk[1]{\smallskip\par\hspace{3mm}\small{\sffamily\textbf{UDC:}} #1}
+
+\newcommand\typeReceived[1]{\par\small(Received #1)}
+
+\newcommand\keywordsUkr[1]{\medskip\par\hspace{3mm}\small{\sffamily\textbf{Ключові слова:}} {\itshape#1}}
+%\newcommand\pacsUkr[1]{\par\small{\sffamily\textbf{PACS:}} #1}
+\newcommand\udkUkr[1]{\smallskip\par\hspace{3mm}\small{\sffamily\textbf{УДК:}} #1}
+
+\newcommand{\address}[1]{\par\hspace{-1.5mm}$^{#1}$}
+
+
+
+
+\def\type@title{%
+    \newpage
+    \noindent
+    \setcounter{section}{0}
+    \begingroup
+    \setcounter{footnote}{0}%
+    \def\thefootnote{\fnsymbol{footnote}}%
+    \def\@makefnmark{$^{\@thefnmark}$}%
+    \def\@makefntext##1{\noindent $\m@th ^{\@thefnmark}$##1}%
+%    \twocolumn[%
+        %\hspace{1cm}\parbox{\textwidth}{%
+          \parbox{0.99\textwidth}{%
+            \begin{center}%
+            %\begin{flushleft}%
+                \vskip\vskipBeforeTitle%
+                %--------- основной заголовок
+                \ifthenelse{\equal{\@title}{}}{}%
+                   % {\typeTitle\@title\ifthenelse{\equal{\@thanks@grant}{}}{}{\footnotemark\setcounter{footnote}{0}}\\[1ex]}%
+                    {\bigskip\typeTitle\@title\\[3ex]}%
+                \ifthenelse{\equal{\@author@long}{}}{}%
+                    {\typeAuthor\@author@long\medskip}%
+%                \ifthenelse{\equal{\@email}{}}{}%
+%                    {\\{\typeEmail\@email}}%
+                \ifthenelse{\equal{\@organization}{}}{}%
+                    {\\{\typeOrganization\@organization}\medskip}%
+                 \ifthenelse{\equal{\@received}{}}{}%
+                    {{\typeReceived\@received}}%
+                \ifthenelse{\equal{\@abstract}{}}{}%
+                    {\typeAbstract\@abstract\par\vskip\vskipAfterTitle}%
+%                \ukreng{{%
+%                %--------- второй заголовок на английском для статей на русском
+%                \English%
+%                \ifthenelse{\equal{\@title@eng}{}}{}%
+%                    {\typeTitle\@title@eng\ifthenelse{\equal{\@thanks@grant}{}}{}{\footnotemark\setcounter{footnote}{0}}\\[1ex]}%
+%                \ifthenelse{\equal{\@author@long@eng}{}}{}%
+%                    {\typeAuthor\@author@long@eng}%
+%                \ifthenelse{\equal{\@organization@eng}{}}{}%
+%                    {\\{\typeOrganization\@organization@eng}}%
+%                \ifthenelse{\equal{\@abstract@eng}{}}{}%
+%                    {\typeAbstract\@abstract@eng}%
+%                }}{{%
+%                %--------- второй заголовок на русском для статей на английском
+%                %\Ukrainian%
+%                \ifthenelse{\equal{\@title@ukr}{}}{}%
+%                    {\typeTitle\@title@ukr\ifthenelse{\equal{\@thanks@grant}{}}{}{\footnotemark}\\[1ex]}%
+%                \ifthenelse{\equal{\@author@long@ukr}{}}{}%
+%                    {\typeAuthor\@author@long@ukr}%
+%                \ifthenelse{\equal{\@organization@ukr}{}}{}%
+%                    {\\{\typeOrganization\@organization@ukr}}%
+%                \ifthenelse{\equal{\@abstract@ukr}{}}{}%
+%                    {\typeAbstract\@abstract@ukr}%
+%                }}%
+            \end{center}%
+           % \end{flushleft}%
+            \vskip-2ex\vskip\vskipAfterTitle
+        }%
+%    ]%
+    \ifthenelse{\equal{\@thanks@grant}{}}{}{\footnotetext{\@thanks@grant}}%
+    \setcounter{footnote}{0}%
+    \endgroup
+}
+\def\maketitle{%
+    \@BeginDocument
+    % на предыдущей странице почему-то подавлялся вывод колонтитулов
+    % (видимо, это побочный эффект \twocolumn
+    %\pagestyle{headings}%
+    %\clearpage
+    % печать заголовка вместе с аннотацией
+    %\globallabel{\@paper@name:begin}%
+    \type@title
+    \globallabel{\@paper@name:begin}%
+    \pagestyle{headings}%
+    \thispagestyle{headfoot}%
+    % обработать список фамилий авторов, занести каждую в авторский указатель
+    %\newcommand\@trim[1]{\@ifnextchar\ \@gobble\relax#1}%
+    \@for\@indx@elem:=\@author\do{%
+        \index{\@indx@elem}%
+    }%
+    % в чистовом режиме записать в оглавление только авторов и название
+    \addcontentsline{tocMy}{mmctitle}{%
+         \typeTocAuthorTitle{\@author}{\@title}%
+    }%
+    % в черновом режиме дописать в оглавление:
+    % организацию, абстракт, имя файла, имена рецензентов, отметки о прохождении корректуры и рецензирования
+    \ifdraft{%\Ukrainian
+        %\addtocontents{tocMy}{\protect\par(\@organization)}%
+        %\addtocontents{tocMy}{\protect\par\@abstract}%
+        \ifthenelse{\equal{\@paper@corrected}{+}}%
+            {\addtocontents{toc}{\protect\par\protect\nopagebreak$\bigstar$\quad
+                \textsl{Статья прошла корректуру}}}%
+            {}%
+        \ifthenelse{\equal{\@paper@reviewed}{+}}%
+            {\addtocontents{tocMy}{\protect\par\protect\nopagebreak$\bigstar\bigstar$\quad
+                \textsl{Статья прошла рецензирование}}}%
+            {}%
+        \ifthenelse{\equal{\@paper@accepted}{0}}%
+            {\addtocontents{tocMy}{\protect\par\protect\nopagebreak ???\quad
+                \textsl{Решение по данной статье пока не принято}}}%
+            {}%
+        \ifthenelse{\equal{\@paper@accepted}{+}}%
+            {\addtocontents{tocMy}{\protect\par\protect\nopagebreak$\bigstar\bigstar\bigstar$\quad
+                \textsl{Статья принята в печать}}}%
+            {}%
+        \ifthenelse{\equal{\@paper@accepted}{?}}%
+            {\addtocontents{tocMy}{\protect\par\protect\nopagebreak$\maltese$\quad
+                \textbf{Статью желательно доработать}}}%
+            {}%
+        \ifthenelse{\equal{\@paper@accepted}{!}}%
+            {\addtocontents{tocMy}{\protect\par\protect\nopagebreak$\maltese\maltese$\quad
+                \textbf{Статья не может быть принята без доработки}}}%
+            {}%
+        \ifthenelse{\equal{\@paper@accepted}{-}}%
+            {\addtocontents{tocMy}{\protect\par\protect\nopagebreak$\maltese\maltese\maltese$\quad
+                \textbf{Статья отвергнута}}}%
+            {}%
+        \addtocontents{tocMy}{%
+            \protect\par\protect\url{\@paper@name.TeX}%
+            \protect\ifthenelse{\protect\equal{\@reviewers@list}{}}%
+                {}%
+                {\quad(рецензенты и корректоры: \texttt{\@reviewers@list})%
+            }%
+        }%
+    }\fi
+    % сформировать колонтитулы
+    \markboth{\@author@short}{\@title@short}%
+%    \markboth{\uppercase{\MMC}\;\;\textbf{\tom},\space\globalpageref{\@paper@name:begin}--\globalpageref{\@paper@name:end}\space(\rik)}%
+%             {\uppercase{\MMC}\;\;\textbf{\tom},\space\globalpageref{\@paper@name:begin}--\globalpageref{\@paper@name:end}\space(\rik)}%
+    \par\nobreak\@afterheading
+    % балансировка колонок -- только в конце статьи
+    \nobalance
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\type@titleUkr{%
+    \noindent
+    \begingroup
+    % подготовка к выводу сноски с грантом
+    \setcounter{footnote}{0}%
+    \def\thefootnote{\fnsymbol{footnote}}%
+    %\def\@makefnmark{\hbox to 0pt{$^{\@thefnmark}$\hss}}%
+    \def\@makefnmark{$^{\@thefnmark}$}%
+    %\long\def\@makefntext##1{\parindent 1em\noindent\hbox to1.8em{\hss $\m@th ^{\@thefnmark}$}##1}%
+    \def\@makefntext##1{\noindent $\m@th ^{\@thefnmark}$##1}%
+        \parbox{\textwidth}{%
+            \begin{center}%
+            %\begin{flushleft}%
+                %\vskip-6ex
+                \Ukrainian
+                \vskip\vskipBeforeTitle%
+                %--------- основной заголовок
+                \ifthenelse{\equal{\@title@ukr}{}}{}%
+                    %{\typeTitle\@title@ukr\ifthenelse{\equal{\@thanks@grant}{}}{}{\footnotemark\setcounter{footnote}{0}}\\[1ex]}%
+                    {\typeTitle\@title@ukr\\[3ex]}%
+                \ifthenelse{\equal{\@author@long@ukr}{}}{}%
+                    {\typeAuthor\@author@long@ukr\medskip}%
+%                \ifthenelse{\equal{\@email}{}}{}%
+%                    {\\{\typeEmail\@email}}%
+                \ifthenelse{\equal{\@organization@ukr}{}}{}%
+                    {\\{\typeOrganization\@organization@ukr}}%
+                \ifthenelse{\equal{\@abstract@ukr}{}}{}%
+                    {\typeAbstract\@abstract@ukr\par\vskip\vskipAfterTitle}%
+            %\end{flushleft}%
+            \end{center}%
+            \vskip-2ex\vskip\vskipAfterTitle
+        }%
+    \setcounter{footnote}{0}%
+    \endgroup
+}
+\def\maketitleUkr{%
+    \type@titleUkr
+    \globallabel{\@paper@name:end}
+    \thispagestyle{headfootUkr}%
+    \markboth{\@author@short}{\@title@short}%
+    \nobalance
+    \newpage
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\def\@clear@title{%
+    \gdef\@title{}%
+    \gdef\@title@short{}%
+    \gdef\@author{}%
+    \gdef\@author@short{}%
+    \gdef\@author@long{}%
+    \gdef\@organization{}%
+    \gdef\@abstract{}%
+    \gdef\@thanks@grant{}%
+    \gdef\@email{}%
+    \gdef\@received{}%
+    %--------- второй заголовок на английском для статей на русском
+    \gdef\@title@eng{}%
+    \gdef\@title@short@eng{}%
+    \gdef\@author@eng{}%
+    \gdef\@author@short@eng{}%
+    \gdef\@author@long@eng{}%
+    \gdef\@organization@eng{}%
+    \gdef\@abstract@eng{}%
+    %--------- второй заголовок на русском для статей на английском
+    \gdef\@title@ukr{}%
+    \gdef\@title@short@ukr{}%
+    \gdef\@author@ukr{}%
+    \gdef\@author@short@ukr{}%
+    \gdef\@author@long@ukr{}%
+    \gdef\@organization@ukr{}%
+    \gdef\@abstract@ukr{}%
+}
+\renewcommand{\title}[2][]{\@clear@title
+    \gdef\@title{#2}%    {\uppercase{#2}}
+    \ifthenelse{\equal{#1}{}}%
+        {\gdef\@title@short{{#2}}}%
+        {\gdef\@title@short{{#1}}}%
+}
+\renewcommand{\author}[2][]{
+    \gdef\@author{#2}
+    \ifthenelse{\equal{#1}{}}%
+        {\gdef\@author@short{{#2}}}%
+        {\gdef\@author@short{{#1 et al.}}}%
+    \gdef\@author@long{#2}%
+    \@ifnextchar[\set@author@long\relax
+}
+\def\set@author@long[#1]{\gdef\@author@long{#1}}
+\newcommand{\organization}[1]{\gdef\@organization{{#1}}}
+\newcommand{\email}[1]{\gdef\@email{{#1}}}
+\newcommand{\received}[1]{\gdef\@received{{#1}}}
+\renewcommand{\thanks}[1]{\gdef\@thanks@grant{{#1}}}
+%\def\myuncat{\def\do##1{\catcode`##1=12}\dospecials}
+\renewcommand{\abstract}[1]{\gdef\@abstract{{#1}}}
+
+
+\newcommand{\titleEng}[2][]{%
+    \gdef\@title@eng{#2}%    {\uppercase{#2}}
+    \ifthenelse{\equal{#1}{}}%
+        {\gdef\@title@short@eng{{#2}}}%
+        {\gdef\@title@short@eng{{#1}}}%
+}
+\newcommand{\authorEng}[2][]{
+    \gdef\@author@eng{#2}
+    \ifthenelse{\equal{#1}{}}%
+        {\gdef\@author@short@eng{{#2}}}%
+        {\gdef\@author@short@eng{{#1 и~др.}}}%
+    \gdef\@author@long@eng{#2}%
+    \@ifnextchar[\set@author@long@eng\relax
+}
+\def\set@author@long@eng[#1]{\gdef\@author@long@eng{#1}}
+\newcommand{\organizationEng}[1]{\gdef\@organization@eng{{#1}}}
+\newcommand{\abstractEng}[1]{\gdef\@abstract@eng{{#1}}}
+
+\newcommand{\titleUkr}[2][]{%
+    \gdef\@title@ukr{#2}%    {\uppercase{#2}}
+    \ifthenelse{\equal{#1}{}}%
+        {\gdef\@title@short@ukr{{#2}}}%
+        {\gdef\@title@short@ukr{{#1}}}%
+}
+\newcommand{\authorUkr}[2][]{
+    \gdef\@author@ukr{#2}
+    \ifthenelse{\equal{#1}{}}%
+        {\gdef\@author@short@ukr{{#2}}}%
+        {\gdef\@author@short@ukr{{#1 та~ін.}}}%
+    \gdef\@author@long@ukr{#2}%
+    \@ifnextchar[\set@author@long@ukr\relax
+}
+\def\set@author@long@ukr[#1]{\gdef\@author@long@ukr{#1}}
+\newcommand{\organizationUkr}[1]{\gdef\@organization@ukr{{#1}}}
+\newcommand{\abstractUkr}[1]{\gdef\@abstract@ukr{{#1}}}
+
+
+%\def\paper@record{{%
+%    %\textit{\@author} \@title~//
+%    %\Ukrainian
+%    Математичне моделювання та інформаційні технології, 2014\\
+%    \English
+%    Mathematical Modeling and Computing, 2014}%
+%    М.:~МАКС Пресс, 2009~---
+%    С.\,\globalpageref{\@paper@name:begin}--\globalpageref{\@paper@name:end}.
+%}
+
+
+
+
+\newcommand\type@chapter@code{%
+    \ifthenelse{\equal{\@chapter@code}{}}{}{\typeChapterCode{\@chapter@code}}
+}
+%\renewcommand{\ps@headings}{%
+%    \renewcommand{\@oddhead}{\parbox{\textwidth}{\footnotesize
+%        \rightmark\hfill\type@chapter@code\quad\thepage\\[-2ex]\hrule}}%
+%    \renewcommand{\@evenhead}{\parbox{\textwidth}{\footnotesize
+%        \thepage\quad\type@chapter@code\hfill\leftmark\\[-2ex]\hrule}}%
+%    \renewcommand{\@oddfoot}{}%
+%    \renewcommand{\@evenfoot}{}%
+%}
+\renewcommand{\ps@headings}{%
+    \renewcommand{\@oddhead}{\parbox[c]{\textwidth}{\textsf{\rightmark}\hfill\thepage\\[-2ex]\hrule}}%
+    \renewcommand{\@evenhead}{\parbox[c]{\textwidth}{\thepage\hfill\textsf{\leftmark}\hfill\\[-2ex]\hrule}}%
+    \renewcommand{\@oddfoot}{\parbox[c]{\textwidth}{\sf\MMC,\;Vol.\,\tom,\space No.\,\nomer,\space pp.\,\globalpageref{\@paper@name:begin}--\globalpageref{\@paper@name:end}\space(\rik)}}%\\[-2ex]\hrule
+    \renewcommand{\@evenfoot}{\@oddfoot}%
+}
+
+
+
+\newcommand{\ps@headfoot}{%
+    \renewcommand{\@oddhead}{\parbox[c]{\textwidth}{\rule{\textwidth}{0.5pt}\\[0.8ex]
+        \raisebox{0.5mm}{\small\sf\MakeUppercase{\MMC},\;\;Vol.\,\tom,\space No.\,\nomer,\space pp.\,\globalpageref{\@paper@name:begin}--\globalpageref{\@paper@name:end}\space(\rik)}
+        \hfill
+        \raisebox{-2ex}{\MMClogo}
+\\[1ex]\rule{\textwidth}{0.5pt}}}%
+    \renewcommand{\@evenhead}{\@oddhead}%
+    \renewcommand{\@oddfoot}{\parbox[t]{5.9cm}{\scriptsize\copyright\,\rik\;\NULP\par\hspace{4mm}\CMM}\hfill\thepage}%\hrule\vskip1ex
+    \renewcommand{\@evenfoot}{\thepage\hfill\parbox[t]{5.9cm}{\scriptsize\copyright\,\rik\;\NULP\par\hspace{4mm}\CMM}}%
+}
+
+
+
+
+\newcommand{\ps@headfootUkr}{%
+    \renewcommand{\@oddhead}{\parbox[c]{\textwidth}{\rightmark\hfill\textsf{\thepage}\\[-2ex]\hrule}}%
+    \renewcommand{\@evenhead}{\parbox[c]{\textwidth}{\thepage\hfill\textsf{\leftmark}\hfill\\[-2ex]\hrule}}%
+    \renewcommand{\@oddfoot}{\parbox[c]{\textwidth}{\sf\MMC,\;\;Vol.\,\tom,\space No.\,\nomer,\space pp.\,\globalpageref{\@paper@name:begin}--\globalpageref{\@paper@name:end}\space(\rik)}}%\\[-2ex]\hrule
+    \renewcommand{\@evenfoot}{\@oddfoot}%
+}
+
+
+
+
+
+
+
+
+\ProcessOptions
+
+
+
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                   {2.3ex \@plus.2ex}%
+                                   {\normalfont\large\hvsf\bfseries\mathversion{bold}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\hvsf\bfseries\mathversion{bold}}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\normalsize\hvsf\bfseries\mathversion{bold}}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+                                    {3.25ex \@plus1ex \@minus.2ex}%
+                                    {-1em}%
+                                    {\normalfont\normalsize\hvsf\bfseries\mathversion{bold}}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
+                                       {3.25ex \@plus1ex \@minus .2ex}%
+                                       {-1em}%
+                                      {\normalfont\normalsize\hvsf\bfseries\mathversion{bold}}}
+
+\def\@seccntformat#1{\csname the#1\endcsname.\hspace{0.5em}}
+
+
+
+\def\newchapterpage{%
+    \pagestyle{headings}
+    \onecolumn
+%%%    \ifthenelse{\isodd{\thepage}}%s
+%%%        {\newpage~\thispagestyle{empty}\newpage}    % \renewcommand{\@evenhead}{}
+%%%        {\newpage}%
+%    \ifthenelse{\isodd{\thepage}}%s
+%        {~\thispagestyle{empty}\newpage}    % \renewcommand{\@evenhead}{}
+%        {}%
+    \thispagestyle{empty}%
+}
+\def\chaptercode#1{\gdef\@chapter@code{#1}}
+\chaptercode{??}
+% INTERFACE
+\def\chapter#1#2#3{%
+    \newchapterpage
+    %\typeChapter{#1}{#2}{#3}
+    \addcontentsline{toc}{mmcchapter}{{\normalfont\sffamily\bfseries #3}}% \protect\chaptercode{#1}
+    \addtocontents{toc}{\protect\nopagebreak}%
+    \addcontentsline{tos}{mmcchapter}{\rlap{(#1)}\hspace{12mm}#2\protect\\\strut\hspace{7.3mm}#3}% для краткого оглавления
+    \markboth{#3}{#3}%
+    \chaptercode{#1}%
+}
+
+
+\newcommand\l@mmctitle{\smallskip\@dottedtocline{1}{0ex}{3ex}}
+\newcommand\l@mmcchapter{\vskip3ex\@dottedtocline{0}{0ex}{3ex}}
+
+
+\renewcommand\tableofcontents{%
+    \renewcommand{\contentsname}{CONTENTS}%
+    \if@twocolumn\@restonecoltrue\onecolumn\else\@restonecolfalse\fi
+    \par{\normalfont\Large\sffamily\bfseries\hfill\contentsname\hfill}\nopagebreak\par\bigskip
+    \def\@chapter@code{}%
+    \markboth{\contentsname}{\contentsname}%
+    \@starttoc{tocMy}%
+    \if@restonecol\twocolumn\fi
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewenvironment{theindex}{%
+   \renewcommand{\indexname}{AUTHOR INDEX OF VOL.\,\tom, No.\,\nomer\space(\rik)}%
+    \if@twocolumn\@restonecolfalse\else\@restonecoltrue\fi
+    \columnseprule \z@
+    \columnsep 35\p@
+    \twocolumn[
+    \begin{center}
+    {\normalfont\Large\sffamily\bfseries\indexname}
+    \end{center}
+    \vskip2em]%
+    \markboth{\indexname}{\indexname}%
+    \parindent\z@
+    \parskip\z@ \@plus .3\p@\relax
+    \flushleft
+    \let\item\@idxitem
+}{%
+    \if@restonecol\onecolumn\else\clearpage\fi
+}
+
+
+
+
+\def\BibAuthor#1{#1}
+\def\BibTitle#1{#1}
+%\def\BibTitle#1{}
+\def\BibUrl#1{{\small\url{#1}}}
+\def\BibHttp#1{{\small\url{http://#1}}}
+\def\BibFtp#1{{\small\url{ftp://#1}}}
+\def\typeBibItem{\small\sloppy}
+
+
+\renewenvironment{thebibliography}[1]
+    {\centerline{\begin{picture}(300,1)
+   \put(100,-0.8){\line(1,0){100}}
+%   \put(50,-0.4){\line(1,0){200}}
+   \put(0,0){\line(1,0){300}}
+%   \put(50,0.4){\line(1,0){200}}
+   \put(100,0.8){\line(1,0){100}}
+\end{picture}}
+\bigskip
+        \list{\@biblabel{\@arabic\c@enumiv}}{%
+            \settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin by 1ex%
+            \topsep=0pt\parsep=3pt\itemsep=0ex%
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}%
+        }%
+        \typeBibItem
+    }{%
+        \def\@noitemerr{\@latex@warning{Empty `thebibliography' environment}}%
+        \endlist%\end{multicols}
+    }
+
+
+\def\citenb#1{%
+    \let\temp@cite\@cite
+    \begingroup
+    \def\@cite##1##2{##1}%
+    \cite{#1}%
+    \endgroup
+    \let\@cite\temp@cite
+}
+
+
+
+
+\newcounter{PaperNo}
+\def\thePaperNo{\arabic{PaperNo}}
+
+
+\let\globallabel\label
+\let\globalltx@label\ltx@label
+\let\globalref\ref
+\let\globalpageref\pageref
+\let\globalcitex\@citex
+\let\globalbibitem\bibitem
+\def\mmc@label#1{\globallabel{#1:\thePaperNo:}}
+\def\mmc@ref#1{\globalref{#1:\thePaperNo:}}
+\def\mmc@pageref#1{\globalpageref{#1:\thePaperNo:}}
+\def\mmc@bibitem#1{\globalbibitem{#1:\thePaperNo:}}
+\def\mmc@citex[#1]#2{%
+  \let\@citea\@empty
+  \@cite{\@for\@citeb:=#2\do
+    %{\@citea\def\@citea{,\penalty\@m\ }%
+    {\@citea\def\@citea{,\penalty\@m}%
+     \edef\@citeb{\expandafter\@firstofone\@citeb\@empty:\thePaperNo:}%
+     \if@filesw\immediate\write\@auxout{\string\citation{\@citeb}}\fi
+     \@ifundefined{b@\@citeb}{\mbox{\reset@font\bfseries ?}%
+       \G@refundefinedtrue
+       \@latex@warning{Citation `\@citeb' on page \thepage \space undefined}}%
+       {\hbox{\csname b@\@citeb\endcsname}}}}{#1}%
+}
+
+
+\newcommand\SetPrivateLabeling{%
+    \let\label\mmc@label
+    \let\ltx@label\mmc@label
+    \let\ref\mmc@ref
+    \let\pageref\mmc@pageref
+    \let\@citex\mmc@citex
+    \let\bibitem\mmc@bibitem
+}
+
+
+\newcommand\RestoreDefaultLabeling{
+    \let\label\globallabel
+    \let\ltx@label\globalltx@label
+    \let\ref\globalref
+    \let\pageref\globalpageref
+    \let\@citex\globalcitex
+    \let\bibitem\globalbibitem
+}
+
+
+\newcommand{\@BeginDocument}{
+    \renewcommand{\@listi}{%
+        \topsep=\smallskipamount
+        \parsep=0pt
+        \parskip=0pt%
+        \itemsep=0pt%
+        \itemindent=0pt%
+        \labelsep=1.5ex%
+        \leftmargin=3.5ex%
+        \rightmargin=0pt} %
+    \renewcommand{\@listii}{\@listi\topsep=0pt}%
+    \renewcommand{\@listiii}{\@listii}%
+    \renewcommand{\@listiv}{\@listii}%
+    \renewcommand{\labelitemi}{---}%
+    \renewcommand{\labelitemii}{---}%
+    \renewcommand{\labelitemiii}{---}%
+    \renewcommand{\labelitemiv}{---}%
+    \renewcommand{\theenumii}{\asbuk{enumii}}%
+    \setcounter{equation}{0}%
+    \setcounter{table}{0}%
+    \setcounter{figure}{0}%
+    \setcounter{algorithm}{0}%
+    \setcounter{footnote}{0}%
+    \setcounter{Theorem}{0}%
+    \setcounter{State}{0}%
+    \setcounter{Corollary}{0}%
+    \setcounter{Def}{0}%
+    \setcounter{Axiom}{0}%
+    \setcounter{Hypothesis}{0}%
+    \setcounter{Assumption}{0}%
+    \setcounter{Problem}{0}%
+    \setcounter{Example}{0}%
+    \setcounter{Remark}{0}%
+    \setcounter{Fact}{0}%
+    \setcounter{Notice}{0}%
+    \setcounter{Rule}{0}%
+    \setcounter{Condition}{0}%
+    \setcounter{mmcReviewerNote}{0}%
+    \refstepcounter{PaperNo}%
+    \ukreng{\hyphenation{иои ммро рффи}}\relax
+    \def\bibname{\ukreng{Література}{References}}%
+    \def\figurename{\ukreng{Рис.}{Fig.}}%
+    \def\tablename{\ukreng{Таблиця}{Table}}%
+}
+
+
+\newcommand\@EndDocument{%
+    \balance
+    \ifthenelse{\equal+{\@paper@corrected}\or\not\equal{\themmcReviewerNote}{0}}{%
+        \ifwritebat
+            \@write@corrauthors@bat{\ZipAdd \@paper@name \@paper@name.tex \@paper@name.pdf}%
+            \@for\@pix@elem:=\@paper@pixlist\do{%
+                \@write@corrauthors@bat{\ZipAdd \@paper@name \@pix@elem}%
+            }%
+        \fi
+    }{}%
+    \ifthenelse{\equal{\themmcReviewerNote}{0}}{}{%
+        \ifdraft{% если черновая печать
+            \addtocontents{toc}{%
+                \protect\par
+                \protect\nopagebreak$\checkmark\kern-1.36ex\checkmark$\quad
+                \textsl{В текст статьи включены замечания рецензента: \themmcReviewerNote}}%
+        }\fi
+    }%
+    \ifwritetab
+        \@write@papers@table{%
+            \@paper@name|%
+            \@chapter@code|%
+            \@author|%
+            \@title|%
+            \@author@eng|%
+            \@title@eng|%
+            \@organization|%
+            \@email|%
+            \@reviewers@list|%
+            \@paper@corrected|%
+            \@paper@reviewed|%
+            \@paper@accepted|%
+            \themmcReviewerNote
+        }%
+    \fi
+    \ifthenelse{%
+        \(\equal{\@paper@corrected}{\@@corrected}\or \equal{\@@corrected}{*}\) \and
+        \(\equal{\@paper@reviewed}{\@@reviewed}\or \equal{\@@reviewed}{*}\) \and
+        \(\equal{\@paper@accepted@}{\@@accepted}\or \equal{\@@accepted}{*}\)
+    }{%
+        \ifwritehtml
+        \@write@papers@html{<br><i>\@author</i> <b>\@title</b>}%
+        \@write@papers@html{<br>{{\@abstract}}}%
+        \fi
+    }{}%
+}
+
+
+\ifwritetab
+    \newwrite\@papers@table
+\fi
+\ifwritehtml
+    \newwrite\@papers@html
+\fi
+\ifwritebat
+    \newwrite\@reviewers@bat
+    \newwrite\@authors@bat
+    \newwrite\@corrauthors@bat
+    \newwrite\@make@bat
+\fi
+
+\newcommand\ZipAdd[1]{rar a #1.rar }
+
+\newenvironment{papers}{
+    \gdef\@paper@name{}%
+    \gdef\@paper@pixlist{}%
+    \renewcommand{\documentclass}[2][0]{\relax}%
+    \renewcommand{\usepackage}[2][0]{\relax}%
+    \renewcommand\RestoreDefaultLabeling{\relax}%
+    \ifdraft\relax\else\NOREVIEWERNOTES\fi
+    \chaptercode{}
+    \gdef\typeChapterCode##1{(##1)}
+    \renewenvironment{document}{\SetPrivateLabeling}{\@EndDocument}%
+    \ifwritetab
+        \immediate\openout\@papers@table=_papers.tab
+        \gdef\@write@papers@table##1{%
+            \immediate\write\@papers@table{##1}%
+        }%
+    \fi
+    \ifwritehtml
+        \immediate\openout\@papers@html=_papers.html
+        \gdef\@write@papers@html##1{%
+            \protected@write\@papers@html{}{##1}%
+            %\immediate\write\@papers@html{##1}%
+        }%
+    \fi
+    \ifwritebat
+        \immediate\openout\@reviewers@bat=reviewers.bax
+        \gdef\@write@reviewers@bat##1{%
+            \immediate\write\@reviewers@bat{##1}%
+        }%
+        \immediate\openout\@authors@bat=authors.bax
+        \gdef\@write@authors@bat##1{%
+            \immediate\write\@authors@bat{##1}%
+        }%
+        \immediate\openout\@corrauthors@bat=corr-authors.bax
+        \gdef\@write@corrauthors@bat##1{%
+            \immediate\write\@corrauthors@bat{##1}%
+        }%
+        \immediate\openout\@make@bat=make-separately.bax
+        \gdef\@write@make@bat##1{%
+            \immediate\write\@make@bat{##1}%
+        }%
+        \@write@make@bat{del *.aux *.log *.toc *.dvi *.pdf}%
+    \fi
+    \AtEndDocument{\relax}
+}{%
+    \chaptercode{}
+}
+
+\AtEndDocument{\globallabel{\@paper@name:end}\balance}
+
+\def\@paper@name{\jobname}%
+\def\@paper@pixlist{}%
+\def\@reviewers@list{}%
+\def\@@reviewer{*}%
+
+
+\newcounter{mmcTotal}
+\newcounter{mmcCorrected}
+\newcounter{mmcReviewed}
+\newcounter{mmcAccepted}
+\newcounter{mmcMayBeCompleted}
+\newcounter{mmcMustBeCompleted}
+\newcounter{mmcRejected}
+\def\@paper@corrected{-}
+\def\@paper@reviewed{-}
+\def\@paper@accepted{+}
+
+
+\def\FILTER#1#2#3{%
+    \gdef\@@corrected{#1}%
+    \gdef\@@reviewed{#2}%
+    \gdef\@@accepted{#3}%
+    \@ifnextchar[\@FILTER@reviewer\relax%
+}
+\def\@FILTER@reviewer[#1]{\gdef\@@reviewer{#1}}
+\ifdraft
+    {\FILTER***}
+\else
+    {\FILTER**+}
+\fi
+
+
+\def\paper#1#2#3#4{%
+    \gdef\@paper@corrected{#1}
+    \gdef\@paper@reviewed{#2}
+    \gdef\@paper@accepted{#3}
+    \gdef\@paper@name{#4}\refstepcounter{mmcTotal}%
+    \gdef\@paper@pixlist{}
+    \ifthenelse{\equal+{#1}}{\refstepcounter{mmcCorrected}}{}%
+    \ifthenelse{\equal+{#2}}{\refstepcounter{mmcReviewed}}{}%
+    \ifthenelse{\equal+{#3}}{\refstepcounter{mmcAccepted}}{}%
+    \ifthenelse{\equal?{#3}}{\refstepcounter{mmcMayBeCompleted}}{}%
+    \ifthenelse{\equal!{#3}}{\refstepcounter{mmcMustBeCompleted}}{}%
+    \ifthenelse{\equal-{#3}}{\refstepcounter{mmcRejected}}{}%
+    \ifwritebat
+        \@write@authors@bat{\ZipAdd \@paper@name \@paper@name.tex \@paper@name.pdf}%
+    \fi
+    \@ifnextchar[\@paper@ii\@paper@i
+}
+\def\@paper@i{%
+    \gdef\@reviewers@list{}%
+    \ifthenelse{\equal{\@@reviewer}{}\or\equal{\@@reviewer}{*}}{\@paper}{}%
+    \gdef\@paper@name{}%
+}
+\newboolean{bReviewer}
+\def\@paper@ii[#1]{%
+    \gdef\@reviewers@list{#1}%
+    \setboolean{bReviewer}{false}%
+    \@for\@reviewer@name:=\@reviewers@list\do{%
+        \ifthenelse{\equal{\@@reviewer}{\@reviewer@name}}
+            {\setboolean{bReviewer}{true}}%
+            {}%
+    }%
+    \ifthenelse{\boolean{bReviewer}\or\equal{\@@reviewer}{*}}{%
+        \@paper
+        \@for\@reviewer@name:=\@reviewers@list\do{%
+            \ifthenelse{\equal{\@@reviewer}{\@reviewer@name}\or\equal{\@@reviewer}{*}}
+                {\ifwritebat
+                    \@write@reviewers@bat{\ZipAdd \@reviewer@name MMC.sty \@paper@name.tex \@paper@name.pdf}%
+                \fi}%
+                {}%
+        }%
+    }{}%
+    \gdef\@paper@name{}%
+}
+
+
+
+\newcommand\@include@graphics@file[1]{%
+    \@for\@reviewer@name:=\@reviewers@list\do{%
+        \ifthenelse{\equal{\@@reviewer}{\@reviewer@name}\or\equal{\@@reviewer}{*}}{%
+            \ifwritebat
+                \@write@reviewers@bat{\ZipAdd \@reviewer@name #1}
+            \fi
+        }{}%
+    }%
+    \ifthenelse{\equal{\@paper@name}{}}{}{%
+        \ifwritebat
+            \@write@authors@bat{\ZipAdd \@paper@name #1}%
+        \fi
+        \xdef\@old@paper@pixlist{\@paper@pixlist}%
+        \ifthenelse{\equal{\@old@paper@pixlist}{}}%
+            {\gdef\@paper@pixlist{#1}}%
+            {\xdef\@paper@pixlist{\@old@paper@pixlist,#1}}%
+    }%
+}
+
+
+
+\newcounter{mmcReviewerNote}
+\newcounter{mmcTotalReviewedPapers}
+\newcounter{mmcTotalReviewerNotes}
+\newcounter{mmcFinalReviewerNotes}
+
+
+\newcommand\LANGNOTE{\Ukr}
+
+
+\def\gobblespace{\@ifnextchar\ {\hspace{-1ex}}\relax}
+
+
+\newcommand\typeREVIEWERNOTE[1]{{%
+    \LANGNOTE\itshape\bfseries%\color{red}%
+    \marginpar{%\raisebox{-1ex}{%\color{red}%
+        $\checkmark\!_{\themmcReviewerNote}$%
+    }%}%
+    \{#1\}
+}\gobblespace}
+\newcommand\REVIEWERNOTE[1]{%
+    \refstepcounter{mmcReviewerNote}%
+    \refstepcounter{mmcTotalReviewerNotes}%
+    \ifthenelse{\equal{\themmcReviewerNote}{1}}%
+        {\refstepcounter{mmcTotalReviewedPapers}}%
+        {}%
+    \@type@REVIEWERNOTE{#1}%
+}
+
+
+\newcommand\typeREPLY[1]{{\LANGNOTE\sffamily\itshape\bfseries\par---\;{#1}}}
+\newcommand\REPLY[1]{\@type@REPLY{#1}}
+
+
+\newcounter{@authors@no}
+\def\the@authors@no{\arabic{@authors@no}}
+
+
+
+
+
+
+
+
+
+\newcommand\ACCEPTNOTE{%
+    \refstepcounter{mmcFinalReviewerNotes}%
+    \ifthenelse{\equal{\@paper@name}{\jobname}}{%
+        \@type@ACCEPTNOTE
+    }{}%
+}
+\newcommand\AMENDNOTE{%
+    \refstepcounter{mmcFinalReviewerNotes}%
+    \ifthenelse{\equal{\@paper@name}{\jobname}}{%
+        \@type@AMENDNOTE
+    }{}%
+}
+\newcommand\REJECTNOTE{%
+    \refstepcounter{mmcFinalReviewerNotes}%
+    \ifthenelse{\equal{\@paper@name}{\jobname}}{% е
+        \@type@REJECTNOTE
+    }{}%
+}
+
+\newcommand\@type@REVIEWERNOTE[1]{\typeREVIEWERNOTE{#1}}
+\newcommand\@type@REPLY[1]{\typeREPLY{#1}}
+\newcommand\@type@FINALREVIEWERNOTE{\typeFINALREVIEWERNOTE}
+\newcommand\@type@ACCEPTNOTE{\par\bigskip\hrule\nopagebreak\bigskip\typeACCEPTNOTE\typeFINALREVIEWERNOTE}
+\newcommand\@type@AMENDNOTE{\par\bigskip\hrule\nopagebreak\bigskip\typeAMENDNOTE\typeFINALREVIEWERNOTE}
+\newcommand\@type@REJECTNOTE{\par\bigskip\hrule\nopagebreak\bigskip\typeREJECTNOTE\typeFINALREVIEWERNOTE}
+
+
+\newcommand\NOREVIEWERNOTES{%
+    \renewcommand\@type@REVIEWERNOTE[1]{\gobblespace}
+    \renewcommand\@type@REPLY[1]{\gobblespace}
+    \renewcommand\@type@FINALREVIEWERNOTE{\gobblespace}
+    \renewcommand\@type@ACCEPTNOTE{\gobblespace}
+    \renewcommand\@type@AMENDNOTE{\gobblespace}
+    \renewcommand\@type@REJECTNOTE{\gobblespace}
+}
+
+
+
+\newcommand\FINALSTAT{%
+    \ifdraft\@type@FINALSTAT\fi
+}
+
+\newcounter{TodoCount}
+\def\thevkTodoCount{\arabic{TodoCount}}
+
+\newcommand\TODO[1]{{%
+    \small\color{red}%
+    \marginpar{\raisebox{-1ex}{\color{red}ToDo$^{\refstepcounter{TodoCount}\theTodoCount}$}}%
+    \{#1\}
+}}
+
+
+
+
+\DeclareGraphicsRule{.wmf}{bmp}{}{}
+\DeclareGraphicsRule{.emf}{bmp}{}{}
+\DeclareGraphicsRule{.bmp}{bmp}{}{}
+\DeclareGraphicsRule{.png}{bmp}{}{}
+
+\def\XYtext(#1,#2)#3{\rlap{\kern#1\lower-#2\hbox{#3}}}
+
+
+\newcounter{PictureNo}
+\let\IncludeGraphics=\includegraphics
+\renewcommand\includegraphics[2][]{%
+    \IncludeGraphics[#1]{#2}%
+    \refstepcounter{PictureNo}%
+    % если идёт вёрстка сборника, включить картинку в архивы
+    \ifthenelse{\equal{\@paper@name}{\jobname}}%
+        {}%
+        {\@include@graphics@file{#2}}%
+}
+
+
+
+\setcounter{topnumber}{9}
+\setcounter{totalnumber}{9}
+\renewcommand\topfraction{1.0}
+\renewcommand\textfraction{0.0}
+\renewcommand\floatpagefraction{0.01} % float-страниц быть вообще не должно - это чтобы их лучше видеть ;)
+\setlength\floatsep{2ex}
+\setlength\textfloatsep{2.5ex}
+\setlength\intextsep{2.5ex}
+\setlength\abovecaptionskip{2ex}
+
+%\def\@caption@left@right@skip{\leftskip=3.5ex\rightskip=3.5ex}
+\def\@caption@left@right@skip{\leftskip=0ex\rightskip=0ex}
+\def\nocaptionskips{\def\@caption@left@right@skip{}}
+\def\fnum@figure{\figurename\:\thefigure} %% нерастяжимый тонкий пробел между Рис. и номером рисунка
+\def\fnum@table{\tablename\enskip\thetable} %% нерастяжимый тонкий пробел между Таблица и номером таблицы
+
+\renewcommand\@makecaption[2]{%
+    \vskip\abovecaptionskip
+    \sbox\@tempboxa{\small\textbf{#1.} #2}%
+    \ifdim\wd\@tempboxa >\hsize
+        {\@caption@left@right@skip\small\textbf{#1.} #2\par}%
+    \else
+        \global\@minipagefalse
+        \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+    \fi
+}
+
+
+
+\newcommand{\dd}{\mathrm{d}}
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\emptyset}{\varnothing}
+%\renewcommand{\kappa}{\varkappa}
+\let\oldphi=\phi
+\renewcommand{\phi}{\varphi}
+\renewcommand{\epsilon}{\varepsilon}
+
+\let\varvec\vec
+%\renewcommand{\vec}[1]{\mathbf{#1}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+%\def\ubar#1{\smash[b]{\underset{\rule[0.8ex]{3pt}{0.3pt}}#1}}
+\renewcommand{\complement}{\mathsf{C}}
+\newcommand{\T}{^{\text{\tiny\sffamily\upshape\mdseries T}}}
+%\newcommand{\T}{^{\textsf{\upshape т}}}
+%\newcommand{\T}{^{\text{\rm т}}}
+
+\newcommand\myop[1]{\mathop{\operator@font #1}\nolimits}
+\newcommand\mylim[1]{\mathop{\operator@font #1}\limits}
+
+
+\newcommand{\tsum}{\mathop{\textstyle\sum}\limits}
+\newcommand{\tprod}{\mathop{\textstyle\prod}\limits}
+\newcommand{\tvee}{\mathop{\textstyle\bigvee}\limits}
+\newcommand{\twedge}{\mathop{\textstyle\bigwedge}\limits}
+\newcommand{\tbigcap}{\mathop{\textstyle\bigcap}\limits}
+\newcommand{\tbigcup}{\mathop{\textstyle\bigcup}\limits}
+\newcommand\grad{\myop{grad}}
+\renewcommand\lim{\mylim{lim}}
+\renewcommand\limsup{\mylim{lim\,sup}}
+\renewcommand\liminf{\mylim{lim\,inf}}
+\renewcommand\max{\mylim{max}}
+\renewcommand\min{\mylim{min}}
+\renewcommand\sup{\mylim{sup}}
+\renewcommand\inf{\mylim{inf}}
+\newcommand\argmin{\mylim{arg\,min}}
+\newcommand\argmax{\mylim{arg\,max}}
+\newcommand\Tr{\myop{tr}}
+\newcommand\rank{\myop{rank}}
+\newcommand\diag{\myop{diag}}
+\renewcommand\Re{\myop{Re}}
+\renewcommand\Im{\myop{Im}}
+\newcommand\sign{\mylim{sign}}
+\newcommand\const{\myop{const}}
+\newcommand\mes{\myop{mes}}
+
+\newcommand{\erf}{\myop{erf}}
+\newcommand{\Expect}{\mathsf{E}}
+\newcommand{\Var}{\mathsf{D}}
+\newcommand\cov{\myop{cov}}
+\newcommand\corr{\myop{corr}}
+\newcommand\Normal{\mathcal{N}}
+\newcommand{\cond}{\mspace{3mu}{|}\mspace{3mu}}
+
+
+\def\CCfont#1{\ifmmode\mbox{\textsf{#1}}\else\mbox{\rm\textsf{#1}}\fi}
+
+\def\CPfont#1{\ifmmode\mbox{\textsc{#1}}\else\mbox{\rm\textsc{#1}}\fi}
+
+\def\P{\CCfont{P}}
+\def\NP{\CCfont{NP}}
+\def\DTIME{\CCfont{DTIME}}
+\def\MaxSNP{\CCfont{Max-SNP}}
+\def\Apx{\CCfont{Apx}}
+
+\def\PC{\CPfont{PC}}
+\def\MinPC{\CPfont{MinPC}}
+\def\threeSAT{\CPfont{3SAT}}
+\def\GapSAT{\CPfont{Gap-3SAT}}
+
+
+\def\NN{\mathbb{N}}
+\def\ZZ{\mathbb{Z}}
+\def\QQ{\mathbb{Q}}
+\def\RR{\mathbb{R}}
+\def\CC{\mathbb{C}}
+\def\HH{\mathbb{H}}
+
+
+
+\def\afterlabel#1{\renewcommand\labelenumi{\theenumi #1}}
+\def\aroundlabel#1#2{\renewcommand\labelenumi{#1\theenumi #2}}
+\newenvironment{enumerate*}
+{%
+    \begingroup
+    \renewcommand{\@listi}{%
+        \topsep=3pt %\smallskipamount %
+        \parsep=0pt%
+        \parskip=0pt%
+        \itemsep=1pt%
+        \itemindent=0ex%
+        \labelsep=1.5ex%
+        \leftmargin=7ex%
+        \rightmargin=0pt} %
+    \begin{enumerate}%
+    \afterlabel)%
+}{%
+    \end{enumerate}%
+    \endgroup
+}
+
+
+
+\theoremstyle{plain}
+% Шаманские притоптывания, чтобы ставить точку после номера теоремы
+\gdef\th@plain{\normalfont
+    \def\@begintheorem##1##2{%
+        \item[\hskip\labelsep\theorem@headerfont ##1\ ##2. ]}%
+    \def\@opargbegintheorem##1##2##3{%
+        \item[\hskip\labelsep\theorem@headerfont ##1\ ##2] {\theorem@headerfont(##3). }}%
+}
+
+\theorempreskipamount=\smallskipamount
+\theorempreskipamount=\smallskipamount
+\theorembodyfont{\rmfamily\slshape}
+\newtheorem{Theorem}{\ukreng{Теорема}{Theorem}}
+\newtheorem{Lemma}[Theorem]{\ukreng{Лема}{Lemma}}
+\newtheorem{State}{\ukreng{Твердження}{Statement}}
+\newtheorem{Corollary}{\ukreng{Наслідок}{Corollary}}
+\newtheorem{Def}{\ukreng{Означення}{Definition}}
+\newtheorem{Definition}[Def]{\ukreng{Означення}{Definition}}
+% Теоремы прямым шрифтом
+\theorembodyfont{\rmfamily}
+\newtheorem{Axiom}{\ukreng{Аксіома}{Axiom}}
+\newtheorem{Hypothesis}{\ukreng{Гіпотеза}{Hypothesis}}
+\newtheorem{Assumption}{\ukreng{Припущення}{Assumption}}
+\newtheorem{Problem}{\ukreng{Задача}{Problem}}
+\newtheorem{Example}{\ukreng{Приклад}{Example}}
+\newtheorem{Fact}{\ukreng{Факт}{Fact}}
+\newtheorem{Remark}{\ukreng{Зауваження}{Remark}}
+\newtheorem{Notice}{\ukreng{Зауваження}{Notice}}
+\newtheorem{Rule}{\ukreng{Правило}{Rule}}
+\newtheorem{Condition}{\ukreng{Умова}{Condition}}
+
+\newenvironment{Proof}%
+    {\par\noindent{\bf \ukreng{Доведення}{Proof}.}}%
+    {\hfill$\scriptstyle\blacksquare$}
+
+
+\newcommand{\algKeyword}[1]{{\bf #1}}
+\renewcommand{\algorithmicrequire}{\rule{0pt}{2.5ex}\algKeyword{\ukreng{Вхід:}{Require:}}}
+\renewcommand{\algorithmicensure}{\algKeyword{\ukreng{Вихід:}{Ensure:}}}
+\renewcommand{\algorithmicend}{\algKeyword{\ukreng{кінець}{end}}}
+\renewcommand{\algorithmicif}{\algKeyword{\ukreng{якщо}{if}}}
+\renewcommand{\algorithmicthen}{\algKeyword{\ukreng{то}{then}}}
+\renewcommand{\algorithmicelse}{\algKeyword{\ukreng{інакше}{else}}}
+\renewcommand{\algorithmicelsif}{\algorithmicelse\ \algorithmicif}
+\renewcommand{\algorithmicendif}{\algorithmicend\ \algorithmicif}
+\renewcommand{\algorithmicfor}{\algKeyword{\ukreng{для}{for}}}
+\renewcommand{\algorithmicforall}{\algKeyword{\ukreng{для всіх}{for all}}}
+\renewcommand{\algorithmicdo}{}
+\renewcommand{\algorithmicendfor}{\algorithmicend\ \algorithmicfor}
+\renewcommand{\algorithmicwhile}{\algKeyword{\ukreng{поки}{while}}}
+\renewcommand{\algorithmicendwhile}{\algorithmicend\ \algorithmicwhile}
+\renewcommand{\algorithmicloop}{\algKeyword{\ukreng{цикл}{loop}}}
+\renewcommand{\algorithmicendloop}{\algorithmicend\ \algorithmicloop}
+\renewcommand{\algorithmicrepeat}{\algKeyword{\ukreng{повторяти}{repeat}}}
+\renewcommand{\algorithmicuntil}{\algKeyword{\ukreng{поки}{until}}}
+%\renewcommand{\algorithmiccomment}[1]{{\footnotesize // #1}}
+\renewcommand{\algorithmiccomment}[1]{{\quad\sl // #1}}
+
+
+\newcommand{\Procedure}[1]{{\tt #1}}
+\newcommand{\Proc}[1]{\text{\tt #1}}
+\def\BEGIN{\\[1ex]\hrule\vskip 1ex}
+\def\PARAMS{\renewcommand{\algorithmicrequire}{\algKeyword{\ukreng{Параметры:}{Parameters:}}}\REQUIRE}
+\def\END{\vskip 1ex\hrule\vskip 1ex}
+\def\RET{\algKeyword{\ukreng{вернуть}{return}} }
+\def\EXIT{\algKeyword{\ukreng{выход}{exit}}}
+\def\IFTHEN#1{\STATE\algorithmicif\ #1 {\algorithmicthen}}
+\def\PROCEDURE#1{\medskip\STATE\algKeyword{\ukreng{ПРОЦЕДУРА}{PROCEDURE}} \Procedure{#1}}
+
+
+\renewcommand{\listalgorithmname}{Список алгоритмов}
+\floatname{algorithm}{\ukreng{Алгоритм}{Algorithm}}
+\floatplacement{algorithm}{!t}
+
+
+\renewcommand\floatc@ruled[2]{\vskip2pt\textbf{#1.} #2\par}
+
+
+\newenvironment{Algorithm}[1][t]%
+    {\begin{algorithm}[#1]\begin{algorithmic}[1]%
+        \renewcommand{\ALC@it}{%
+            \refstepcounter{ALC@line}% удивительно, почему это не сделал Peter Williams?
+            \addtocounter{ALC@rem}{1}%
+            \ifthenelse{\equal{\arabic{ALC@rem}}{1}}{\setcounter{ALC@rem}{0}}{}%
+            \item}}%
+    {\end{algorithmic}\end{algorithm}}
+
+
+
+\newenvironment{network}%
+    {\catcode`"=12\begin{xy}<1ex,0ex>:}%
+    {\end{xy}\catcode`"=13}
+\def\nnNode"#1"(#2)#3{\POS(#2)*#3="#1"}
+\def\nnLink"#1,#2"#3{\POS"#1"\ar #3 "#2"}
+
+
+\newcommand{\hstrut}{\rule{0pt}{2.5ex}}
+\newcommand{\headline}{\hline\hstrut}
+
+
+\renewcommand\emph[1]{\textit{#1}}
+
+
+\newcommand\brop[1]{#1\discretionary{}{\hbox{$\mathsurround=0pt #1$}}{}}
+
+%\begingroup
+%\catcode`\+\active\gdef+{\mathchar8235\nobreak\discretionary{}%
+% {\usefont{OT1}{cmr}{m}{n}\char43}{}}
+%\catcode`\-\active\gdef-{\mathchar8704\nobreak\discretionary{}%
+% {\usefont{OMS}{cmsy}{m}{n}\char0}{}}
+%\catcode`\=\active\gdef={\mathchar12349\nobreak\discretionary{}%
+% {\usefont{OT1}{cmr}{m}{n}\char61}{}}
+%\endgroup
+%\def\cdot{\mathchar8705\nobreak\discretionary{}%
+% {\usefont{OMS}{cmsy}{m}{n}\char1}{}}
+%\def\times{\mathchar8706\nobreak\discretionary{}%
+% {\usefont{OMS}{cmsy}{m}{n}\char2}{}}
+%\AtBeginDocument{%
+%\mathcode`\==32768
+%\mathcode`\+=32768
+%\mathcode`\-=32768
+%}

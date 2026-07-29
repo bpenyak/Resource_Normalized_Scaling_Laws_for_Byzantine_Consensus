@@ -1,0 +1,101 @@
+\section{Experimental validation}
+\label{sec:exp}
+
+\subsection{Setup and design}
+
+The campaign runs in a public continuous-integration workflow on a four-core,
+16~GB hosted runner. Each job provisions a Hyperledger Besu~\cite{besu} QBFT
+network of~$\n$ validators under the \RNM{} protocol
+(Definition~\ref{def:rnm}); a closed-loop generator drives~$\cc$ concurrent
+submitters and records steady-state committed throughput after warm-up.
+
+Faults are injected with kernel traffic control (packet loss and duplication) on
+designated validators, realizing the omission class of
+Definition~\ref{def:faults} but not equivocation. The detector polls signer
+metrics over a window of~$\w$ rounds to estimate $\pd$, $\pf$, $\rho$ and the
+ROC; the Youden threshold is used in Section~\ref{sec:case}.
+
+Measured groups: \textbf{X1} sweeps $\n\in\{4,\dots,16\}$ at $\cc=16$;
+\textbf{X2} tests $\q$-invariance at three quotas; \textbf{X3} sweeps
+$\cc\in\{1,\dots,64\}$ at $\n=7$; \textbf{X4} adds emulated RTT;
+\textbf{X5} injects omission/duplication at faulty fraction $\phi=0.2$.
+Cross-client replication on a second QBFT-family implementation (planned as
+\textbf{X9}/GoQuorum) is \emph{out of scope} for this paper: Theorem~\ref{thm:identifiability}
+is a statement about least squares, not about any one client, and the numerical
+coefficients below are reported as Besu/QBFT-specific by design. Post-hoc:
+\textbf{X3b} re-samples along
+concurrency paths $\lambda\in\{0,0.5,1,2\}$; \textbf{X6} is a discrete-event
+simulation used only for qualitative extrapolation beyond the measured range
+(not as a measurement); \textbf{X7} predictive coverage on $\resHoldoutN$;
+\textbf{X8} sizing ablation. In total $\resTotalRuns$ successful records,
+$\approx\resCoreHours$ core-hours, $\n_{\max}=\resNmaxMeasured$.
+
+\subsection{Results}
+
+Joint OLS on the reference-quota calibration subset yields
+$\beta=\resBeta\pm\resBetaSE$ and $\gamma=\resGamma\pm\resGammaSE$
+($R^{2}=\resRsq$); remaining parameters appear in Table~\ref{tab:results}.
+Under \RNM{} one must have $\beta>0$; a single-factor fit along $\lambda=1$
+instead gives $\ahat=\resAlphaHat$ against the predicted
+$\gamma\lambda-\beta=\resAlphaPred$.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.68\textwidth]{figures/fig_confounding}
+\caption{X3b: single-factor $\ahat$ along concurrency paths of slope~$\lambda$,
+versus $\gamma\lambda-\beta$ (Theorem~\ref{thm:identifiability}). Predicted
+sign change at $\lambda=\beta/\gamma=\resLambda$}
+\label{fig:confounding}
+\end{figure}
+
+Figure~\ref{fig:confounding} confirms that estimated exponents track the
+predicted line. The partial $F$-test for quota\,$\times\log\n$ interaction
+rejects exact $\q$-invariance ($p=\resQinvP$), so coefficients are reported at
+the reference quota $\q=0.25$ only; $\beta$ rises from $\resBetaRttZero$ at
+zero RTT to $\resBetaRttHigh$ under elevated latency (X4).
+
+\begin{table}[!t]
+\centering
+\caption{Calibrated parameters, invariance, detector, and coverage}
+\label{tab:results}
+\scriptsize
+\begin{tabular}{lll}
+\headline
+Quantity & Estimate & Note \\
+\headline
+$\Tzero$; $\beta$; $\gamma$ &
+  $\resTzero$; $\resBeta\pm\resBetaSE$; $\resGamma\pm\resGammaSE$ &
+  bi-factor \\
+$\csat$, $\theta$; $\hat\sigma$ & $\resCsat$, $\resTheta$; $\resSigmaRes$ &
+  saturation / residual \\
+$\ahat$ at $\lambda=0,1,2$ &
+  $\resAlphaHatLzero$, $\resAlphaHatLone$, $\resAlphaHatLtwo$ &
+  X3b \\
+$\beta$ at $q=0.20,0.25,0.33$ &
+  $\resBetaQlow$, $\resBetaQmid$, $\resBetaQhigh$ &
+  X2, $p=\resQinvP$ \\
+$\beta$ at RTT $0$/high & $\resBetaRttZero$, $\resBetaRttHigh$ & X4 \\
+$\pd$, $\pf$, $\rho$; AUC &
+  $\resPd$, $\resPf$, $\resRho$; $\resAuc$ &
+  X5, $\thr=\resDetectorThr$ \\
+coverage $90\%$/$95\%$ & $\resCovNinety$, $\resCovNinetyFive$ &
+  hold-out $\resHoldoutN$ \\
+\headline
+\end{tabular}
+\end{table}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.62\textwidth]{figures/fig_roc}
+\caption{X5 detector ROC for omission/duplication faults. AUC$\,=\,\resAuc$ at
+the Youden threshold $\thr=\resDetectorThr$; safety is consequently weak and
+the sizing window is set by throughput}
+\label{fig:roc}
+\end{figure}
+
+Figure~\ref{fig:roc} shows the weak detector (AUC$\,\resAuc$). Hold-out
+coverage meets the nominal levels in Table~\ref{tab:results}. Out-of-sample
+log-RMSE for linear / single-factor / USL~\cite{gunther2007} / bi-factor
+predictors is $\resRmseLinear$, $\resRmseSingle$, $\resRmseUsl$,
+$\resRmseOurs$; relative sizing costs are $\resCostLinear$, $\resCostSingle$,
+$\resCostUsl$, $\resCostOurs$ (Section~\ref{sec:case}).

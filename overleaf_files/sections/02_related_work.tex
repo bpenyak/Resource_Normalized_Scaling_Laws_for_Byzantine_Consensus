@@ -1,0 +1,33 @@
+\section{Related work}
+\label{sec:related}
+
+\emph{BFT and benchmarking.} Classical PBFT~\cite{castro1999} tolerates
+$f<\n/3$ at $O(\n^{2})$ messages~\cite{lamport1982,dwork1988};
+HotStuff~\cite{yin2019}, Tendermint~\cite{buchman2016},
+Algorand~\cite{gilad2017} and HoneyBadgerBFT~\cite{miller2016} vary latency and
+randomization, while Vukoli\'{c}~\cite{vukolic2015} argues that no protocol
+dominates. All fix the validator set at deployment and none supplies a sizing
+procedure. Empirical characterizations of Fabric~\cite{androulaki2018,thakkar2018},
+BLOCKBENCH~\cite{dinh2017} and BFT-SMaRt~\cite{sousa2018} report throughput at
+fixed configurations without separating offered load from validator count ---
+exactly the confounding of Theorem~\ref{thm:identifiability} --- and do not
+extrapolate.
+
+\emph{Scaling, statistics, optimization.} Amdahl~\cite{amdahl1967} and
+Gustafson~\cite{gustafson1988} bound speedup under a fixed serial fraction;
+Gunther's Universal Scalability Law~\cite{gunther2007} adds a coherency term
+and is our closest baseline, but does not separate the concurrency factor and
+has not been calibrated for BFT. Concentration
+bounds~\cite{hoeffding1963,boucheron2013}, delta-method
+intervals~\cite{seber2003}, the residual bootstrap~\cite{efron1993} and
+chance-constrained programming~\cite{charnes1959,nemirovski2007} are used as
+standard tools; what is specific here is the opposing monotonicity of throughput
+and detection, which turns the feasible set into a closed interval.
+
+\emph{E-governance and prior work.} Remote-voting
+analyses~\cite{springall2014,specter2020,park2021} show that consensus-layer
+guarantees resolve neither endpoint nor coercion threats. Our earlier
+single-factor calibration~\cite{peniak2026a} and detection-based adaptive
+switching~\cite{peniak2026b} are unified and corrected here: we identify the
+confounding that inflated the exponent of~\cite{peniak2026a} and measure the
+detector rates that~\cite{peniak2026b} assumed.

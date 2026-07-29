@@ -1,0 +1,46 @@
+\section{Introduction}
+\label{sec:intro}
+
+Permissioned Byzantine Fault Tolerant (BFT) consensus underpins e-governance
+systems --- voting, registries, digital identity --- and forces a concrete
+procurement question: \emph{how many validators should the network have?}
+
+The count~$\n$ pulls in opposite directions. Throughput argues for small~$\n$
+(every validator executes every transaction; PBFT-family protocols exchange
+$O(\n^{2})$ messages per block). Safety argues for large~$\n$ (detecting a
+coordinated faulty minority concentrates exponentially in~$\n$). The two
+regimes have been studied separately; their joint treatment is the subject of
+this paper.
+
+Two obstacles intervene. Published power-law fits
+$\TPS(\n)\propto\n^{\alpha}$ disagree in magnitude and sometimes in sign ---
+our own earlier studies, extrapolated to sixty validators, differ by roughly an
+order of magnitude --- because client concurrency is rarely held fixed while
+$\n$ varies, so the fitted exponent mixes load-generator scaling with consensus
+overhead. And large testbeds are unavailable: packing many validators onto one
+host confounds consensus cost with contention for the host CPU.
+
+\paragraph{Contributions.}
+(1)~An \textbf{identifiability theorem} (Section~\ref{sec:model}): if
+throughput follows a bi-factor law and concurrency is scaled along a path of
+slope~$\lambda$, the single-factor least-squares fit converges to
+$\ahat=\gamma\lambda-\beta$; a positive exponent is therefore evidence
+about~$\lambda$, not about the protocol
+(Theorem~\ref{thm:identifiability}).
+(2)~A \textbf{resource-normalized measurement} (\RNM{}) protocol that fixes a
+CPU quota~$\q$ per validator independently of~$\n$ and reports
+$\TPSn=\TPS/\q$, making the required factorial design feasible on one commodity
+host; $\q$-invariance is tested, not assumed.
+(3)~Lognormal \textbf{prediction intervals} validated by empirical coverage
+rather than by unchecked percentage error.
+(4)~Validator-set \textbf{sizing as a chance-constrained program} whose
+feasible set is a closed interval $[\nmin,\nmax]$
+(Theorem~\ref{thm:window}); an empty interval certifies that no size meets the
+requirement.
+The detection bound itself is Hoeffding's inequality with a design-effect
+correction; we claim nothing new for it beyond supplying the opposing
+constraint with measured parameters. Scope is limited to throughput and
+detection reliability: cryptography, endpoint security and coercion lie
+outside, absolute TPS values are environment-specific, and all measurements
+come from one implementation (Hyperledger Besu/QBFT) on one host; cross-client
+replication is out of scope (Section~\ref{sec:case}).

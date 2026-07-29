@@ -1,0 +1,102 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Resource-Normalized Scaling Laws for Byzantine Consensus
+%% Peniak B.O., Liubinskyj B.B.
+%%
+%% COMPILE WITH pdflatex (T2A fontenc + babel). NOT xelatex / lualatex.
+%%   pdflatex paper3 && pdflatex paper3
+%% Bibliography is a manual `thebibliography' environment: NO bibtex / biblatex.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+\usepackage{MMC}
+\usepackage{graphicx}
+
+\input{macros}
+\input{numbers}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (EN) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title[Resource-Normalized Scaling Laws for BFT Consensus]{Resource-Normalized
+Scaling Laws for Byzantine Consensus: Chance-Constrained Validator-Set Sizing
+from Commodity-CI Measurements}
+
+\author[Peniak B.\,O.]{Peniak B.\,O., Liubinskyj B.\,B.}
+
+\organization{%
+\address{1}Lviv Polytechnic National University\\
+12 S.~Bandera str., 79013, Lviv, Ukraine\\
+\address{2}Institute of Applied Mathematics and Fundamental Sciences}
+
+\email{bohdan.o.peniak@lpnu.ua}
+
+\received{29 July 2026}
+
+\abstract{%
+\textbf{Problem.} Sizing a permissioned BFT validator set for national-scale
+e-governance must reconcile degrading consensus throughput with improving
+fault-detection power as~$\n$ grows; published single-factor exponents are not
+reproducible across testbeds.
+\textbf{Contributions.} (1)~An identifiability theorem:
+$\ahat\to\gamma\lambda-\beta$ along a concurrency path of slope~$\lambda$;
+(2)~a resource-normalized measurement protocol fixing per-validator CPU
+quota~$\q$; (3)~coverage-validated lognormal prediction intervals;
+(4)~chance-constrained sizing whose feasible set is a closed interval
+$[\nmin,\nmax]$.
+\textbf{Validation.} A public CI campaign on one four-core runner covers
+$\n\le\resNmaxMeasured$, concurrency up to~$64$, emulated RTT, and
+omission/duplication fault injection.
+%
+\keywords{Byzantine fault tolerance, consensus, scaling law, capacity planning,
+chance-constrained optimization, e-governance}
+\MSC{68M14, 68W20, 90C15, 62J02}
+\udk{004.75:519.2}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (UKR) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\titleUkr[Ресурсно-нормовані закони масштабування BFT-консенсусу]{РЕСУРСНО-НОРМОВАНІ
+ЗАКОНИ МАСШТАБУВАННЯ BFT-КОНСЕНСУСУ: ІМОВІРНІСНО-ОБМЕЖЕНЕ ВИЗНАЧЕННЯ РОЗМІРУ
+МНОЖИНИ ВАЛІДАТОРІВ ЗА ВИМІРЮВАННЯМИ НА ТИПОВІЙ CI-ІНФРАСТРУКТУРІ}
+
+\authorUkr[Пеняк Б.\,О.]{Пеняк Б.\,О., Любінський Б.\,Б.}
+
+\organizationUkr{%
+Національний університет <<Львівська політехніка>>\\
+вул.~С.~Бандери, 12, 79013, Львів, Україна}
+
+\abstractUkr{%
+Метод визначення розміру множини валідаторів BFT-мережі для електронного
+урядування: пропускна здатність спадає зі зростанням~$\n$, а потужність
+виявлення відмов зростає з~$\n$.
+Результати: 1)~протокол ресурсно-нормованих вимірювань із фіксованою
+CPU-квотою~$\q$; 2)~двофакторний закон і теорема ідентифікованості
+($\ahat=\gamma\lambda-\beta$); 3)~лог-нормальні прогнозні інтервали з
+перевіркою покриття; 4)~задача з імовірнісними обмеженнями та теорема про
+вікно $[\nmin,\nmax]$.
+Експерименти --- у публічному CI на одному чотириядерному вузлі.
+%
+\keywordsUkr{візантійська відмовостійкість, консенсус, закон масштабування,
+планування потужності, оптимізація з імовірнісними обмеженнями, електронне
+урядування}
+\udkUkr{004.75:519.2}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BODY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_model}
+\input{sections/04_sizing}
+\input{sections/05_experiments}
+\input{sections/06_case_study}
+\input{sections/07_conclusions}
+
+\input{bib/references}
+
+\maketitleUkr
+
+\end{document}

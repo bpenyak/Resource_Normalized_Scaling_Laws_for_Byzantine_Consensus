@@ -1,0 +1,112 @@
+\section{Resource-normalized measurement and the bi-factor law}
+\label{sec:model}
+
+\subsection{The \RNM{} protocol}
+
+If $\n$ validators share a host of $Q$ cores, each receives $Q/\n$ cores, so
+measured throughput mixes growing consensus cost with a shrinking compute
+budget. An exponent fitted to such data is a property of the host, not of the
+protocol.
+
+\begin{Def}[Resource-normalized measurement]
+\label{def:rnm}
+A campaign follows the \emph{\RNM{} protocol} with quota~$\q$ if every validator
+container receives the same CPU quota and memory limit independently of~$\n$,
+with aggregate reservation $\n\q$ below host capacity. Normalized throughput is
+$\TPSn\eqdef\TPS/\q$.
+\end{Def}
+
+\begin{Assumption}[Separable compute budget]
+\label{as:separable}
+$\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+O(\q))$ on the operating range:
+the quota enters multiplicatively and does not interact with~$\n$ to first
+order.
+\end{Assumption}
+
+The assumption is expected for CPU-bound verification and execution under a
+cgroup quota; it fails when fixed per-process overhead (e.g.\ GC) dominates a
+small~$\q$, when $\n\q$ saturates host bandwidth, or when block production is
+paced by a fixed period. It is a working hypothesis with a stated domain, not a
+law.
+
+\begin{State}[$\q$-invariance]
+\label{st:qinvariance}
+Under Assumption~\ref{as:separable} and
+$\Phi(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta}$, the OLS slope of
+$\log\TPSn$ on $\log\n$ at fixed~$\cc$ does not depend on~$\q$.
+\end{State}
+
+\begin{Proof}
+$\log\TPSn=\log\Phi+O(\q)$; at fixed~$\q$ the $O(\q)$ term is absorbed by the
+intercept, so the slope equals $-\beta$ for every~$\q$.
+\end{Proof}
+
+Invariance is tested by a partial $F$-test on quota\,$\times\log\n$
+interactions across three quota levels
+(Section~\ref{sec:exp}); if rejected, the exponent is reported only on the
+surviving quota interval.
+
+\subsection{The bi-factor law and its identifiability}
+
+More submitters~$\cc$ raise throughput until saturation; more validators~$\n$
+add communication and verification, lowering it. We model the two
+multiplicatively.
+
+\begin{Def}[Bi-factor scaling law]
+\label{def:bifactor}
+Under the \RNM{} protocol,
+\begin{equation}
+\TPS(\n,\cc)=\Tzero\cdot\gfun(\cc)\cdot\n^{-\beta},
+\quad
+\gfun(\cc)=\frac{\cc^{\gamma}}{1+(\cc/\csat)^{\theta}},
+\label{eq:bifactor}
+\end{equation}
+with $\Tzero>0$, $\beta>0$, $\gamma\in(0,1]$, $\theta>\gamma$, $\csat>0$.
+In the unsaturated regime $\cc\ll\csat$ this is log-linear:
+$\log\TPS=\log\Tzero+\gamma\log\cc-\beta\log\n$.
+\end{Def}
+
+Constraint $\beta>0$ encodes replicated-state-machine semantics; $\theta>\gamma$
+makes $\gfun$ unimodal. Single-factor fits $\TPS\propto\n^{\alpha}$ can still
+report $\alpha>0$ when the load generator is scaled with the network: the
+regression attributes the net movement to~$\n$ alone.
+
+\begin{Theorem}[Identifiability of the consensus exponent]
+\label{thm:identifiability}
+Let observations follow the unsaturated bi-factor law with additive noise of
+mean zero and finite variance, along a concurrency path
+$\log\cc_{i}=\lambda\log\n_{i}+\mu+\eta_{i}$
+($\E[\eta_{i}\mid\n_{i}]=0$). If the empirical second moment of
+$x_{i}=\log\n_{i}$ converges to a positive limit, the OLS slope $\ahat_{m}$ of
+$\log\TPS_{i}$ on $x_{i}$ alone satisfies
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$.
+In particular $\ahat>0\iff\lambda>\beta/\gamma$, and $\ahat=-\beta\iff\lambda=0$.
+\end{Theorem}
+
+\begin{Proof}
+Substituting the path into the log-linear law yields a simple regression with
+slope $\gamma\lambda-\beta$ and mean-zero noise. The OLS slope therefore equals
+that constant plus a ratio $N_{m}/D_{m}$ whose numerator converges to zero in
+probability (zero-mean finite-variance summands) while the denominator converges
+to a positive second moment; continuous mapping gives the claim. The sign
+statements follow from $\gamma>0$.
+\end{Proof}
+
+\begin{Remark}
+The bias is first-order: with $\gamma=0.8$, $\beta=0.5$ and $\lambda=1$ one
+obtains $\ahat=+0.3$, and extrapolating from $\n=5$ to $\n=60$ the two exponents
+differ by a factor $\approx7$, the order of the discrepancy between our earlier
+studies~\cite{peniak2026a}.
+\end{Remark}
+
+\begin{Corollary}[Non-transferability]
+\label{cor:sign}
+Laboratories measuring along $\lambda_{1}\ne\lambda_{2}$ obtain exponents
+differing by $\gamma(\lambda_{1}-\lambda_{2})$; published exponents are
+incomparable unless concurrency paths are reported.
+\end{Corollary}
+
+On a factorial grid ($\lambda=0$ by construction) we estimate
+$(\log\Tzero,\gamma,\beta)$ by OLS in log-space and $(\csat,\theta)$ by
+nonlinear least squares on the full $\cc$-sweep
+(Section~\ref{sec:exp}).

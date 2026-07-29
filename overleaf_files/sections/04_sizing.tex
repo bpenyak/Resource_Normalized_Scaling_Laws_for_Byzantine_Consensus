@@ -1,0 +1,121 @@
+\section{Prediction intervals, detection, and the sizing problem}
+\label{sec:sizing}
+
+\subsection{Calibrated prediction intervals}
+
+Capacity planning needs a lower bound with a stated probability, not a point
+estimate. With regressor $\mathbf{z}=(1,\log\cc,-\log\n)^{\!\top}$ and
+$\hat\vartheta=(\log\Tzero,\gamma,\beta)^{\!\top}$, the delta
+method~\cite{seber2003} gives predictive variance
+$\hat{V}=\mathbf{z}^{\!\top}\widehat{\Cov}(\hat\vartheta)\mathbf{z}+\hat\sigma^{2}$.
+
+\begin{State}[Lognormal prediction interval]
+\label{st:pi}
+An approximate $(1-\epsp)$ interval for $\TPS(\n,\cc)$ is
+$\exp\{\log\widehat{\TPS}\mp\zq_{1-\epsp/2}\hat{V}^{1/2}\}$; the one-sided lower
+endpoint $\underline{\TPS}_{1-\epsp}$ uses $\zq_{1-\epsp}$.
+\end{State}
+
+Because normality of residuals is only approximate, a residual
+bootstrap~\cite{efron1993} supplies empirical quantiles, and coverage is
+checked on held-out validator counts
+(Section~\ref{sec:exp}) rather than asserted.
+
+\subsection{Detection of coordinated omission faults}
+
+The bound below is Hoeffding's inequality with a design-effect correction; we
+claim no novelty for it. Its role is an $\n$-monotone constraint opposing
+throughput, with parameters measured rather than postulated.
+
+\begin{Def}[Fault class and detector]
+\label{def:faults}
+A subset $B$ of size $\kf$ is \emph{faulty} if each member fails a proposal
+round independently with probability $\pd>\pf$ (omission class; equivocation
+excluded). The detector flags validator~$i$ when its participation over $\w$
+rounds falls below $\thr\in(\pf,\pd)$; detection succeeds when at least one
+member of~$B$ is flagged.
+\end{Def}
+
+\begin{Assumption}[Exchangeable correlation]
+\label{as:rho}
+Participation indicators in~$B$ are exchangeable with pairwise correlation
+$\rho\in[0,1)$, so the mean carries design effect $1+(\kf-1)\rho$.
+\end{Assumption}
+
+\begin{State}[Miss probability and $\nmin$]
+\label{st:rho}
+With $\kf=\lceil\phi\n\rceil$,
+\begin{equation}
+\pmiss(\n,\w)\le\exp\!\Bigl\{-\frac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\Bigr\},
+\label{eq:pmiss}
+\end{equation}
+which is nonincreasing in $\n$ and $\w$. The constraint $\pmiss\le\epss$ holds
+for all $\n\ge\nmin$ with
+\begin{equation}
+\nmin=\left\lceil
+\frac{1+(\kf-1)\rho}{\phi}\cdot
+\frac{\log(1/\epss)}{2\w(\pd-\thr)^{2}}\right\rceil .
+\label{eq:nmin}
+\end{equation}
+\end{State}
+
+\begin{Proof}
+A miss requires every member of~$B$ to remain unflagged. The effective sample
+size is $\neff=\kf\w/(1+(\kf-1)\rho)$; Hoeffding's inequality on the
+exchangeable mean yields~\eqref{eq:pmiss}, and solving for~$\kf$
+gives~\eqref{eq:nmin}.
+\end{Proof}
+
+\subsection{Chance-constrained sizing and the feasibility window}
+
+\begin{Problem}[Validator-set sizing]
+\label{prob:sizing}
+Given peak demand $\Dpk$, levels $\epsp,\epss$, window~$\w$, faulty fraction
+$\phi$, production scale-up $\kappaScale>0$ from \RNM{} units to absolute
+throughput, and nondecreasing $\Cost(\n)$, minimize $\Cost(\n)$ subject to
+$\Prob[\kappaScale\cdot\TPSn(\n,\cc^{\star})\ge\Dpk]\ge1-\epsp$ and
+$\pmiss(\n,\w)\le\epss$, where $\cc^{\star}=\arg\max\gfun$. When $\kappaScale$
+is free, take the smallest value that meets the throughput constraint at
+$\n=4$.
+\end{Problem}
+
+\begin{Lemma}[Deterministic equivalent]
+\label{lem:detequiv}
+The chance constraint is equivalent to
+$h(\n)\eqdef\log(\kappaScale\,\Tzero\,\gfun(\cc^{\star})/\Dpk)
+-\beta\log\n-\zq_{1-\epsp}\hat{V}^{1/2}(\n,\cc^{\star})\ge0$.
+If $\hat{V}$ is nondecreasing in $\log\n$ over the extrapolation region, then
+$h$ is strictly decreasing there.
+\end{Lemma}
+
+\begin{Proof}
+Statement~\ref{st:pi} converts the chance constraint into
+$\kappaScale\cdot\underline{\TPSn}_{1-\epsp}\ge\Dpk$; taking logs gives~$h$.
+Strict decrease follows from $\beta>0$ and the hypothesis on~$\hat{V}$.
+\end{Proof}
+
+\begin{Theorem}[Feasibility window]
+\label{thm:window}
+Under Lemma~\ref{lem:detequiv} and Statement~\ref{st:rho}, the feasible set is
+the integer interval $\{\n:\nmin\le\n\le\nmax\}$ with $\nmin$ from~\eqref{eq:nmin}
+and $\nmax=\lfloor\sup\{\n:h(\n)\ge0\}\rfloor$. If the set is nonempty and
+$\Cost$ is nondecreasing then $\nopt=\nmin$; both endpoints cost
+$O(\log\nmax)$ evaluations of~$h$.
+\end{Theorem}
+
+\begin{Proof}
+Detection holds on $\{\n\ge\nmin\}$ and throughput on $\{\n\le\nmax\}$ (two
+opposing half-lines), so the feasible set is an interval. Monotone cost places
+the optimum at the left endpoint; bisection locates~$\nmax$.
+\end{Proof}
+
+\begin{Corollary}[Infeasibility certificate]
+\label{cor:infeasible}
+If $\nmin>\nmax$, no validator-set size satisfies both requirements: the
+architecture (sharding, delegation, or a weaker safety target) must change,
+not merely the provisioning.
+\end{Corollary}
+
+Chance-constrained programming is classical~\cite{charnes1959,nemirovski2007};
+the contribution is the opposing monotonicity that bounds the feasible set on
+both sides and certifies infeasibility.
