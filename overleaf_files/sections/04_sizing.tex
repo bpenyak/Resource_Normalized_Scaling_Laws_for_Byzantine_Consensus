@@ -1,31 +1,13 @@
 \section{Prediction intervals, detection, and the sizing problem}
 \label{sec:sizing}
 
-\subsection{Calibrated prediction intervals}
+Theory gives an identifiable exponent. This section supplies a
+\emph{framework} for sizing: a throughput chance constraint and an optional
+detection constraint. Any detector that yields measured $(\pd,\pf,\rho)$ can be
+plugged in; experiment~X5 is one concrete instance, not a prerequisite for the
+mathematics.
 
-Capacity planning needs a lower bound with a stated probability, not a point
-estimate. With regressor $\mathbf{z}=(1,\log\cc,-\log\n)^{\!\top}$ and
-$\hat\vartheta=(\log\Tzero,\gamma,\beta)^{\!\top}$, the delta
-method~\cite{seber2003} gives predictive variance
-$\hat{V}=\mathbf{z}^{\!\top}\widehat{\Cov}(\hat\vartheta)\mathbf{z}+\hat\sigma^{2}$.
-
-\begin{State}[Lognormal prediction interval]
-\label{st:pi}
-An approximate $(1-\epsp)$ interval for $\TPS(\n,\cc)$ is
-$\exp\{\log\widehat{\TPS}\mp\zq_{1-\epsp/2}\hat{V}^{1/2}\}$; the one-sided lower
-endpoint $\underline{\TPS}_{1-\epsp}$ uses $\zq_{1-\epsp}$.
-\end{State}
-
-Because normality of residuals is only approximate, a residual
-bootstrap~\cite{efron1993} supplies empirical quantiles, and coverage is
-checked on held-out validator counts
-(Section~\ref{sec:exp}) rather than asserted.
-
-\subsection{Detection of coordinated omission faults}
-
-The bound below is Hoeffding's inequality with a design-effect correction; we
-claim no novelty for it. Its role is an $\n$-monotone constraint opposing
-throughput, with parameters measured rather than postulated.
+\subsection{Definitions and assumptions}
 
 \begin{Def}[Fault class and detector]
 \label{def:faults}
@@ -39,18 +21,37 @@ member of~$B$ is flagged.
 \begin{Assumption}[Exchangeable correlation]
 \label{as:rho}
 Participation indicators in~$B$ are exchangeable with pairwise correlation
-$\rho\in[0,1)$, so the mean carries design effect $1+(\kf-1)\rho$.
+$\rho\in[0,1)$, so the mean carries design effect $1+(\kf-1)\rho$ in the sense
+of Kish~\cite{kish1965}.
 \end{Assumption}
 
-\begin{State}[Miss probability and $\nmin$]
+\subsection{Prediction intervals and detection bound}
+
+With regressor $\mathbf{z}=(1,\log\cc,-\log\n)^{\!\top}$ and
+$\hat\vartheta=(\log\Tzero,\gamma,\beta)^{\!\top}$, the delta
+method~\cite{seber2003} gives predictive variance
+$\hat{V}=\mathbf{z}^{\!\top}\widehat{\Cov}(\hat\vartheta)\mathbf{z}+\hat\sigma^{2}$.
+
+\begin{State}[Lognormal prediction interval]
+\label{st:pi}
+An approximate $(1-\epsp)$ interval for $\TPS(\n,\cc)$ is
+$\exp\{\log\widehat{\TPS}\mp\zq_{1-\epsp/2}\hat{V}^{1/2}\}$; the one-sided lower
+endpoint $\underline{\TPS}_{1-\epsp}$ uses $\zq_{1-\epsp}$.
+\end{State}
+
+A residual bootstrap~\cite{efron1993} supplies empirical quantiles when residual
+normality is doubtful. Coverage is checked on held-out validator counts
+(Section~\ref{sec:exp}).
+
+\begin{State}[Approximate miss probability and $\nmin$]
 \label{st:rho}
-With $\kf=\lceil\phi\n\rceil$,
+With $\kf=\lceil\phi\n\rceil$, the design-effect heuristic yields
 \begin{equation}
-\pmiss(\n,\w)\le\exp\!\Bigl\{-\frac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\Bigr\},
+\pmiss(\n,\w)\lesssim\exp\!\Bigl\{-\frac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\Bigr\},
 \label{eq:pmiss}
 \end{equation}
-which is nonincreasing in $\n$ and $\w$. The constraint $\pmiss\le\epss$ holds
-for all $\n\ge\nmin$ with
+which is nonincreasing in $\n$ and $\w$. Treating~\eqref{eq:pmiss} as an
+engineering constraint $\pmiss\le\epss$ gives the cut
 \begin{equation}
 \nmin=\left\lceil
 \frac{1+(\kf-1)\rho}{\phi}\cdot
@@ -59,14 +60,26 @@ for all $\n\ge\nmin$ with
 \end{equation}
 \end{State}
 
-\begin{Proof}
-A miss requires every member of~$B$ to remain unflagged. The effective sample
-size is $\neff=\kf\w/(1+(\kf-1)\rho)$; Hoeffding's inequality on the
-exchangeable mean yields~\eqref{eq:pmiss}, and solving for~$\kf$
-gives~\eqref{eq:nmin}.
-\end{Proof}
+\begin{HeuristicJustification}
+The bound is an empirical heuristic for dependent trials, not a strict
+concentration proof. A miss requires every member of~$B$ to remain unflagged.
+Classical Hoeffding~\cite{hoeffding1963} applies to independent bounded
+summands, not directly to exchangeable Bernoulli indicators. Following the
+survey-sampling design-effect approximation~\cite{kish1965}, we replace the
+correlated sample by an effective size $\neff=\kf\w/(1+(\kf-1)\rho)$ and insert
+that size into the independent Hoeffding form. The resulting
+expression~\eqref{eq:pmiss} is therefore an engineering adaptation;
+$\pd$, $\pf$ and $\rho$ are measured in experiment~X5.
+\end{HeuristicJustification}
 
-\subsection{Chance-constrained sizing and the feasibility window}
+The construction supplies an optional lower cut of the feasibility window.
+The detection model is an architectural framework slot: it accepts any future
+high-fidelity detection metrics $(\pd,\pf,\rho)$ without changing the
+underlying optimization mathematics. When the plugged-in detector is weak,
+$\nmin$ collapses and throughput alone sets the window --- as occurs with X5
+below.
+
+\subsection{The sizing program}
 
 \begin{Problem}[Validator-set sizing]
 \label{prob:sizing}
@@ -84,8 +97,10 @@ $\n=4$.
 The chance constraint is equivalent to
 $h(\n)\eqdef\log(\kappaScale\,\Tzero\,\gfun(\cc^{\star})/\Dpk)
 -\beta\log\n-\zq_{1-\epsp}\hat{V}^{1/2}(\n,\cc^{\star})\ge0$.
-If $\hat{V}$ is nondecreasing in $\log\n$ over the extrapolation region, then
-$h$ is strictly decreasing there.
+\emph{Provided} $\hat{V}$ is nondecreasing in $\log\n$ on the extrapolation
+region (a modelling hypothesis, confirmed empirically in
+Section~\ref{sec:exp}; not implied by the delta method alone), $h$ is strictly
+decreasing there.
 \end{Lemma}
 
 \begin{Proof}
@@ -94,28 +109,27 @@ $\kappaScale\cdot\underline{\TPSn}_{1-\epsp}\ge\Dpk$; taking logs gives~$h$.
 Strict decrease follows from $\beta>0$ and the hypothesis on~$\hat{V}$.
 \end{Proof}
 
-\begin{Theorem}[Feasibility window]
-\label{thm:window}
-Under Lemma~\ref{lem:detequiv} and Statement~\ref{st:rho}, the feasible set is
-the integer interval $\{\n:\nmin\le\n\le\nmax\}$ with $\nmin$ from~\eqref{eq:nmin}
-and $\nmax=\lfloor\sup\{\n:h(\n)\ge0\}\rfloor$. If the set is nonempty and
-$\Cost$ is nondecreasing then $\nopt=\nmin$; both endpoints cost
-$O(\log\nmax)$ evaluations of~$h$.
-\end{Theorem}
+\begin{Proposition}[Feasibility window]
+\label{prop:window}
+\emph{Provided} $h$ is strictly decreasing (Lemma~\ref{lem:detequiv}) and the
+approximate detection cut of Statement~\ref{st:rho} is used, the feasible set
+is $\{\n:\nmin\le\n\le\nmax\}$ with $\nmin$ from~\eqref{eq:nmin} and
+$\nmax=\lfloor\sup\{\n:h(\n)\ge0\}\rfloor$. If nonempty and $\Cost$ is
+nondecreasing then $\nopt=\nmin$. If $\hat{V}$ is not monotone, evaluate~$h$
+directly --- the throughput-feasible set need not be a half-line.
+\end{Proposition}
 
 \begin{Proof}
-Detection holds on $\{\n\ge\nmin\}$ and throughput on $\{\n\le\nmax\}$ (two
-opposing half-lines), so the feasible set is an interval. Monotone cost places
-the optimum at the left endpoint; bisection locates~$\nmax$.
+Under those provisos, detection holds on $\{\n\ge\nmin\}$ and throughput on
+$\{\n\le\nmax\}$, hence an interval; monotone cost selects the left endpoint.
 \end{Proof}
 
-\begin{Corollary}[Infeasibility certificate]
+\begin{Corollary}[Empty feasible set]
 \label{cor:infeasible}
-If $\nmin>\nmax$, no validator-set size satisfies both requirements: the
-architecture (sharding, delegation, or a weaker safety target) must change,
-not merely the provisioning.
+If $\nmin>\nmax$, no validator count satisfies both requirements: the
+architecture must change, not merely the provisioning.
 \end{Corollary}
 
-Chance-constrained programming is classical~\cite{charnes1959,nemirovski2007};
-the contribution is the opposing monotonicity that bounds the feasible set on
-both sides and certifies infeasibility.
+The window is the intersection of two monotone constraints
+\cite{charnes1959,nemirovski2007}; its role is to turn calibrated exponents
+into a sizing rule.

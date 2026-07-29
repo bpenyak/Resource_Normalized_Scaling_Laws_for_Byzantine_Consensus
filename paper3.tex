@@ -34,15 +34,18 @@ from Commodity-CI Measurements}
 \abstract{%
 \textbf{Problem.} Sizing a permissioned BFT validator set for national-scale
 e-governance must reconcile degrading consensus throughput with improving
-fault-detection power as~$\n$ grows; published single-factor exponents are not
-reproducible across testbeds.
-\textbf{Contributions.} (1)~An identifiability theorem:
-$\ahat\to\gamma\lambda-\beta$ along a concurrency path of slope~$\lambda$;
-(2)~a resource-normalized measurement protocol fixing per-validator CPU
-quota~$\q$; (3)~coverage-validated lognormal prediction intervals;
-(4)~chance-constrained sizing whose feasible set is a closed interval
-$[\nmin,\nmax]$.
-\textbf{Validation.} A public CI campaign on one four-core runner covers
+fault-detection power as~$\n$ grows; without reporting the concurrency path,
+published single-factor exponents cannot be read as protocol properties.
+\textbf{Contributions.}
+\emph{Theory (main):} identifiability theorem
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ along a concurrency path of
+slope~$\lambda$;
+\emph{method:} resource-normalized measurement with per-validator CPU
+quota~$\q$;
+\emph{engineering:} chance-constrained sizing with feasible set
+$[\nmin,\nmax]$;
+\emph{empirics:} coverage-validated prediction intervals on public CI.
+\textbf{Validation.} A four-core CI campaign covers
 $\n\le\resNmaxMeasured$, concurrency up to~$64$, emulated RTT, and
 omission/duplication fault injection.
 %
@@ -66,14 +69,13 @@ chance-constrained optimization, e-governance}
 
 \abstractUkr{%
 Метод визначення розміру множини валідаторів BFT-мережі для електронного
-урядування: пропускна здатність спадає зі зростанням~$\n$, а потужність
+урядування: пропускна здатність спадає зі зростанням~$\n$, а надійність
 виявлення відмов зростає з~$\n$.
-Результати: 1)~протокол ресурсно-нормованих вимірювань із фіксованою
-CPU-квотою~$\q$; 2)~двофакторний закон і теорема ідентифікованості
-($\ahat=\gamma\lambda-\beta$); 3)~лог-нормальні прогнозні інтервали з
-перевіркою покриття; 4)~задача з імовірнісними обмеженнями та теорема про
-вікно $[\nmin,\nmax]$.
-Експерименти --- у публічному CI на одному чотириядерному вузлі.
+Внески: теорія --- теорема ідентифікованості
+($\ahat\to\gamma\lambda-\beta$); метод --- ресурсно-нормовані вимірювання;
+інженерія --- задача з імовірнісними обмеженнями та вікном
+$[\nmin,\nmax]$; емпірика --- прогнозні інтервали з перевіркою покриття у
+публічному CI.
 %
 \keywordsUkr{візантійська відмовостійкість, консенсус, закон масштабування,
 планування потужності, оптимізація з імовірнісними обмеженнями, електронне

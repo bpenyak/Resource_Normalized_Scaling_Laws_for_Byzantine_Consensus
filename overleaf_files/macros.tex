@@ -67,3 +67,13 @@
 % the string form. Restore the working switch for MMC's \maketitleUkr.
 \DeclareRobustCommand{\Ukrainian}{\selectlanguage{ukrainian}}
 \providecommand{\English}{\selectlanguage{english}}
+
+% Structural sizing result: Proposition (not Theorem), shared Theorem counter.
+\theorembodyfont{\rmfamily\slshape}
+\newtheorem{Proposition}[Theorem]{\ukreng{Пропозиція}{Proposition}}
+\theorembodyfont{\rmfamily}
+
+% Heuristic / design-effect arguments (not concentration proofs).
+\newenvironment{HeuristicJustification}%
+    {\par\noindent{\bf \ukreng{Евристичне обґрунтування}{Heuristic justification}.}}%
+    {\hfill$\scriptstyle\blacksquare$}

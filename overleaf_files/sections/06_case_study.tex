@@ -1,63 +1,65 @@
-\section{Application to an e-governance workload, and limitations}
+\section{Application, implications, and limitations}
 \label{sec:case}
 
-We instantiate Problem~\ref{prob:sizing} on a national-scale profile of about
-$3\times10^{7}$ ballots over twelve hours (peak demand
-$\Dpk\approx2.1\times10^{3}$~TPS) with the requirement that a coordinated
-omission fault of fraction $\phi=0.2$ be detected within one epoch at level
-$1-\epss$.
+\subsection{Application}
 
-Because the law is calibrated on \RNM{}-normalized throughput, absolute demand
-enters through an explicit scale-up $\kappaScale$. Taking the \emph{minimal
-admissible} $\kappaScale$ (smallest value whose lower prediction bound at
-$\n=4$ meets $\Dpk$) yields $\kappaScale=\resKappa$, operating concurrency
-$\cc^{\star}=\resCstar$, and feasibility window
+We instantiate Problem~\ref{prob:sizing} on $\approx3\times10^{7}$ ballots over
+twelve hours ($\Dpk\approx2.1\times10^{3}$~TPS), requiring detection of a
+coordinated omission fault of fraction $\phi=0.2$ within one epoch at level
+$1-\epss$. Absolute demand enters via scale-up $\kappaScale$ from \RNM{} units.
+With free $\kappaScale$, Problem~\ref{prob:sizing} takes
+\begin{equation}
+\kappaScale^{\star}
+=\frac{\Dpk}{\underline{\TPSn}_{1-\epsp}(4,\cc^{\star})},
+\label{eq:kappa}
+\end{equation}
+the minimal scale at which the lower PI bound at $\n=4$ meets $\Dpk$, yielding
+$\kappaScale=\resKappa$, $\cc^{\star}=\resCstar$, and window
 $[\resNminCase,\resNmaxCase]$ with $\nopt=\resNoptCase$
-(Theorem~\ref{thm:window}); Figure~\ref{fig:window} shows the intersection.
-Detector rates enter at the Youden threshold $\thr=\resDetectorThr$ of X5.
+(Proposition~\ref{prop:window}; Figure~\ref{fig:window}).
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.68\textwidth]{figures/fig_window}
-\caption{Feasibility window at minimal admissible $\kappaScale=\resKappa$:
-confidence-adjusted absolute throughput versus $\Dpk$; shaded band
-$[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$}
+\includegraphics[width=0.45\textwidth]{figures/fig_window}
+\caption{At minimal admissible $\kappaScale=\resKappa$, throughput and
+detection constraints intersect in
+$[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$; here the window collapses to one
+admissible validator count}
 \label{fig:window}
 \end{figure}
 
-The window is most sensitive to $\beta$ (shifts $\log\nmax$), to $\rho$
-(inflates $\nmin$ via~\eqref{eq:nmin}), to RTT-elevated $\beta$ from X4, and to
-tightening $\epsp$ or $\epss$ (closing from both sides). Operationally: with
-confidence $1-\epsp$ the network sustains the peak up to $\nmax$, detects the
-specified fault from $\nmin$ upward, and the cheapest admissible configuration
-is $\nopt$ at production scale $\kappaScale$.
+The workflow illustrates sizing for registry and identity workloads; it is not
+a prescription for binding elections on a
+blockchain~\cite{springall2014,specter2020,park2021}.
 
-\begin{Remark}
-This illustrates the sizing workflow; it is not a recommendation to run binding
-elections on a blockchain~\cite{springall2014,specter2020,park2021}. The same
-workflow applies to registry and identity workloads.
-\end{Remark}
+\subsection{What this implies}
+\label{sec:discussion}
+
+A fitted $(\beta,\gamma)$ transfers only when concurrency path, quota regime,
+and RTT class match the calibration (X2, X4). Future benchmarks should report
+$\lambda$ (or state $\lambda=0$), per-validator quota, and RTT class; without
+$\lambda$, single-factor exponents are not protocol properties
+(Corollary~\ref{cor:sign}). \RNM{} makes factorial designs feasible on commodity
+CI; durable objects are exponents, coverage, and window shape. Other mechanisms
+(GC, bandwidth saturation, block-period pacing, client queues) can also move a
+fitted exponent; controlling~$\lambda$ isolates one identifiable component.
 
 \subsection{Limitations}
 \label{sec:limitations}
 
-\emph{Fault class.} Encrypted transport precludes selective consensus-message
-injection, so X5 realizes omission and duplication only. Signer-metrics
-detection is weak (AUC~$\resAuc$), the safety constraint is non-binding at the
-operating point, and the window is set by throughput.
+\emph{Fault class.}
+Encrypted transport precludes selective consensus-message injection, so X5
+realizes omission and duplication only. With AUC~$\resAuc$ the safety
+constraint is non-binding and throughput sets the window. This is the intended
+fallback of the framework slot in Section~\ref{sec:sizing}, not a contradiction
+of the sizing programme.
 
-\emph{Absolute TPS and range.} \RNM{} quotas keep absolute throughput far below
-dedicated-hardware benchmarks; every claim concerns exponents, coverage and
-sizing. Absolute demand enters only through $\kappaScale$. The largest measured
-set is $\resNmaxMeasured$; beyond it, intervals of Statement~\ref{st:pi}
-quantify but do not eliminate extrapolation risk. With $\beta=\resBeta$ the
-window collapses to $\n=\resNoptCase$ --- a substantive conclusion, not an
-artefact.
-
-\emph{Single host and platform.} Theorem~\ref{thm:identifiability} is about
-least squares and is platform-independent; the calibrated $(\beta,\gamma)$ are
-not. Cross-client replication (GoQuorum/X9) is deliberately out of scope, so
-all numerical coefficients are Besu/QBFT-specific. Exact $\q$-invariance is
-rejected on $\{0.20,0.25,0.33\}$, and the fit is reported at $\q=0.25$ only.
-Structural claims (bias form, feasible-set shape) are the durable part;
-numerical values are provisional.
+\emph{Range and platform.}
+Commodity CI restricts physical scale to $\n\le\resNmaxMeasured$. Beyond that
+range, prediction intervals quantify but do not eliminate extrapolation risk.
+The bi-factor law's primary role here is to isolate~$\beta$, so that the
+scale-up $\kappaScale$ in~\eqref{eq:kappa} supplies a conservative lower bound
+for production capacity rather than a claim to have measured national-scale
+deployments in situ. With $\beta=\resBeta$ the case-study window collapses to
+$\n=\resNoptCase$. Numerical $(\beta,\gamma)$ are Besu/QBFT-specific; the
+identifiability statement is not.
