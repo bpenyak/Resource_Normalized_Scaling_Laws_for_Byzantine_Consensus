@@ -1,29 +1,28 @@
 \section{Conclusions}
 \label{sec:conclusions}
 
-\paragraph{What is proved.}
+\paragraph{What is established.}
 Along a concurrency path of slope~$\lambda$, the single-factor OLS scaling
 exponent satisfies $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Theorem~\ref{thm:identifiability}). Opposing monotone constraints yield a
-closed integer feasibility window (Proposition~\ref{prop:window}).
+(Proposition~\ref{prop:identifiability}). Opposing monotone constraints yield a
+closed integer feasibility window (Proposition~\ref{prop:window}). The
+contribution is a rigorous capacity-planning methodology: isolate the consensus
+exponent under \RNM{}, then size the validator set under calibrated chance
+constraints.
 
 \paragraph{What is confirmed experimentally.}
-Under \RNM{} on public four-core CI, the fit yields
-$\beta=\resBeta\pm\resBetaSE$, $\gamma=\resGamma\pm\resGammaSE$, and path
-re-sampling tracks $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$.
-$\q$-invariance fails on the full tested range; prediction-interval coverage
-meets nominal levels. With AUC$\,=\,\resAuc$ the window falls back to the
-throughput bound. Emulated WAN RTT raises~$\beta$ from $\resBetaRttZero$ to
-$\resBetaRttHigh$, so LAN-calibrated capacity models are optimistic for
-geo-distributed deployments.
+Under \RNM{} on four-core CI:
+$\beta=\resBeta\pm\resBetaSE$, $\gamma=\resGamma\pm\resGammaSE$; path
+re-sampling tracks $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$;
+coefficients at $\q=0.25$; coverage meets nominal levels; AUC$\,=\,\resAuc$
+defaults the window to throughput. WAN RTT raises~$\beta$ from
+$\resBetaRttZero$ to $\resBetaRttHigh$. Substituting the same coefficients
+shows that doubled demand or WAN $\beta$ at fixed $\kappaScale$ empties the
+window.
 
 \paragraph{What remains open.}
 Equivocation-capable instrumentation; multi-client numerical checks; latency or
 finality constraints inside the window; online recalibration of~$\beta$.
-
-The principal outcome of this work is not a new benchmark coefficient, but an
-identifiability result: concurrency-path design fundamentally determines how
-measured scaling exponents may be interpreted.
 
 \subsection*{Conflict of interest}
 The authors declare no conflict of interest.

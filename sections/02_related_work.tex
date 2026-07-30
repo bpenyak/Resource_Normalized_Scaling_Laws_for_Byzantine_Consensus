@@ -18,17 +18,17 @@ under which exponents transfer.
 
 \emph{Scalability laws and tools.}
 Amdahl~\cite{amdahl1967}, Gustafson~\cite{gustafson1988} and Gunther's
-USL~\cite{gunther2007} (our closest baseline) fold concurrency and system size
-into one load variable. Concentration
-bounds~\cite{hoeffding1963,boucheron2013}, delta-method
-intervals~\cite{seber2003}, the residual bootstrap~\cite{efron1993} and
-chance-constrained programming~\cite{charnes1959,nemirovski2007} are standard
-instruments; what is specific is coupling throughput and detection through
-opposing monotonicities in~$\n$.
+USL~\cite{gunther2007} fold concurrency and system size into one load variable
+--- the confound that \RNM{} removes. Concentration
+bounds~\cite{hoeffding1963,boucheron2013}, Kish's design
+effect~\cite{kish1965}, delta-method intervals~\cite{seber2003}, the residual
+bootstrap~\cite{efron1993} and chance-constrained
+programming~\cite{charnes1959,nemirovski2007} are standard instruments; what is
+specific is coupling throughput and detection through opposing monotonicities
+in~$\n$.
 
 \emph{Prior work.}
 Remote-voting analyses~\cite{springall2014,specter2020,park2021} place endpoint
-and coercion threats out of scope here. Our earlier
+and coercion threats out of scope. Our earlier
 calibration~\cite{peniak2026a} and switching study~\cite{peniak2026b} left open
 an identifiable consensus exponent and sizing with measured detector rates.
-The next sections supply both.

@@ -37,11 +37,10 @@ e-governance must reconcile degrading consensus throughput with improving
 fault-detection power as~$\n$ grows; without reporting the concurrency path,
 published single-factor exponents cannot be read as protocol properties.
 \textbf{Contributions.}
-\emph{Theory (main):} identifiability theorem
-$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ along a concurrency path of
-slope~$\lambda$;
-\emph{method:} resource-normalized measurement with per-validator CPU
-quota~$\q$;
+\emph{Method:} resource-normalized measurement isolating consensus cost from
+host contention;
+\emph{analysis:} identifiability result
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ along a concurrency path;
 \emph{engineering:} chance-constrained sizing with feasible set
 $[\nmin,\nmax]$;
 \emph{empirics:} coverage-validated prediction intervals on public CI.
@@ -71,8 +70,8 @@ chance-constrained optimization, e-governance}
 Метод визначення розміру множини валідаторів BFT-мережі для електронного
 урядування: пропускна здатність спадає зі зростанням~$\n$, а надійність
 виявлення відмов зростає з~$\n$.
-Внески: теорія --- теорема ідентифікованості
-($\ahat\to\gamma\lambda-\beta$); метод --- ресурсно-нормовані вимірювання;
+Внески: метод --- ресурсно-нормовані вимірювання; аналіз --- результат
+ідентифікованості ($\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$);
 інженерія --- задача з імовірнісними обмеженнями та вікном
 $[\nmin,\nmax]$; емпірика --- прогнозні інтервали з перевіркою покриття у
 публічному CI.

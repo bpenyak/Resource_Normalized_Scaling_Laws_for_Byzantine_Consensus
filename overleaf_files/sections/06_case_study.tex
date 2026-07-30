@@ -1,7 +1,7 @@
 \section{Application, implications, and limitations}
 \label{sec:case}
 
-\subsection{Application}
+\subsection{Application and what-if analysis}
 
 We instantiate Problem~\ref{prob:sizing} on $\approx3\times10^{7}$ ballots over
 twelve hours ($\Dpk\approx2.1\times10^{3}$~TPS), requiring detection of a
@@ -13,53 +13,63 @@ With free $\kappaScale$, Problem~\ref{prob:sizing} takes
 =\frac{\Dpk}{\underline{\TPSn}_{1-\epsp}(4,\cc^{\star})},
 \label{eq:kappa}
 \end{equation}
-the minimal scale at which the lower PI bound at $\n=4$ meets $\Dpk$, yielding
-$\kappaScale=\resKappa$, $\cc^{\star}=\resCstar$, and window
+the minimal scale at which the lower PI bound at $\n=4$ meets $\Dpk$.
+
+\paragraph{Scenario A (baseline).}
+Substituting the calibrated coefficients
+($\beta=\resBeta$, $\gamma=\resGamma$) at $\cc^{\star}=\resCstar$ yields
+$\kappaScale=\resKappa$ and feasibility window
 $[\resNminCase,\resNmaxCase]$ with $\nopt=\resNoptCase$
-(Proposition~\ref{prop:window}; Figure~\ref{fig:window}).
+(Proposition~\ref{prop:window}; Figure~\ref{fig:window}). The collapse to a
+single admissible count is the capacity-planning conclusion under this demand
+and hardware class: the network is throughput-bound at the smallest BFT set.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/fig_window}
-\caption{At minimal admissible $\kappaScale=\resKappa$, throughput and
-detection constraints intersect in
-$[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$; here the window collapses to one
-admissible validator count}
+\caption{Scenario~A: at minimal admissible $\kappaScale=\resKappa$, the
+feasibility window is $[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$}
 \label{fig:window}
 \end{figure}
 
-The workflow illustrates sizing for registry and identity workloads; it is not
-a prescription for binding elections on a
-blockchain~\cite{springall2014,specter2020,park2021}.
+\paragraph{Scenario B (doubled peak demand, fixed hardware class).}
+Hold $\kappaScale=\resKappa$ and replace $\Dpk$ by $2\Dpk$. Then $h$
+in~\eqref{eq:h} falls by $\log 2$ everywhere; in particular $h(4)<0$, so the
+feasible set is empty (Corollary~\ref{cor:infeasible}). Doubling peak load on
+the same hardware class is an architectural impossibility under the calibrated
+law: adding validators cannot restore feasibility, because throughput falls
+with~$\n$.
+
+\paragraph{Scenario C (WAN deployment, fixed hardware class).}
+Retain $\kappaScale=\resKappa$ and $\Dpk$, but substitute the high-RTT
+exponent $\beta=\resBetaRttHigh$ (X4) for $\beta=\resBetaRttZero$. The steeper
+penalty yields $h(4)<0$ and an empty window: a hardware class that is
+marginally admissible under LAN $\beta$ becomes infeasible under WAN $\beta$
+without raising $\kappaScale$.
+
+The workflow applies equally to registry and identity sizing; binding elections
+on a blockchain remain outside the recommendation
+\cite{springall2014,specter2020,park2021}.
 
 \subsection{What this implies}
 \label{sec:discussion}
 
-A fitted $(\beta,\gamma)$ transfers only when concurrency path, quota regime,
-and RTT class match the calibration (X2, X4). Future benchmarks should report
-$\lambda$ (or state $\lambda=0$), per-validator quota, and RTT class; without
-$\lambda$, single-factor exponents are not protocol properties
-(Corollary~\ref{cor:sign}). \RNM{} makes factorial designs feasible on commodity
-CI; durable objects are exponents, coverage, and window shape. Other mechanisms
-(GC, bandwidth saturation, block-period pacing, client queues) can also move a
-fitted exponent; controlling~$\lambda$ isolates one identifiable component.
+A fitted $(\beta,\gamma)$ transfers when concurrency path, quota regime, and
+RTT class match the calibration. Future benchmarks should report $\lambda$ (or
+$\lambda=0$), per-validator quota, and RTT class
+(Corollary~\ref{cor:sign}).
 
 \subsection{Limitations}
 \label{sec:limitations}
 
 \emph{Fault class.}
 Encrypted transport precludes selective consensus-message injection, so X5
-realizes omission and duplication only. With AUC~$\resAuc$ the safety
-constraint is non-binding and throughput sets the window. This is the intended
-fallback of the framework slot in Section~\ref{sec:sizing}, not a contradiction
-of the sizing programme.
+realizes omission and duplication only. With AUC~$\resAuc$, the framework
+defaults to the throughput-bound window.
 
 \emph{Range and platform.}
 Commodity CI restricts physical scale to $\n\le\resNmaxMeasured$. Beyond that
-range, prediction intervals quantify but do not eliminate extrapolation risk.
-The bi-factor law's primary role here is to isolate~$\beta$, so that the
-scale-up $\kappaScale$ in~\eqref{eq:kappa} supplies a conservative lower bound
-for production capacity rather than a claim to have measured national-scale
-deployments in situ. With $\beta=\resBeta$ the case-study window collapses to
-$\n=\resNoptCase$. Numerical $(\beta,\gamma)$ are Besu/QBFT-specific; the
-identifiability statement is not.
+range, prediction intervals quantify extrapolation risk. The bi-factor law
+isolates~$\beta$ so that $\kappaScale$ in~\eqref{eq:kappa} supplies a
+conservative production scale-up. Numerical $(\beta,\gamma)$ are Besu/QBFT-
+specific; Proposition~\ref{prop:identifiability} is not.

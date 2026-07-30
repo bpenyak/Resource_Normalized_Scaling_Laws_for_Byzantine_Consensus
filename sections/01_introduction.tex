@@ -18,19 +18,20 @@ from measurement design: concurrency is rarely held fixed while~$\n$ varies, so
 the fitted scaling exponent mixes load-generator growth with consensus
 overhead. Without reporting the concurrency path, published exponents cannot be
 read as protocol properties. Packing many validators onto one host adds a second
-confound --- CPU contention --- that the protocol below removes.
+confound --- CPU contention --- that resource-normalized measurement isolates.
 
 \paragraph{Contributions.}
-On the theoretical front, we establish an identifiability theorem: along a
-concurrency path of slope~$\lambda$,
+On the methodological front, we introduce a resource-normalized measurement
+(\RNM{}) protocol that fixes CPU quota~$\q$ per validator and reports
+$\TPSn=\TPS/\q$, isolating intrinsic consensus cost from host contention ---
+analogous to a calibrated wind tunnel. Analytically, along a concurrency path
+of slope~$\lambda$ the single-factor OLS fit satisfies
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Theorem~\ref{thm:identifiability}). The bi-factor law is the substrate; the
-theorem is the main contribution. Methodologically, this is achieved by a
-resource-normalized measurement (\RNM{}) protocol that fixes CPU quota~$\q$ per
-validator and reports $\TPSn=\TPS/\q$. From an engineering perspective, we
-formulate chance-constrained sizing whose feasible set is $[\nmin,\nmax]$
-(Proposition~\ref{prop:window}) --- opposing monotone constraints, not an
-independent depth claim. Empirically, we validate prediction intervals by
-coverage and run a public Besu/QBFT CI campaign
-(Sections~\ref{sec:exp}--\ref{sec:case}). Scope: throughput and detection;
-absolute TPS environment-specific; cross-client replication out of scope.
+(Proposition~\ref{prop:identifiability}); the value of the result is the
+engineering interpretation that reconciles historical BFT benchmarks.
+From a planning perspective, we formulate chance-constrained sizing whose
+feasible set is $[\nmin,\nmax]$ (Proposition~\ref{prop:window}). Empirically, we
+validate prediction intervals by coverage and run a public Besu/QBFT CI
+campaign (Sections~\ref{sec:exp}--\ref{sec:case}). Scope: throughput and
+detection; absolute TPS environment-specific; cross-client replication out of
+scope.

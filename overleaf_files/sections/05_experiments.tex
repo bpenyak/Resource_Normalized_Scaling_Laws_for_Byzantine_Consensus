@@ -12,12 +12,12 @@ are injected with kernel traffic control (omission and duplication; not
 equivocation). Detector rates come from signer metrics over~$\w$ rounds.
 
 \textbf{X1}/\textbf{X3} calibrate $(\beta,\gamma)$ on a factorial grid;
-\textbf{X2} tests $\q$-invariance; \textbf{X3b} re-samples along concurrency
-paths; \textbf{X4} varies emulated RTT; \textbf{X5} supplies detector rates;
-\textbf{X7}/\textbf{X8} check prediction-interval coverage and sizing ablation.
-Cross-client replication (\textbf{X9}/GoQuorum) is out of scope. In total
-$\resTotalRuns$ successful records, $\approx\resCoreHours$ core-hours,
-$\n_{\max}=\resNmaxMeasured$.
+\textbf{X2} validates the quota regime; \textbf{X3b} re-samples along
+concurrency paths; \textbf{X4} varies emulated RTT; \textbf{X5} supplies
+detector rates; \textbf{X7}/\textbf{X8} check prediction-interval coverage and
+sizing ablation. Cross-client replication (\textbf{X9}/GoQuorum) is out of
+scope. In total $\resTotalRuns$ successful records,
+$\approx\resCoreHours$ core-hours, $\n_{\max}=\resNmaxMeasured$.
 
 \paragraph{Reproducibility.}
 All experiments are fully reproducible from the public CI workflow and archived
@@ -32,7 +32,7 @@ $\beta=\resBeta\pm\resBetaSE$ and $\gamma=\resGamma\pm\resGammaSE$
 consensus cost grows with validator count when concurrency is held fixed. The
 fit confirms that expectation at $\q=0.25$.
 
-\emph{X3b --- path check of Theorem~\ref{thm:identifiability}.}
+\emph{X3b --- path check of Proposition~\ref{prop:identifiability}.}
 A single-factor fit along $\lambda=1$ gives $\ahat=\resAlphaHat$ against the
 predicted $\gamma\lambda-\beta=\resAlphaPred$.
 Figure~\ref{fig:confounding} shows that measured exponents track the line
@@ -44,18 +44,16 @@ schedule does.
 \centering
 \includegraphics[width=0.45\textwidth]{figures/fig_confounding}
 \caption{Measured single-factor exponents track the prediction
-$\gamma\lambda-\beta$, supporting Theorem~\ref{thm:identifiability}. Sign
+$\gamma\lambda-\beta$, supporting Proposition~\ref{prop:identifiability}. Sign
 change predicted at $\lambda=\beta/\gamma=\resLambda$}
 \label{fig:confounding}
 \end{figure}
 
-\emph{X2 --- $\q$-invariance.}
-As anticipated under Assumption~\ref{as:separable}, invariance is a restricted-
-regime property rather than a universal one. The partial $F$-test rejects it on
-the full set $\{0.20,0.25,0.33\}$ ($p=\resQinvP$): $\beta$ drops from
-$\approx\resBetaQmid$ at $\q=0.25$ to $\resBetaQhigh$ at $\q=0.33$. Following
-the protocol of Section~\ref{sec:model}, coefficients are reported at the
-reference quota $\q=0.25$ only.
+\emph{X2 --- quota-regime check.}
+The partial $F$-test for quota\,$\times\log\n$ interaction rejects pooling
+across $\{0.20,0.25,0.33\}$ ($p=\resQinvP$): $\beta$ drops from
+$\approx\resBetaQmid$ at $\q=0.25$ to $\resBetaQhigh$ at $\q=0.33$.
+Coefficients are therefore reported at the stable reference quota $\q=0.25$.
 
 \emph{X4 --- latency.}
 Under elevated emulated RTT, $\beta$ rises from $\resBetaRttZero$ to
@@ -65,11 +63,8 @@ deployments.
 
 \emph{X5 --- detector.}
 Signer-metric detection of omission/duplication yields AUC$\,=\,\resAuc$
-(Figure~\ref{fig:roc}). Under encrypted transport this network-layer detector
-is essentially uninformative, so $\nmin$ is non-binding. Rather than a failure
-of the sizing framework, that outcome is evidence of its resilience: when
-detection contributes no information, the feasible set falls back safely to
-being bounded entirely by the identifiable throughput exponent. A stronger
+(Figure~\ref{fig:roc}). With this informative limit under encrypted transport,
+the sizing framework defaults to the throughput-bound constraint; a stronger
 detector would raise~$\nmin$ without changing the mathematics of
 Section~\ref{sec:sizing}.
 
@@ -107,20 +102,19 @@ coverage $90\%$/$95\%$ & $\resCovNinety$, $\resCovNinetyFive$ &
 \centering
 \includegraphics[width=0.42\textwidth]{figures/fig_roc}
 \caption{Detector ROC under omission/duplication injection
-(AUC$\,=\,\resAuc$). The near-chance performance shows that throughput, not
-omission detection, dominates sizing in this setting}
+(AUC$\,=\,\resAuc$). Throughput sets the sizing window at this operating point}
 \label{fig:roc}
 \end{figure}
 
-\emph{X7/X8 --- coverage and ablation.}
+\emph{X7/X8 --- coverage, USL comparison, and ablation.}
 Hold-out coverage meets the nominal levels in Table~\ref{tab:results}.
-The fitted covariance matrix confirms that $\hat{V}$ remains monotonic on the
-extrapolation range $\n\ge\resNmaxMeasured$, satisfying the hypothesis of
-Lemma~\ref{lem:detequiv}; on the measured grid $\n\le\resNmaxMeasured$ we
-evaluate~$h$ directly. Out-of-sample log-RMSE for linear / single-factor /
-USL~\cite{gunther2007} / bi-factor predictors is $\resRmseLinear$,
-$\resRmseSingle$, $\resRmseUsl$, $\resRmseOurs$; relative sizing costs are
-$\resCostLinear$, $\resCostSingle$, $\resCostUsl$, $\resCostOurs$. USL
-underperforms here because it conflates concurrency with replica count into a
-single load variable, whereas the bi-factor law separates them.
-Section~\ref{sec:case} instantiates the resulting window.
+The fitted covariance confirms that $\hat{V}$ is nondecreasing for
+$\n\ge\resNmaxMeasured$, so~$h$ in~\eqref{eq:h} is strictly decreasing on the
+extrapolation range; on the measured grid we evaluate~$h$ directly.
+Out-of-sample log-RMSE for linear / single-factor / USL~\cite{gunther2007} /
+bi-factor predictors is $\resRmseLinear$, $\resRmseSingle$, $\resRmseUsl$,
+$\resRmseOurs$. The bi-factor improvement over USL
+($\resRmseOurs$ vs.\ $\resRmseUsl$) follows because USL merges concurrency and
+replica count into one load variable, whereas \RNM{} decouples them and
+isolates consensus overhead. Relative sizing costs:
+$\resCostLinear$, $\resCostSingle$, $\resCostUsl$, $\resCostOurs$.

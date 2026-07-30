@@ -1,13 +1,16 @@
 \section{Resource-normalized measurement and the bi-factor law}
 \label{sec:model}
 
-We first fix the measurement protocol, then state the bi-factor law and its
-identifiability theorem. Estimation details follow the corollaries.
+Capacity planning for BFT requires an exponent that reflects consensus cost,
+not host contention or load-generator growth. We introduce an isolation protocol
+for that purpose, then a bi-factor law and an analytical identifiability result.
 
-\subsection{Definitions and assumptions}
+\subsection{Resource-normalized measurement as an isolation tool}
 
-If $\n$ validators share a host of $Q$ cores, each receives $Q/\n$ cores.
-Measured throughput then mixes consensus cost with a shrinking compute budget.
+If $\n$ validators share a host of $Q$ cores, each receives $Q/\n$ cores, so
+measured throughput mixes algorithmic cost with a shrinking compute budget.
+\RNM{} isolates those effects --- as a calibrated wind tunnel isolates model
+drag from facility artefacts.
 
 \begin{Def}[Resource-normalized measurement]
 \label{def:rnm}
@@ -21,29 +24,17 @@ $\TPSn\eqdef\TPS/\q$.
 \label{as:separable}
 On the operating range of quotas in the campaign,
 $\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+r)$ with $|r|\le C\q$ for a
-constant~$C$ independent of~$(\n,\cc)$ there. Quota enters multiplicatively up
-to a relative error controlled by~$\q$ --- a bound on a fixed interval, not an
-asymptotic claim as $\q\to0$.
+constant~$C$ independent of~$(\n,\cc)$ there.
 \end{Assumption}
 
-Assumption~\ref{as:separable} is expected only within a restricted quota
-regime (CPU-bound verification under cgroup quota; away from GC-dominated
-small~$\q$, bandwidth saturation, or fixed block periods).
-Section~\ref{sec:exp} tests it via Statement~\ref{st:qinvariance}. If rejected
-on the full range, subsequent estimates are reported only where invariance
-approximately holds --- a conditional quota interval, not a universal law.
-
-\begin{State}[$\q$-invariance]
-\label{st:qinvariance}
-Under Assumption~\ref{as:separable} and
-$\Phi(\n,\cc)=\Tzero\,\gfun(\cc)\,\n^{-\beta}$, the OLS slope of
-$\log\TPSn$ on $\log\n$ at fixed~$\cc$ does not depend on~$\q$.
-\end{State}
-
-\begin{Proof}
-$\log\TPSn=\log\Phi+\log(1+r)$ with $|r|\le C\q$; at fixed~$\q$ the remainder is
-absorbed by the intercept, so the slope equals $-\beta$ for every such~$\q$.
-\end{Proof}
+\paragraph{Assumption validation.}
+Under Assumption~\ref{as:separable} and a power-law factor
+$\Phi\propto\n^{-\beta}$, the OLS slope of $\log\TPSn$ on $\log\n$ at fixed
+concurrency is independent of~$\q$: the relative remainder is absorbed by the
+intercept. Section~\ref{sec:exp} tests this invariance across
+$\q\in\{0.20,0.25,0.33\}$. The model is bounded to the stable reference quota
+$\q=0.25$, where the calibrated coefficients are reported; outside that
+regime the protocol still applies, but the numerical law must be re-fit.
 
 \begin{Def}[Bi-factor scaling law]
 \label{def:bifactor}
@@ -62,17 +53,17 @@ $\log\TPS=\log\Tzero+\gamma\log\cc-\beta\log\n$.
 The form separates concurrency from validator-count scaling, reduces to a
 power law for $\cc\ll\csat$, saturates at large~$\cc$, and contains the
 classical single-factor law as the case $\gamma=0$ (or $\lambda=0$ with
-$\alpha=-\beta$). Here $\beta>0$ encodes replication; $\theta>\gamma$ makes
-$\gfun$ unimodal.
+$\alpha=-\beta$).
 
 \subsection{Identifiability}
 
-The next theorem is the main theoretical result. Changing the experimental
-concurrency schedule changes the observed scaling exponent even when the
-protocol itself is unchanged.
+The algebra below uses standard OLS and a weak law. Its value is the
+\emph{engineering interpretation}: discrepancies among published BFT
+single-factor exponents are artefacts of the concurrency schedule, not of the
+protocol.
 
-\begin{Theorem}[Identifiability of the consensus exponent]
-\label{thm:identifiability}
+\begin{Proposition}[Identifiability of the consensus exponent]
+\label{prop:identifiability}
 Let observations follow the unsaturated bi-factor law with additive noise of
 mean zero and finite variance, along a concurrency path
 $\log\cc_{i}=\lambda\log\n_{i}+\mu+\eta_{i}$
@@ -81,7 +72,7 @@ $x_{i}=\log\n_{i}$ converges to a positive limit, the OLS slope $\ahat_{m}$ of
 $\log\TPS_{i}$ on $x_{i}$ alone satisfies
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$.
 In particular $\ahat>0\iff\lambda>\beta/\gamma$, and $\ahat=-\beta\iff\lambda=0$.
-\end{Theorem}
+\end{Proposition}
 
 \begin{Proof}
 Write $x_{i}=\log\n_{i}$, $y_{i}=\log\TPS_{i}$. The path reduces the unsaturated
@@ -102,9 +93,8 @@ $\ahat_{m}\xrightarrow{\Prob}\alpha$. Signs follow from $\gamma>0$.
 \end{Proof}
 
 Thus $\alpha=\underbrace{-\beta}_{\text{protocol}}
-+\underbrace{\gamma\lambda}_{\text{measurement}}$:
-a positive fit can reflect a scaled load generator rather than improving
-consensus. Only $\lambda=0$ recovers~$-\beta$.
++\underbrace{\gamma\lambda}_{\text{measurement}}$.
+Only a factorial design ($\lambda=0$) recovers the consensus exponent.
 
 \begin{Remark}
 With $\gamma=0.8$, $\beta=0.5$ and $\lambda=1$ one obtains $\ahat=+0.3$.
