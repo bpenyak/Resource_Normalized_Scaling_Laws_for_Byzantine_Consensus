@@ -2,36 +2,41 @@
 \label{sec:intro}
 
 Permissioned Byzantine Fault Tolerant (BFT) consensus underpins e-governance
-systems --- voting, registries, digital identity --- and forces a concrete
+systems --- voting, registries, digital identity --- and raises a concrete
 procurement question: \emph{how many validators should the network have?}
 
 The validator count~$\n$ pulls in opposite directions. Throughput argues for
 small~$\n$: every validator executes every transaction, and PBFT-family
 protocols exchange $O(\n^{2})$ messages per block. Detection reliability argues
-for large~$\n$. Combining the two for sizing is the subject of this paper.
+for large~$\n$. This paper develops a capacity-planning methodology that
+combines the two under resource-normalized measurement.
 
 Published single-factor fits $\TPS(\n)\propto\n^{\alpha}$ disagree in magnitude
 and sometimes in sign. Our earlier studies, extrapolated to sixty validators,
-differ by roughly an order of magnitude. This disagreement has often been
-interpreted as protocol-specific behaviour. We show that it can arise solely
-from measurement design: concurrency is rarely held fixed while~$\n$ varies, so
-the fitted scaling exponent mixes load-generator growth with consensus
-overhead. Without reporting the concurrency path, published exponents cannot be
-read as protocol properties. Packing many validators onto one host adds a second
-confound --- CPU contention --- that resource-normalized measurement isolates.
+differ by roughly an order of magnitude. Such disagreement is often read as
+protocol-specific behaviour. Within the investigated setting we show that it
+can arise from measurement design alone: concurrency is rarely held fixed
+while~$\n$ varies, so the fitted scaling exponent mixes load-generator growth
+with consensus overhead. Without reporting the concurrency path, published
+exponents are difficult to interpret as intrinsic protocol properties.
+Packing many validators onto one host adds a second confound --- CPU
+contention --- that resource-normalized measurement is designed to isolate.
 
 \paragraph{Contributions.}
-On the methodological front, we introduce a resource-normalized measurement
-(\RNM{}) protocol that fixes CPU quota~$\q$ per validator and reports
-$\TPSn=\TPS/\q$, isolating intrinsic consensus cost from host contention ---
-analogous to a calibrated wind tunnel. Analytically, along a concurrency path
+Methodologically, we introduce a resource-normalized measurement (\RNM{})
+protocol that fixes CPU quota~$\q$ per validator and reports
+$\TPSn=\TPS/\q$, separating consensus cost from host contention.
+Analytically, under the unsaturated bi-factor model, along a concurrency path
 of slope~$\lambda$ the single-factor OLS fit satisfies
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Proposition~\ref{prop:identifiability}); the value of the result is the
-engineering interpretation that reconciles historical BFT benchmarks.
-From a planning perspective, we formulate chance-constrained sizing whose
-feasible set is $[\nmin,\nmax]$ (Proposition~\ref{prop:window}). Empirically, we
-validate prediction intervals by coverage and run a public Besu/QBFT CI
-campaign (Sections~\ref{sec:exp}--\ref{sec:case}). Scope: throughput and
-detection; absolute TPS environment-specific; cross-client replication out of
-scope.
+(Proposition~\ref{prop:identifiability}); the relation is a consequence of the
+model assumptions, not an empirical universal. From a planning perspective, we
+formulate chance-constrained sizing whose feasible set is $[\nmin,\nmax]$
+(Proposition~\ref{prop:window}). Empirically, we check prediction-interval
+coverage and exercise the workflow in a public Besu/QBFT CI campaign
+(Sections~\ref{sec:exp}--\ref{sec:case}), including a path check of consistency
+with Proposition~\ref{prop:identifiability} within that configuration.
+Scope: throughput and detection under the investigated deployment; absolute TPS
+are environment-specific; cross-client replication is out of scope. Reported
+coefficients are deployment-specific; the methodology is intended to transfer
+under matching measurement conditions.

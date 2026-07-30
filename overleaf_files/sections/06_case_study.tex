@@ -20,25 +20,27 @@ Substituting the calibrated coefficients
 ($\beta=\resBeta$, $\gamma=\resGamma$) at $\cc^{\star}=\resCstar$ yields
 $\kappaScale=\resKappa$ and feasibility window
 $[\resNminCase,\resNmaxCase]$ with $\nopt=\resNoptCase$
-(Proposition~\ref{prop:window}; Figure~\ref{fig:window}). The collapse to a
-single admissible count is the capacity-planning conclusion under this demand
-and hardware class: the network is throughput-bound at the smallest BFT set.
+(Proposition~\ref{prop:window}; Figure~\ref{fig:window}). Under this demand and
+hardware class the window collapses to a single admissible count: the network is
+throughput-bound at the smallest BFT set admitted by the formulation.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/fig_window}
+\includegraphics[width=0.42\textwidth]{figures/fig_window}
 \caption{Scenario~A: at minimal admissible $\kappaScale=\resKappa$, the
-feasibility window is $[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$}
+feasibility window is $[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$. The
+dash-dotted line marks the calibration limit $\n=\resNmaxMeasured$; the shaded
+region to its right is model-based extrapolation}
 \label{fig:window}
 \end{figure}
 
 \paragraph{Scenario B (doubled peak demand, fixed hardware class).}
 Hold $\kappaScale=\resKappa$ and replace $\Dpk$ by $2\Dpk$. Then $h$
 in~\eqref{eq:h} falls by $\log 2$ everywhere; in particular $h(4)<0$, so the
-feasible set is empty (Corollary~\ref{cor:infeasible}). Doubling peak load on
-the same hardware class is an architectural impossibility under the calibrated
-law: adding validators cannot restore feasibility, because throughput falls
-with~$\n$.
+feasible set is empty (Corollary~\ref{cor:infeasible}). Within the calibrated
+law, doubling peak load on the same hardware class is an architectural
+impossibility: adding validators cannot restore feasibility, because throughput
+falls with~$\n$.
 
 \paragraph{Scenario C (WAN deployment, fixed hardware class).}
 Retain $\kappaScale=\resKappa$ and $\Dpk$, but substitute the high-RTT
@@ -47,29 +49,32 @@ penalty yields $h(4)<0$ and an empty window: a hardware class that is
 marginally admissible under LAN $\beta$ becomes infeasible under WAN $\beta$
 without raising $\kappaScale$.
 
-The workflow applies equally to registry and identity sizing; binding elections
-on a blockchain remain outside the recommendation
-\cite{springall2014,specter2020,park2021}.
+The workflow applies equally to registry and identity sizing under analogous
+demand assumptions; binding elections on a blockchain remain outside the
+recommendation \cite{springall2014,specter2020,park2021}.
 
 \subsection{What this implies}
 \label{sec:discussion}
 
 A fitted $(\beta,\gamma)$ transfers when concurrency path, quota regime, and
-RTT class match the calibration. Future benchmarks should report $\lambda$ (or
-$\lambda=0$), per-validator quota, and RTT class
+RTT class match the calibration. Our results suggest that future benchmarks
+should report $\lambda$ (or $\lambda=0$), per-validator quota, and RTT class
 (Corollary~\ref{cor:sign}).
 
 \subsection{Limitations}
 \label{sec:limitations}
 
-\emph{Fault class.}
-Encrypted transport precludes selective consensus-message injection, so X5
-realizes omission and duplication only. With AUC~$\resAuc$, the framework
-defaults to the throughput-bound window.
+\emph{Fault class.} Encrypted transport limits X5 to omission/duplication
+(AUC~$\resAuc$; throughput-bound window).
 
-\emph{Range and platform.}
-Commodity CI restricts physical scale to $\n\le\resNmaxMeasured$. Beyond that
-range, prediction intervals quantify extrapolation risk. The bi-factor law
-isolates~$\beta$ so that $\kappaScale$ in~\eqref{eq:kappa} supplies a
-conservative production scale-up. Numerical $(\beta,\gamma)$ are Besu/QBFT-
-specific; Proposition~\ref{prop:identifiability} is not.
+\emph{Infrastructure and range.} Experiments use commodity four-core CI with
+$\n\le\resNmaxMeasured$. Beyond that range, extrapolation is model-based and
+is quantified by prediction intervals.
+
+\emph{Coefficients versus methodology.} Numerical $(\beta,\gamma)$ are
+Besu/QBFT-specific. Proposition~\ref{prop:identifiability} is analytical under
+model assumptions; the campaign shows consistency within the investigated
+configuration. The \RNM{} protocol and chance-constrained workflow are intended
+to generalize under matching measurement conditions; production scale-up uses
+$\kappaScale$ in~\eqref{eq:kappa}.
+

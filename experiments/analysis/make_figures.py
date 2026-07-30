@@ -125,6 +125,11 @@ def fig_window(proc: Path, out: Path) -> None:
         return
     s = json.loads(path.read_text(encoding="utf-8"))
     curve = pd.DataFrame(s["curve"])
+    fit_path = proc / "fit.json"
+    n_cal = None
+    if fit_path.exists():
+        fit = json.loads(fit_path.read_text(encoding="utf-8"))
+        n_cal = fit.get("n_max_measured")
 
     fig, ax = plt.subplots(figsize=(4.6, 3.0))
     ax.semilogy(curve["n"], curve["lower_tps"], "-",
@@ -138,9 +143,19 @@ def fig_window(proc: Path, out: Path) -> None:
                    label=rf"$n_{{min}}={s['n_min']:.0f}$")
         if s["n_max"] and s["n_min"] <= s["n_max"]:
             ax.axvspan(s["n_min"], s["n_max"], color="C0", alpha=0.12)
+    if n_cal is not None:
+        ax.axvline(n_cal, color="0.35", ls="-.", lw=1.2,
+                   label=rf"calibration limit $n={n_cal}$")
+        xmax = float(curve["n"].max())
+        if n_cal < xmax:
+            ymin, ymax = ax.get_ylim()
+            ax.axvspan(n_cal, xmax, color="0.5", alpha=0.06, zorder=0)
+            ax.text(0.5 * (n_cal + xmax), ymin * (ymax / ymin) ** 0.08,
+                    "extrapolation", ha="center", va="bottom",
+                    fontsize=7, color="0.35")
     ax.set_xlabel("validators $n$")
     ax.set_ylabel("throughput (tx/s)")
-    ax.legend(frameon=False, fontsize=8)
+    ax.legend(frameon=False, fontsize=7)
     fig.savefig(out / "fig_window.pdf")
     plt.close(fig)
 

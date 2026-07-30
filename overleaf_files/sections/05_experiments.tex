@@ -9,18 +9,18 @@ network of~$\n$ validators under the \RNM{} protocol
 (Definition~\ref{def:rnm}). A closed-loop generator drives~$\cc$ concurrent
 submitters and records steady-state committed throughput after warm-up. Faults
 are injected with kernel traffic control (omission and duplication; not
-equivocation). Detector rates come from signer metrics over~$\w$ rounds.
+equivocation).
 
 \textbf{X1}/\textbf{X3} calibrate $(\beta,\gamma)$ on a factorial grid;
-\textbf{X2} validates the quota regime; \textbf{X3b} re-samples along
-concurrency paths; \textbf{X4} varies emulated RTT; \textbf{X5} supplies
-detector rates; \textbf{X7}/\textbf{X8} check prediction-interval coverage and
+\textbf{X2} checks the quota regime; \textbf{X3b} re-samples along
+concurrency paths; \textbf{X4} varies emulated RTT; \textbf{X5} reports
+detector AUC; \textbf{X7}/\textbf{X8} check prediction-interval coverage and
 sizing ablation. Cross-client replication (\textbf{X9}/GoQuorum) is out of
 scope. In total $\resTotalRuns$ successful records,
 $\approx\resCoreHours$ core-hours, $\n_{\max}=\resNmaxMeasured$.
 
 \paragraph{Reproducibility.}
-All experiments are fully reproducible from the public CI workflow and archived
+All experiments are reproducible from the public CI workflow and archived
 artefacts at \url{https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_for_Byzantine_Consensus}.
 
 \subsection{Results}
@@ -30,22 +30,23 @@ Joint OLS on the reference-quota subset yields
 $\beta=\resBeta\pm\resBetaSE$ and $\gamma=\resGamma\pm\resGammaSE$
 ($R^{2}=\resRsq$; Table~\ref{tab:results}). Under \RNM{} one expects $\beta>0$:
 consensus cost grows with validator count when concurrency is held fixed. The
-fit confirms that expectation at $\q=0.25$.
+fit confirms that expectation at $\q=0.25$ within the investigated setting.
 
 \emph{X3b --- path check of Proposition~\ref{prop:identifiability}.}
 A single-factor fit along $\lambda=1$ gives $\ahat=\resAlphaHat$ against the
 predicted $\gamma\lambda-\beta=\resAlphaPred$.
-Figure~\ref{fig:confounding} shows that measured exponents track the line
-$\gamma\lambda-\beta$ across $\lambda\in\{0,0.5,1,2\}$. The protocol need not
-change for the observed scaling exponent to change; only the concurrency
-schedule does.
+Figure~\ref{fig:confounding} shows that measured exponents track
+$\gamma\lambda-\beta$ across $\lambda\in\{0,0.5,1,2\}$ within the investigated
+configuration. This is consistency with the analytical prediction under the
+campaign's measurement conditions, not a claim of universal validity.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/fig_confounding}
-\caption{Measured single-factor exponents track the prediction
-$\gamma\lambda-\beta$, supporting Proposition~\ref{prop:identifiability}. Sign
-change predicted at $\lambda=\beta/\gamma=\resLambda$}
+\includegraphics[width=0.42\textwidth]{figures/fig_confounding}
+\caption{Measured single-factor exponents track $\gamma\lambda-\beta$ within
+the investigated configuration, consistent with the analytical prediction of
+Proposition~\ref{prop:identifiability}.
+Sign change predicted at $\lambda=\beta/\gamma=\resLambda$}
 \label{fig:confounding}
 \end{figure}
 
@@ -57,16 +58,13 @@ Coefficients are therefore reported at the stable reference quota $\q=0.25$.
 
 \emph{X4 --- latency.}
 Under elevated emulated RTT, $\beta$ rises from $\resBetaRttZero$ to
-$\resBetaRttHigh$. WAN delay steepens the consensus penalty in validator count.
-Sizing rules calibrated on LAN-like RTT are optimistic for geo-distributed
-deployments.
+$\resBetaRttHigh$. WAN delay steepens the consensus penalty in validator count
+in this campaign. Sizing rules calibrated on LAN-like RTT are therefore
+optimistic for geo-distributed deployments unless re-calibrated.
 
 \emph{X5 --- detector.}
-Signer-metric detection of omission/duplication yields AUC$\,=\,\resAuc$
-(Figure~\ref{fig:roc}). With this informative limit under encrypted transport,
-the sizing framework defaults to the throughput-bound constraint; a stronger
-detector would raise~$\nmin$ without changing the mathematics of
-Section~\ref{sec:sizing}.
+Omission/duplication detection yields AUC$\,=\,\resAuc$
+(Figure~\ref{fig:roc}), so sizing defaults to the throughput-bound constraint.
 
 \begin{table}[!t]
 \centering
@@ -100,21 +98,18 @@ coverage $90\%$/$95\%$ & $\resCovNinety$, $\resCovNinetyFive$ &
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.42\textwidth]{figures/fig_roc}
-\caption{Detector ROC under omission/duplication injection
-(AUC$\,=\,\resAuc$). Throughput sets the sizing window at this operating point}
+\includegraphics[width=0.40\textwidth]{figures/fig_roc}
+\caption{Detector ROC (AUC$\,=\,\resAuc$); throughput binds the window}
 \label{fig:roc}
 \end{figure}
 
 \emph{X7/X8 --- coverage, USL comparison, and ablation.}
-Hold-out coverage meets the nominal levels in Table~\ref{tab:results}.
-The fitted covariance confirms that $\hat{V}$ is nondecreasing for
-$\n\ge\resNmaxMeasured$, so~$h$ in~\eqref{eq:h} is strictly decreasing on the
-extrapolation range; on the measured grid we evaluate~$h$ directly.
+Hold-out coverage meets the nominal levels in Table~\ref{tab:results} for the
+calibrated range. The fitted covariance confirms that $\hat{V}$ is nondecreasing
+for $\n\ge\resNmaxMeasured$, so~$h$ in~\eqref{eq:h} is strictly decreasing on
+the extrapolation range; on the measured grid we evaluate~$h$ directly.
 Out-of-sample log-RMSE for linear / single-factor / USL~\cite{gunther2007} /
 bi-factor predictors is $\resRmseLinear$, $\resRmseSingle$, $\resRmseUsl$,
-$\resRmseOurs$. The bi-factor improvement over USL
-($\resRmseOurs$ vs.\ $\resRmseUsl$) follows because USL merges concurrency and
-replica count into one load variable, whereas \RNM{} decouples them and
-isolates consensus overhead. Relative sizing costs:
+$\resRmseOurs$. The bi-factor improvement over USL is consistent with decoupling
+concurrency from replica count under \RNM{}. Relative sizing costs:
 $\resCostLinear$, $\resCostSingle$, $\resCostUsl$, $\resCostOurs$.

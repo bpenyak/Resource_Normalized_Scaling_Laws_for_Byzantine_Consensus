@@ -35,18 +35,21 @@ from Commodity-CI Measurements}
 \textbf{Problem.} Sizing a permissioned BFT validator set for national-scale
 e-governance must reconcile degrading consensus throughput with improving
 fault-detection power as~$\n$ grows; without reporting the concurrency path,
-published single-factor exponents cannot be read as protocol properties.
+published single-factor exponents are difficult to interpret as intrinsic
+protocol properties.
 \textbf{Contributions.}
-\emph{Method:} resource-normalized measurement isolating consensus cost from
+An engineering methodology for resource-normalized capacity planning:
+\emph{method} --- resource-normalized measurement isolating consensus cost from
 host contention;
-\emph{analysis:} identifiability result
+\emph{analysis} --- identifiability relation
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ along a concurrency path;
-\emph{engineering:} chance-constrained sizing with feasible set
+\emph{engineering} --- chance-constrained sizing with feasible set
 $[\nmin,\nmax]$;
-\emph{empirics:} coverage-validated prediction intervals on public CI.
-\textbf{Validation.} A four-core CI campaign covers
+\emph{empirics} --- coverage-checked prediction intervals on public CI.
+\textbf{Validation.} A four-core commodity-CI campaign covers
 $\n\le\resNmaxMeasured$, concurrency up to~$64$, emulated RTT, and
-omission/duplication fault injection.
+omission/duplication fault injection; fitted coefficients are
+deployment-specific.
 %
 \keywords{Byzantine fault tolerance, consensus, scaling law, capacity planning,
 chance-constrained optimization, e-governance}
@@ -67,14 +70,14 @@ chance-constrained optimization, e-governance}
 вул.~С.~Бандери, 12, 79013, Львів, Україна}
 
 \abstractUkr{%
-Метод визначення розміру множини валідаторів BFT-мережі для електронного
-урядування: пропускна здатність спадає зі зростанням~$\n$, а надійність
-виявлення відмов зростає з~$\n$.
-Внески: метод --- ресурсно-нормовані вимірювання; аналіз --- результат
+Методика ресурсно-нормованого планування потужності для визначення розміру
+множини валідаторів BFT-мережі в електронному урядуванні: пропускна здатність
+спадає зі зростанням~$\n$, а надійність виявлення відмов зростає з~$\n$.
+Внески: метод --- ресурсно-нормовані вимірювання; аналіз --- співвідношення
 ідентифікованості ($\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$);
 інженерія --- задача з імовірнісними обмеженнями та вікном
 $[\nmin,\nmax]$; емпірика --- прогнозні інтервали з перевіркою покриття у
-публічному CI.
+публічному CI. Коефіцієнти специфічні для дослідженого розгортання.
 %
 \keywordsUkr{візантійська відмовостійкість, консенсус, закон масштабування,
 планування потужності, оптимізація з імовірнісними обмеженнями, електронне

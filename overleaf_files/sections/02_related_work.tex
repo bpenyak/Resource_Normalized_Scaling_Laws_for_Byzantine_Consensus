@@ -7,25 +7,25 @@ messages~\cite{lamport1982,dwork1988}. Later designs ---
 HotStuff~\cite{yin2019}, Tendermint~\cite{buchman2016},
 Algorand~\cite{gilad2017}, HoneyBadgerBFT~\cite{miller2016} --- trade latency
 and randomization; Vukoli\'{c}~\cite{vukolic2015} argues that no protocol
-dominates. They fix the validator set; they do not size it under joint
-throughput and detection requirements.
+dominates. These lines of work fix the validator set; they do not size it under
+joint throughput and detection requirements.
 
 \emph{Benchmarks.}
 Fabric~\cite{androulaki2018,thakkar2018}, BLOCKBENCH~\cite{dinh2017} and
 BFT-SMaRt~\cite{sousa2018} report absolute throughput at chosen configurations.
-They do not separate concurrency from validator count, nor state a protocol
-under which exponents transfer.
+They do not separate concurrency from validator count, nor state measurement
+conditions under which fitted exponents would be expected to transfer.
 
 \emph{Scalability laws and tools.}
 Amdahl~\cite{amdahl1967}, Gustafson~\cite{gustafson1988} and Gunther's
 USL~\cite{gunther2007} fold concurrency and system size into one load variable
---- the confound that \RNM{} removes. Concentration
+--- the confound that \RNM{} is intended to remove. Concentration
 bounds~\cite{hoeffding1963,boucheron2013}, Kish's design
 effect~\cite{kish1965}, delta-method intervals~\cite{seber2003}, the residual
 bootstrap~\cite{efron1993} and chance-constrained
-programming~\cite{charnes1959,nemirovski2007} are standard instruments; what is
-specific is coupling throughput and detection through opposing monotonicities
-in~$\n$.
+programming~\cite{charnes1959,nemirovski2007} are standard instruments; the
+present framework couples throughput and detection through opposing
+monotonicities in~$\n$.
 
 \emph{Prior work.}
 Remote-voting analyses~\cite{springall2014,specter2020,park2021} place endpoint

@@ -2,23 +2,24 @@
 \label{sec:conclusions}
 
 \paragraph{What is established.}
-Along a concurrency path of slope~$\lambda$, the single-factor OLS scaling
-exponent satisfies $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
+Under the unsaturated bi-factor model and stated path assumptions, the
+single-factor OLS exponent satisfies
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
 (Proposition~\ref{prop:identifiability}). Opposing monotone constraints yield a
 closed integer feasibility window (Proposition~\ref{prop:window}). The
-contribution is a rigorous capacity-planning methodology: isolate the consensus
-exponent under \RNM{}, then size the validator set under calibrated chance
-constraints.
+contribution is a reproducible engineering methodology for resource-normalized
+capacity planning: isolate a consensus exponent under \RNM{}, then size the
+validator set under calibrated chance constraints.
 
-\paragraph{What is confirmed experimentally.}
-Under \RNM{} on four-core CI:
+\paragraph{What the experiments indicate.}
+Under \RNM{} on four-core commodity CI:
 $\beta=\resBeta\pm\resBetaSE$, $\gamma=\resGamma\pm\resGammaSE$; path
-re-sampling tracks $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$;
-coefficients at $\q=0.25$; coverage meets nominal levels; AUC$\,=\,\resAuc$
-defaults the window to throughput. WAN RTT raises~$\beta$ from
-$\resBetaRttZero$ to $\resBetaRttHigh$. Substituting the same coefficients
-shows that doubled demand or WAN $\beta$ at fixed $\kappaScale$ empties the
-window.
+re-sampling is consistent with $\gamma\lambda-\beta$ within the investigated
+configuration; coefficients at $\q=0.25$; coverage meets nominal levels within
+the calibrated range; AUC$\,=\,\resAuc$ defaults the window to throughput.
+WAN RTT raises~$\beta$ from $\resBetaRttZero$ to $\resBetaRttHigh$; doubled
+demand or WAN $\beta$ at fixed $\kappaScale$ empties the window. Numerical
+results are deployment-specific.
 
 \paragraph{What remains open.}
 Equivocation-capable instrumentation; multi-client numerical checks; latency or

@@ -1,0 +1,8 @@
+{
+  "beta_simulated": 0.030213957545874658,
+  "beta_measured": -0.19087963077964243,
+  "block_period_s": 2.2,
+  "tx_capacity_per_block": 154,
+  "calibration_n": 4,
+  "note": "simulation only; not reported as measurement"
+}
