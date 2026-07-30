@@ -1,29 +1,29 @@
 \section{Conclusions}
 \label{sec:conclusions}
 
-\paragraph{What is established.}
+\paragraph{Analytical results.}
 Under the unsaturated bi-factor model and stated path assumptions, the
 single-factor OLS exponent satisfies
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
 (Proposition~\ref{prop:identifiability}). Opposing monotone constraints yield a
-closed integer feasibility window (Proposition~\ref{prop:window}). The
-contribution is a reproducible engineering methodology for resource-normalized
-capacity planning: isolate a consensus exponent under \RNM{}, then size the
-validator set under calibrated chance constraints.
+closed integer feasibility window (Proposition~\ref{prop:window}).
 
-\paragraph{What the experiments indicate.}
+\paragraph{Experimentally supported observations.}
 Under \RNM{} on four-core commodity CI:
 $\beta=\resBeta\pm\resBetaSE$, $\gamma=\resGamma\pm\resGammaSE$; path
-re-sampling is consistent with $\gamma\lambda-\beta$ within the investigated
-configuration; coefficients at $\q=0.25$; coverage meets nominal levels within
-the calibrated range; AUC$\,=\,\resAuc$ defaults the window to throughput.
-WAN RTT raises~$\beta$ from $\resBetaRttZero$ to $\resBetaRttHigh$; doubled
-demand or WAN $\beta$ at fixed $\kappaScale$ empties the window. Numerical
-results are deployment-specific.
+re-sampling is consistent with $\gamma\lambda-\beta$ within the evaluated
+deployment; coefficients at $\q=0.25$; coverage meets nominal levels within the
+calibrated range; AUC$\,=\,\resAuc$ defaults the window to throughput. WAN RTT
+raises~$\beta$ from $\resBetaRttZero$ to $\resBetaRttHigh$; doubled demand or
+WAN $\beta$ at fixed $\kappaScale$ empties the window under the calibrated
+model. Numerical results are deployment-specific.
 
-\paragraph{What remains open.}
-Equivocation-capable instrumentation; multi-client numerical checks; latency or
-finality constraints inside the window; online recalibration of~$\beta$.
+\paragraph{Engineering implications.}
+The contribution is a reproducible methodology for resource-normalized
+calibration and capacity planning under \RNM{} and calibrated chance
+constraints. Commodity CI is the intended calibration substrate; other
+deployments require recalibration of $(\beta,\gamma)$ (and, where relevant,
+$(\pd,\pf,\rho)$) while reusing the same workflow and public artefacts.
 
 \subsection*{Conflict of interest}
 The authors declare no conflict of interest.

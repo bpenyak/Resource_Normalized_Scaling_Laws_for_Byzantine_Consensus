@@ -8,35 +8,35 @@ procurement question: \emph{how many validators should the network have?}
 The validator count~$\n$ pulls in opposite directions. Throughput argues for
 small~$\n$: every validator executes every transaction, and PBFT-family
 protocols exchange $O(\n^{2})$ messages per block. Detection reliability argues
-for large~$\n$. This paper develops a capacity-planning methodology that
-combines the two under resource-normalized measurement.
+for large~$\n$. This paper develops a reproducible engineering methodology that
+combines the two under resource-normalized calibration.
 
-Published single-factor fits $\TPS(\n)\propto\n^{\alpha}$ disagree in magnitude
-and sometimes in sign. Our earlier studies, extrapolated to sixty validators,
-differ by roughly an order of magnitude. Such disagreement is often read as
-protocol-specific behaviour. Within the investigated setting we show that it
-can arise from measurement design alone: concurrency is rarely held fixed
-while~$\n$ varies, so the fitted scaling exponent mixes load-generator growth
-with consensus overhead. Without reporting the concurrency path, published
-exponents are difficult to interpret as intrinsic protocol properties.
-Packing many validators onto one host adds a second confound --- CPU
-contention --- that resource-normalized measurement is designed to isolate.
+A practical obstacle is that dedicated multi-host testbeds are often
+unavailable at design time. Commodity CI runners are accessible and
+reproducible, yet pack many validators onto few cores. Without normalization,
+fitted exponents mix consensus cost with host contention and with the load
+generator's concurrency schedule. Published single-factor fits
+$\TPS(\n)\propto\n^{\alpha}$ then disagree in magnitude and sometimes in sign.
+Our earlier studies, extrapolated to sixty validators, differ by roughly an
+order of magnitude --- often read as protocol-specific behaviour. Within the
+investigated setting we show that it can arise from measurement design alone.
+Without reporting the concurrency path, published exponents are difficult to
+interpret as intrinsic protocol properties.
 
 \paragraph{Contributions.}
 Methodologically, we introduce a resource-normalized measurement (\RNM{})
 protocol that fixes CPU quota~$\q$ per validator and reports
-$\TPSn=\TPS/\q$, separating consensus cost from host contention.
-Analytically, under the unsaturated bi-factor model, along a concurrency path
-of slope~$\lambda$ the single-factor OLS fit satisfies
+$\TPSn=\TPS/\q$. Analytically, under the unsaturated bi-factor model, a
+concurrency path of slope~$\lambda$ yields
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Proposition~\ref{prop:identifiability}); the relation is a consequence of the
-model assumptions, not an empirical universal. From a planning perspective, we
-formulate chance-constrained sizing whose feasible set is $[\nmin,\nmax]$
-(Proposition~\ref{prop:window}). Empirically, we check prediction-interval
-coverage and exercise the workflow in a public Besu/QBFT CI campaign
-(Sections~\ref{sec:exp}--\ref{sec:case}), including a path check of consistency
-with Proposition~\ref{prop:identifiability} within that configuration.
-Scope: throughput and detection under the investigated deployment; absolute TPS
+(Proposition~\ref{prop:identifiability}) --- a consequence of the model
+assumptions, not an empirical universal. From a planning perspective, we
+formulate chance-constrained sizing with feasible set $[\nmin,\nmax]$
+(Proposition~\ref{prop:window}). Empirically, we calibrate the workflow on a
+public Besu/QBFT commodity-CI campaign, check prediction-interval coverage, and
+verify consistency with Proposition~\ref{prop:identifiability} within that
+configuration (Sections~\ref{sec:exp}--\ref{sec:case}).
+Scope: throughput and detection under the evaluated deployment; absolute TPS
 are environment-specific; cross-client replication is out of scope. Reported
-coefficients are deployment-specific; the methodology is intended to transfer
-under matching measurement conditions.
+coefficients are deployment-specific; the methodology is intended for
+recalibration under matching measurement conditions.

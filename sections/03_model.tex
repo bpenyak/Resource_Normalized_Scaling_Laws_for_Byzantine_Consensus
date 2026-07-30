@@ -1,10 +1,10 @@
 \section{Resource-normalized measurement and the bi-factor law}
 \label{sec:model}
 
-Capacity planning for BFT benefits from an exponent that reflects consensus
+Capacity planning benefits from a calibrated exponent that reflects consensus
 cost rather than host contention or load-generator growth. We introduce an
-isolation protocol, a bi-factor law, and an identifiability result under stated
-assumptions.
+isolation protocol, a bi-factor characterization, and an identifiability result
+under stated assumptions.
 
 \subsection{Resource-normalized measurement as an isolation tool}
 
@@ -27,16 +27,16 @@ $\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+r)$ with $|r|\le C\q$ for a
 constant~$C$ independent of~$(\n,\cc)$ there.
 \end{Assumption}
 
-\paragraph{Assumption validation.}
+\paragraph{Assumption check.}
 Under Assumption~\ref{as:separable} and a power-law factor
 $\Phi\propto\n^{-\beta}$, the OLS slope of $\log\TPSn$ on $\log\n$ at fixed
 concurrency is independent of~$\q$: the relative remainder is absorbed by the
 intercept. Section~\ref{sec:exp} tests this invariance across
-$\q\in\{0.20,0.25,0.33\}$. Within the investigated campaign the model is
-bounded to the reference quota $\q=0.25$; outside that regime the numerical law
-must be re-fit.
+$\q\in\{0.20,0.25,0.33\}$. Within the evaluated deployment the calibrated model
+is reported at the reference quota $\q=0.25$; outside that regime the numerical
+coefficients must be re-fit.
 
-\begin{Def}[Bi-factor scaling law]
+\begin{Def}[Bi-factor scaling characterization]
 \label{def:bifactor}
 Under the \RNM{} protocol,
 \begin{equation}
@@ -52,18 +52,16 @@ $\log\TPS=\log\Tzero+\gamma\log\cc-\beta\log\n$.
 
 The form separates concurrency from validator-count scaling, reduces to a
 power law for $\cc\ll\csat$, saturates at large~$\cc$, and contains the
-classical single-factor law as the case $\gamma=0$ (or $\lambda=0$ with
+classical single-factor fit as the case $\gamma=0$ (or $\lambda=0$ with
 $\alpha=-\beta$).
 
 \subsection{Identifiability}
 
-Proposition~\ref{prop:identifiability} is an analytical result under the
-unsaturated bi-factor model and the stated path and noise assumptions. Its
-practical value is an \emph{engineering interpretation}: discrepant
-single-factor BFT exponents can arise from the concurrency schedule rather than
-from the protocol alone. The campaign in Section~\ref{sec:exp} checks
-consistency with the predicted line within the investigated configuration; it
-does not establish universal validity beyond those assumptions.
+Proposition~\ref{prop:identifiability} is analytical under the unsaturated
+bi-factor model and stated path assumptions. Its engineering value is
+interpretive: discrepant single-factor exponents can arise from the concurrency
+schedule. Section~\ref{sec:exp} checks consistency within the evaluated
+deployment; that check does not extend the claim beyond the model assumptions.
 
 \begin{Proposition}[Identifiability of the consensus exponent]
 \label{prop:identifiability}
@@ -104,7 +102,7 @@ $\approx7$, matching the order of the discrepancy in~\cite{peniak2026a}.
 
 \begin{Corollary}[Non-transferability of single-factor exponents]
 \label{cor:sign}
-Under the unsaturated bi-factor law, laboratories measuring along
+Under the unsaturated bi-factor model, laboratories measuring along
 $\lambda_{1}\ne\lambda_{2}$ obtain exponents differing by
 $\gamma(\lambda_{1}-\lambda_{2})$. Without reporting~$\lambda$, published
 single-factor exponents should not be treated as transferable protocol
@@ -115,6 +113,6 @@ properties across measurement designs.
 
 On a factorial grid ($\lambda=0$) we estimate $(\log\Tzero,\gamma,\beta)$ by
 OLS in log-space and $(\csat,\theta)$ by nonlinear least squares on the full
-$\cc$-sweep (Section~\ref{sec:exp}). The calibrated law then feeds prediction
+$\cc$-sweep (Section~\ref{sec:exp}). The calibrated model then feeds prediction
 intervals and the sizing program of the next section within the range supported
 by the campaign.

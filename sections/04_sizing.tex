@@ -1,10 +1,10 @@
 \section{Prediction intervals, detection, and the sizing problem}
 \label{sec:sizing}
 
-An identifiable exponent is an input to capacity planning. This section
-assembles a sizing framework: a throughput chance constraint and an optional
-detection constraint. Any detector yielding measured $(\pd,\pf,\rho)$ plugs in;
-X5 is one instance.
+A calibrated consensus exponent is an input to capacity planning. This section
+assembles an engineering workflow: a throughput chance constraint and an
+optional detection constraint. Any detector yielding measured $(\pd,\pf,\rho)$
+plugs in; experiment~X5 is one instance under the evaluated deployment.
 
 \subsection{Definitions and assumptions}
 
@@ -30,12 +30,12 @@ With regressor $\mathbf{z}=(1,\log\cc,-\log\n)^{\!\top}$ and
 $\hat\vartheta=(\log\Tzero,\gamma,\beta)^{\!\top}$, the delta
 method~\cite{seber2003} gives predictive variance
 $\hat{V}=\mathbf{z}^{\!\top}\widehat{\Cov}(\hat\vartheta)\mathbf{z}+\hat\sigma^{2}$.
-An approximate $(1-\epsp)$ interval for $\TPS(\n,\cc)$ is then
+An approximate $(1-\epsp)$ prediction interval for $\TPS(\n,\cc)$ is then
 $\exp\{\log\widehat{\TPS}\mp\zq_{1-\epsp/2}\hat{V}^{1/2}\}$;\label{st:pi}
 the one-sided lower endpoint $\underline{\TPS}_{1-\epsp}$ uses $\zq_{1-\epsp}$.
 A residual bootstrap~\cite{efron1993} supplies empirical quantiles when residual
-normality is doubtful. Coverage is checked on held-out validator counts
-(Section~\ref{sec:exp}).
+normality is doubtful. Coverage is checked on held-out validator counts within
+the calibrated range (Section~\ref{sec:exp}).
 
 With $\kf=\lceil\phi\n\rceil$, a design-effect heuristic yields the approximate
 miss probability\label{st:rho}
@@ -51,8 +51,8 @@ which is nonincreasing in $\n$ and $\w$. The cut $\pmiss\le\epss$ gives
 \label{eq:nmin}
 \end{equation}
 This adapts Hoeffding~\cite{hoeffding1963} via Kish~\cite{kish1965} with
-$\neff=\kf\w/(1+(\kf-1)\rho)$. With X5 rates (AUC$\,=\,\resAuc$), the campaign
-defaults to the throughput-bound constraint.
+$\neff=\kf\w/(1+(\kf-1)\rho)$. With X5 AUC$\,=\,\resAuc$, the evaluated
+deployment defaults to the throughput-bound constraint.
 
 \subsection{The sizing program}
 
@@ -73,10 +73,10 @@ h(\n)\eqdef\log(\kappaScale\,\Tzero\,\gfun(\cc^{\star})/\Dpk)
 -\beta\log\n-\zq_{1-\epsp}\hat{V}^{1/2}(\n,\cc^{\star})\ge0.
 \label{eq:h}
 \end{equation}
-On the extrapolation range the fitted covariance confirms that $\hat{V}$ is
-nondecreasing in $\log\n$ (Section~\ref{sec:exp}), so with $\beta>0$ the map
-$h$ is strictly decreasing there; on the measured grid we evaluate~$h$
-directly.
+On the model-based extrapolation range the fitted covariance confirms that
+$\hat{V}$ is nondecreasing in $\log\n$ (Section~\ref{sec:exp}), so with
+$\beta>0$ the map $h$ is strictly decreasing there; on the measured grid we
+evaluate~$h$ directly.
 
 \begin{Proposition}[Feasibility window]
 \label{prop:window}
@@ -99,5 +99,6 @@ stated constraints: the architecture must change, not merely the provisioning.
 \end{Corollary}
 
 The window is the intersection of two monotone constraints
-\cite{charnes1959,nemirovski2007}; within the proposed framework it converts
-calibrated exponents into a sizing rule for the investigated deployment class.
+\cite{charnes1959,nemirovski2007}. Within the proposed methodology it converts
+a calibrated model into a reproducible sizing workflow for the evaluated
+deployment class.
