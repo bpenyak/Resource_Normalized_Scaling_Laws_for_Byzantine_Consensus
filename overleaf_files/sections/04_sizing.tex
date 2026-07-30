@@ -50,9 +50,11 @@ which is nonincreasing in $\n$ and $\w$. The cut $\pmiss\le\epss$ gives
 \frac{\log(1/\epss)}{2\w(\pd-\thr)^{2}}\right\rceil .
 \label{eq:nmin}
 \end{equation}
-This adapts Hoeffding~\cite{hoeffding1963} via Kish~\cite{kish1965} with
-$\neff=\kf\w/(1+(\kf-1)\rho)$. With X5 AUC$\,=\,\resAuc$, the evaluated
-deployment defaults to the throughput-bound constraint.
+Expression~\eqref{eq:pmiss} is an engineering approximation adapting
+Hoeffding~\cite{hoeffding1963} via Kish~\cite{kish1965}
+($\neff=\kf\w/(1+(\kf-1)\rho)$), not a new exact bound.
+With X5 AUC$\,=\,\resAuc$, the evaluated deployment defaults to the
+throughput-bound constraint.
 
 \subsection{The sizing program}
 

@@ -24,19 +24,19 @@ Without reporting the concurrency path, published exponents are difficult to
 interpret as intrinsic protocol properties.
 
 \paragraph{Contributions.}
-Methodologically, we introduce a resource-normalized measurement (\RNM{})
-protocol that fixes CPU quota~$\q$ per validator and reports
-$\TPSn=\TPS/\q$. Analytically, under the unsaturated bi-factor model, a
-concurrency path of slope~$\lambda$ yields
-$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Proposition~\ref{prop:identifiability}) --- a consequence of the model
-assumptions, not an empirical universal. From a planning perspective, we
+The central methodological contribution is resource-normalized measurement
+(\RNM{}): fixed CPU quota~$\q$ per validator and $\TPSn=\TPS/\q$, calibrating
+consensus cost separately from host contention. Analytically, under the
+unsaturated bi-factor model,
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ along a concurrency path
+(Proposition~\ref{prop:identifiability}) interprets measured single-factor
+exponents and shows why an \RNM{} factorial design ($\lambda=0$) matters; the
+relation follows from model assumptions, not an empirical universal. We also
 formulate chance-constrained sizing with feasible set $[\nmin,\nmax]$
-(Proposition~\ref{prop:window}). Empirically, we calibrate the workflow on a
-public Besu/QBFT commodity-CI campaign, check prediction-interval coverage, and
-verify consistency with Proposition~\ref{prop:identifiability} within that
+(Proposition~\ref{prop:window}), and calibrate the workflow on public Besu/QBFT
+commodity CI with coverage checks and a path consistency check within that
 configuration (Sections~\ref{sec:exp}--\ref{sec:case}).
 Scope: throughput and detection under the evaluated deployment; absolute TPS
-are environment-specific; cross-client replication is out of scope. Reported
-coefficients are deployment-specific; the methodology is intended for
-recalibration under matching measurement conditions.
+environment-specific; cross-client replication out of scope. Coefficients are
+deployment-specific; the methodology is for recalibration under matching
+conditions.

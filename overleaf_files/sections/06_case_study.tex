@@ -27,11 +27,12 @@ throughput-bound at the smallest BFT set admitted by the formulation.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.38\textwidth]{figures/fig_window}
-\caption{Scenario~A: lower PI throughput vs.\ $\n$ at $\kappaScale=\resKappa$;
-window $[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$. Dash-dotted:
-calibration limit $\n=\resNmaxMeasured$ (measured left; model extrapolation
-right)}
+\includegraphics[width=0.34\textwidth]{figures/fig_window}
+\caption{Scenario~A: calibrated lower PI throughput vs.\ $\n$ at
+$\kappaScale=\resKappa$; window
+$[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$. Dash-dotted line:
+calibration limit $\n=\resNmaxMeasured$ (measured region to the left;
+model-based extrapolation to the right)}
 \label{fig:window}
 \end{figure}
 
@@ -71,9 +72,9 @@ $\n\le\resNmaxMeasured$ is the intended calibration substrate. Beyond measured
 counts, predictions are model-based; prediction intervals quantify
 extrapolation uncertainty.
 
-\emph{Coefficients versus methodology.} Numerical $(\beta,\gamma)$ are
-Besu/QBFT-specific and should not be transferred directly.
-Proposition~\ref{prop:identifiability} is analytical under model assumptions;
-the \RNM{} protocol and chance-constrained workflow transfer via recalibration
-under matching measurement conditions, with production scale-up $\kappaScale$
+\emph{Coefficients versus methodology.}
+Coefficients $(\beta,\gamma)$ are Besu/QBFT-specific and must not be copied
+across deployments. The \RNM{} protocol and chance-constrained workflow transfer
+via recalibration under matching conditions; Proposition~\ref{prop:identifiability}
+remains analytical under its assumptions. Production scale-up uses $\kappaScale$
 in~\eqref{eq:kappa}.
