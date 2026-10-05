@@ -1,7 +1,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-Permissioned Byzantine Fault Tolerant (BFT) consensus underpins e-governance
+Permissioned Byzantine Fault Tolerant (BFT) consensus underpins \mbox{e-governance}
 systems --- voting, registries, digital identity --- and raises a concrete
 procurement question: \emph{how many validators should the network have?}
 
@@ -20,23 +20,23 @@ $\TPS(\n)\propto\n^{\alpha}$ then disagree in magnitude and sometimes in sign.
 Our earlier studies, extrapolated to sixty validators, differ by roughly an
 order of magnitude --- often read as protocol-specific behaviour. Within the
 investigated setting we show that it can arise from measurement design alone.
-Without reporting the concurrency path, published exponents are difficult to
-interpret as intrinsic protocol properties.
 
 \paragraph{Contributions.}
 The central methodological contribution is resource-normalized measurement
 (\RNM{}): fixed CPU quota~$\q$ per validator and $\TPSn=\TPS/\q$, calibrating
-consensus cost separately from host contention. Analytically, under the
-unsaturated bi-factor model,
+consensus cost separately from host contention; in the evaluated deployment it
+stabilizes the exponent at a fixed quota, although the exponent still depends
+on the quota level (Section~\ref{sec:exp}). Analytically, under the unsaturated
+bi-factor model with zero-mean noise,
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ along a concurrency path
-(Proposition~\ref{prop:identifiability}) interprets measured single-factor
-exponents and shows why an \RNM{} factorial design ($\lambda=0$) matters; the
-relation follows from model assumptions, not an empirical universal. We also
-formulate chance-constrained sizing with feasible set $[\nmin,\nmax]$
-(Proposition~\ref{prop:window}), and calibrate the workflow on public Besu/QBFT
-commodity CI with coverage checks and a path consistency check within that
-configuration (Sections~\ref{sec:exp}--\ref{sec:case}).
-Scope: throughput and detection under the evaluated deployment; absolute TPS
-environment-specific; cross-client replication out of scope. Coefficients are
-deployment-specific; the methodology is for recalibration under matching
-conditions.
+(Proposition~\ref{prop:identifiability}) --- the standard \mbox{omitted-variable}
+bias~\cite{wooldridge2010}, used here to interpret measured single-factor
+exponents and to show why an \RNM{} factorial design ($\lambda=0$) matters. We
+also formulate chance-constrained sizing with feasible set $[\nmin,\nmax]$
+(Proposition~\ref{prop:window}) and calibrate the workflow on public Besu/QBFT
+commodity CI (Sections~\ref{sec:exp}--\ref{sec:case}). The
+throughput--detection trade-off is formulated but not demonstrated: the
+measured detector is near chance, the detection constraint is unsatisfiable
+with it, and the window is set by throughput alone
+(Section~\ref{sec:detection}). Coefficients are deployment-specific and
+intended for recalibration; cross-client replication is out of scope.

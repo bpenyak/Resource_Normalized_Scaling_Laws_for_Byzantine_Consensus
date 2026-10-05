@@ -2,28 +2,28 @@
 \label{sec:conclusions}
 
 \paragraph{Analytical results.}
-Under the unsaturated bi-factor model and stated path assumptions, the
-single-factor OLS exponent satisfies
+Under the unsaturated bi-factor model with zero-mean, finite-variance noise and
+the stated path assumptions, the single-factor OLS exponent satisfies
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Proposition~\ref{prop:identifiability}). Opposing monotone constraints yield a
-closed integer feasibility window (Proposition~\ref{prop:window}).
+(Proposition~\ref{prop:identifiability}), an \mbox{omitted-variable} bias. Opposing
+monotone constraints yield a closed integer feasibility window
+(Proposition~\ref{prop:window}).
 
 \paragraph{Experimentally supported observations.}
-Under \RNM{} on four-core commodity CI:
-$\beta=\resBeta\pm\resBetaSE$, $\gamma=\resGamma\pm\resGammaSE$; path
-re-sampling is consistent with $\gamma\lambda-\beta$ within the evaluated
-deployment; coefficients at $\q=0.25$; coverage meets nominal levels within the
-calibrated range; AUC$\,=\,\resAuc$ defaults the window to throughput. WAN RTT
-raises~$\beta$ from $\resBetaRttZero$ to $\resBetaRttHigh$; doubled demand or
-WAN $\beta$ at fixed $\kappaScale$ empties the window under the calibrated
-model. Numerical results are deployment-specific.
+Under \RNM{} on four-core commodity CI, $\beta=\resBeta\pm\resBetaSE$ and
+$\gamma=\resGamma\pm\resGammaSE$ at $\q=0.25$; $\beta$ is stable at a fixed
+quota but quota-dependent; path re-sampling agrees with $\gamma\lambda-\beta$.
+The detector is near chance, so the window is throughput-only. Doubled demand
+or WAN $\beta$ requires $\kappaScale=\resKappaDoubled$ or $\approx\resKappaWan$,
+respectively, instead of $\resKappa$; these values rest on the untested
+linearity of throughput in the quota. Numerical results are deployment-specific.
 
 \paragraph{Engineering implications.}
-The contribution is a reproducible methodology for resource-normalized
-calibration and capacity planning under \RNM{} and calibrated chance
-constraints. Commodity CI is the intended calibration substrate; other
-deployments require recalibration of $(\beta,\gamma)$ (and, where relevant,
-$(\pd,\pf,\rho)$) while reusing the same workflow and public artefacts.
+We contribute a reproducible methodology for calibration and capacity planning
+under resource normalization; the throughput--detection trade-off is
+formulated but, with the measured detector, not demonstrated. Other
+deployments require recalibration of $(\beta,\gamma)$ and $(\pd,\pf,\rho)$
+while reusing the same workflow and public artefacts.
 
 \subsection*{Conflict of interest}
 The authors declare no conflict of interest.
@@ -44,5 +44,5 @@ scientific results, proofs, design and analysis were produced by the authors.
 \textbf{Peniak B.\,O.}: conceptualization, methodology, formal analysis,
 software, investigation, data curation, writing --- original draft,
 visualization.
-\textbf{Liubinskyj B.\,B.}: supervision, validation, writing --- review and
+\textbf{Liubinskiy B.\,B.}: supervision, validation, writing --- review and
 editing.

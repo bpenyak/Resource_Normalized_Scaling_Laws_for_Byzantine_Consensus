@@ -4,10 +4,21 @@
 \subsection{Application and what-if analysis}
 
 We instantiate Problem~\ref{prob:sizing} on $\approx3\times10^{7}$ ballots over
-twelve hours ($\Dpk\approx2.1\times10^{3}$~TPS), requiring detection of a
-coordinated omission fault of fraction $\phi=0.2$ within one epoch at level
-$1-\epss$. Absolute demand enters via scale-up $\kappaScale$ from \RNM{} units.
-With free $\kappaScale$, Problem~\ref{prob:sizing} takes
+twelve hours: a mean of $\approx694$~TPS and, with an assumed peak-to-mean
+factor of $\approx3$ (not a measured profile), a peak $\Dpk=\resDemand$~TPS.
+The detection requirement --- a coordinated transaction-omission fault of
+fraction $\phi=0.2$ within one epoch --- is unsatisfiable and is relaxed, not
+enforced (Section~\ref{sec:detection}), so $\nmin=4$. Fault-free CI runs
+without emulated latency commit at most $\approx\resTpsMaxMeasured$~TPS (at
+$\n=\resTpsMaxN$, $\cc=\resTpsMaxC$, $\q=\resTpsMaxQ$); the model works in
+\RNM{} units $\TPSn=\TPS/\q$ (throughput per core of per-validator quota), and
+under Assumption~\ref{as:separable} the scale-up $\kappaScale$ is the
+per-validator core count of the target hardware class. Linearity of throughput
+in the quota is the key assumption and the main extrapolation risk:
+$\kappaScale=\resKappa$ cores is $\approx\resKappaQuotaRatio$ times the
+calibrated $\q=0.25$, whereas X2 already shows throughput ceasing to grow at
+$\q=0.33$. $\kappaScale$ is therefore a hardware requirement to verify on the
+target hardware, not a measured capability. With free $\kappaScale$, Problem~\ref{prob:sizing} takes
 \begin{equation}
 \kappaScale^{\star}
 =\frac{\Dpk}{\underline{\TPSn}_{1-\epsp}(4,\cc^{\star})},
@@ -19,33 +30,22 @@ $\Dpk$.
 \paragraph{Scenario A (baseline).}
 Substituting the calibrated coefficients
 ($\beta=\resBeta$, $\gamma=\resGamma$) at $\cc^{\star}=\resCstar$ yields
-$\kappaScale=\resKappa$ and feasibility window
+$\kappaScale=\resKappa$ (cores per validator) and feasibility window
 $[\resNminCase,\resNmaxCase]$ with $\nopt=\resNoptCase$
-(Proposition~\ref{prop:window}; Figure~\ref{fig:window}). Under this demand and
-hardware class the window collapses to a single admissible count: the network is
-throughput-bound at the smallest BFT set admitted by the formulation.
+(Proposition~\ref{prop:window}; Figure~\ref{fig:window}). The single count is
+by construction: $\kappaScale$ is the smallest scale admitting $\n=4$, so
+$h(4)=0$ and, with $\beta>0$, $\nmax=4$; the informative output is
+$\kappaScale$. ($\cc^{\star}$ maximizes the fitted $\gfun$ beyond the OLS grid
+$\cc\le\resCalibCmax$; at $\cc=\resCalibCmax$, $\kappaScale=\resKappaCalibC$.)
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=0.34\textwidth]{figures/fig_window}
-\caption{Scenario~A: calibrated lower PI throughput vs.\ $\n$ at
-$\kappaScale=\resKappa$; window
-$[\nmin,\nmax]=[\resNminCase,\resNmaxCase]$. Dash-dotted line:
-calibration limit $\n=\resNmaxMeasured$ (measured region to the left;
-model-based extrapolation to the right)}
-\label{fig:window}
-\end{figure}
-
-\paragraph{Scenario B (doubled peak demand, fixed hardware class).}
-Hold $\kappaScale=\resKappa$ and replace $\Dpk$ by $2\Dpk$. Then $h(4)<0$ and
-the feasible set is empty (Corollary~\ref{cor:infeasible}): within the
-calibrated model, adding validators cannot restore doubled demand because
-predicted throughput falls with~$\n$.
-
-\paragraph{Scenario C (WAN deployment, fixed hardware class).}
-Retain $\kappaScale=\resKappa$ and $\Dpk$, but use $\beta=\resBetaRttHigh$ (X4)
-in place of $\beta=\resBetaRttZero$. Again $h(4)<0$: LAN-admissible hardware
-becomes infeasible under WAN $\beta$ without raising $\kappaScale$.
+\paragraph{Scenarios B and C (fixed hardware class).}
+Hold $\kappaScale=\resKappa$. Doubling $\Dpk$ gives $h(4)=-\log2<0$; raising
+$\beta$ by the within-X4 WAN increment $\Delta\beta=\resDeltaBetaRtt$ lowers
+$h(4)$ by $\Delta\beta\log4$. Both windows are empty
+(Corollary~\ref{cor:infeasible}), and adding validators cannot help because
+predicted throughput falls with~$\n$. Both follow from the zero margin of
+Scenario~A; their content is the required scale-up: $\kappaScale=\resKappaDoubled$
+and $\approx\resKappaWan$ for doubled demand and WAN, respectively.
 
 The same workflow applies to registry and identity sizing after recalibration;
 binding elections on a blockchain remain outside the recommendation
@@ -54,27 +54,21 @@ binding elections on a blockchain remain outside the recommendation
 \subsection{What this implies}
 \label{sec:discussion}
 
-A fitted $(\beta,\gamma)$ should be treated as deployment-specific. Transfer is
-appropriate when concurrency path, quota regime, and RTT class match the
-calibration. The experiments indicate that future benchmarks should report
-$\lambda$ (or $\lambda=0$), per-validator quota, and RTT class
-(Corollary~\ref{cor:sign}).
+A fitted $(\beta,\gamma)$ is Besu/QBFT- and deployment-specific; transfer is
+appropriate only when concurrency path, quota regime, and RTT class match the
+calibration, while the \RNM{} protocol and the workflow transfer via
+recalibration. Benchmarks should report $\lambda$ (or $\lambda=0$),
+per-validator quota, and RTT class (Corollary~\ref{cor:sign}).
 
 \subsection{Limitations}
 \label{sec:limitations}
 
-\emph{Fault class.} Encrypted transport limits X5 to omission/duplication.
-AUC~$\resAuc$ (near chance) motivates a throughput-bound window under the
-evaluated detector.
+\emph{Fault class and detection.} Encrypted transport limits X5 to
+omission/duplication, and the resulting detector is near chance; the detection
+side is therefore not exercised empirically, and demonstrating the
+throughput--detection trade-off needs a detector with $J$ bounded away from
+zero.
 
-\emph{Infrastructure as design choice.} Commodity four-core CI with
-$\n\le\resNmaxMeasured$ is the intended calibration substrate. Beyond measured
-counts, predictions are model-based; prediction intervals quantify
-extrapolation uncertainty.
-
-\emph{Coefficients versus methodology.}
-Coefficients $(\beta,\gamma)$ are Besu/QBFT-specific and must not be copied
-across deployments. The \RNM{} protocol and chance-constrained workflow transfer
-via recalibration under matching conditions; Proposition~\ref{prop:identifiability}
-remains analytical under its assumptions. Production scale-up uses $\kappaScale$
-in~\eqref{eq:kappa}.
+\emph{Infrastructure.} Four-core CI with $\n\le\resNmaxMeasured$ is the
+intended substrate; at $\n=\resNmaxMeasured$ the reservation equals the four
+host cores. Beyond measured counts, predictions are model-based.

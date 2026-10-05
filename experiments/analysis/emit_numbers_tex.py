@@ -103,6 +103,8 @@ def main() -> int:
     e.num("resTzero", fit.get("T0"), "{:.1f}", todo="T0")
     e.num("resRsq", fit.get("r2"), todo="R2")
     e.num("resSigmaRes", fit.get("sigma"), todo="sigma")
+    e.num("resCalibNobs", fit.get("calibration_n_obs"), "{:.0f}",
+          todo="calibration n_obs")
 
     # -- confounding check (Theorem 1) ----------------------------------------
     e.section("confounding check (Theorem 1)")
@@ -157,12 +159,43 @@ def main() -> int:
     e.num("resBetaQmid", beta_at("0.25"), todo="beta(q=0.25)")
     e.num("resBetaQhigh", beta_at("0.33"), todo="beta(q=0.33)")
     e.num("resQinvP", qinv.get("p_value"), todo="p-value")
+    ds = load_csv(args.inp / "dataset.csv")
+
+    def x2_tps(q: float, n: int):
+        if ds.empty:
+            return None
+        sel = ds[(ds["experiment"] == "X2") & (ds["n"] == n)
+                 & ((ds["quota"] - q).abs() < 1e-9)]["tps"]
+        return float(sel.mean()) if len(sel) else None
+
+    e.num("resTpsQlowNfour", x2_tps(0.20, 4), "{:.1f}", todo="TPS(q=.20,n=4)")
+    e.num("resTpsQmidNfour", x2_tps(0.25, 4), "{:.1f}", todo="TPS(q=.25,n=4)")
+    e.num("resTpsQhighNfour", x2_tps(0.33, 4), "{:.1f}", todo="TPS(q=.33,n=4)")
+    clean_ds = ds if ds.empty else ds[(ds["loss_pct"] == 0) & (ds["rtt_ms"] == 0)]
+    top = None if clean_ds.empty else clean_ds.loc[clean_ds["tps"].idxmax()]
+    e.num("resTpsMaxMeasured", None if top is None else float(top["tps"]),
+          "{:.0f}", todo="max TPS")
+    e.num("resTpsMaxN", None if top is None else float(top["n"]), "{:.0f}",
+          todo="n at max TPS")
+    e.num("resTpsMaxC", None if top is None else float(top["c"]), "{:.0f}",
+          todo="c at max TPS")
+    e.num("resTpsMaxQ", None if top is None else float(top["quota"]), "{:.2f}",
+          todo="q at max TPS")
+    e.num("resKappaQuotaRatio", None if top is None
+          else float(sizing.get("kappa") or 0) / float(top["quota"]), "{:.0f}",
+          todo="kappa / q")
 
     # -- latency ---------------------------------------------------------------
     e.section("WAN degradation (X4)")
     by_rtt = fit.get("beta_by_rtt", {}) or {}
     e.num("resBetaRttZero", by_rtt.get("0"), todo="beta(0ms)")
+    e.num("resBetaRttTwentyFive", by_rtt.get("25"), todo="beta(25ms)")
+    e.num("resBetaRttFifty", by_rtt.get("50"), todo="beta(50ms)")
+    e.num("resBetaRttHundred", by_rtt.get("100"), todo="beta(100ms)")
     e.num("resBetaRttHigh", by_rtt.get("200"), todo="beta(200ms)")
+    b0, b200 = by_rtt.get("0"), by_rtt.get("200")
+    d_beta = (b200 - b0) if (b0 is not None and b200 is not None) else None
+    e.num("resDeltaBetaRtt", d_beta, todo="delta beta(RTT)")
 
     # -- detector --------------------------------------------------------------
     e.section("detector characterisation (X5)")
@@ -171,6 +204,12 @@ def main() -> int:
     e.num("resPf", det.get("p_f"), todo="p_f")
     e.num("resRho", det.get("rho"), todo="rho")
     e.num("resAuc", det.get("auc"), todo="AUC")
+    e.num("resYouden", det.get("youden"), todo="Youden J")
+    e.num("resDetRuns", det.get("runs"), "{:.0f}", todo="X5 runs")
+    e.num("resDetMargin", sizing.get("detector_margin"), "{:.4f}",
+          todo="detector margin")
+    e.num("resNminDet", sizing.get("n_min_detector"), "{:.0f}",
+          todo="n_min(detector)")
 
     # -- coverage --------------------------------------------------------------
     e.section("prediction-interval coverage (X7)")
@@ -179,6 +218,37 @@ def main() -> int:
     c95 = (cov_map.get("0.95") or {}).get("delta")
     e.num("resCovNinety", pct(c90), "{:.1f}\\,\\%", todo="cov90")
     e.num("resCovNinetyFive", pct(c95), "{:.1f}\\,\\%", todo="cov95")
+    runs = cov.get("holdout_runs")
+    e.num("resHoldoutRuns", runs, "{:.0f}", todo="holdout runs")
+    e.num("resCalibRuns", cov.get("calibration_runs"), "{:.0f}",
+          todo="calibration runs")
+    e.num("resCalibMaxN", cov.get("calibrate_max_n"), "{:.0f}",
+          todo="calibrate max n")
+    e.num("resBetaCalibMaxN", (cov.get("coef") or {}).get("beta"), "{:.3f}",
+          todo="beta(n<=calib max)")
+    small_fit = fit.get("small_n_fit") or {}
+    e.num("resBetaSmallN", small_fit.get("beta"), "{:.3f}", todo="beta(small n)")
+
+    def gap_in_se(beta_other):
+        if beta_other is None or not fit.get("se_beta"):
+            return None
+        return (fit["beta"] - beta_other) / fit["se_beta"]
+
+    e.num("resBetaGapCalib", gap_in_se((cov.get("coef") or {}).get("beta")),
+          "{:.1f}", todo="gap/SE (coverage refit)")
+    e.num("resBetaGapSmallN", gap_in_se(small_fit.get("beta")), "{:.1f}",
+          todo="gap/SE (small-n refit)")
+    e.num("resSmallNmax", small_fit.get("n_max"), "{:.0f}", todo="small-n cut")
+    local = fit.get("beta_local") or {}
+    for key, name in (("4-7", "resBetaLocalA"), ("7-13", "resBetaLocalB"),
+                      ("13-16", "resBetaLocalC")):
+        e.num(name, local.get(key), "{:.1f}", todo=f"local beta {key}")
+    e.num("resKappaSmallN", sizing.get("kappa_small_n"), "{:.1f}",
+          todo="kappa(small-n fit)")
+    e.num("resCovHitsNinety", None if c90 is None or runs is None
+          else round(c90 * runs), "{:.0f}", todo="hits90")
+    e.num("resCovHitsNinetyFive", None if c95 is None or runs is None
+          else round(c95 * runs), "{:.0f}", todo="hits95")
     holdout = cov.get("holdout_n")
     # No $...$: callers wrap as $\resHoldoutN$ (and \n is a letter macro).
     e.raw("resHoldoutN",
@@ -188,7 +258,19 @@ def main() -> int:
 
     # -- sizing ----------------------------------------------------------------
     e.section("sizing ablation (X8)")
-    e.num("resKappa", sizing.get("kappa"), "{:.2f}", todo="kappa")
+    kappa = sizing.get("kappa")
+    e.num("resKappa", kappa, "{:.1f}", todo="kappa")
+    e.num("resDemand", sizing.get("demand"), "{:.0f}", todo="D_peak")
+    # Scenario B/C: kappa that restores h(4) >= 0. Doubling demand doubles
+    # kappa; raising beta by d_beta lowers log TPS(4) by d_beta*log 4.
+    e.num("resKappaDoubled", None if kappa is None else 2.0 * kappa,
+          "{:.1f}", todo="kappa(2D)")
+    e.num("resKappaWan", None if kappa is None or d_beta is None
+          else kappa * 4.0 ** d_beta, "{:.1f}", todo="kappa(WAN)")
+    e.num("resKappaCalibC", sizing.get("kappa_calib_max"), "{:.2f}",
+          todo="kappa(c_cal)")
+    e.num("resCalibCmax", sizing.get("concurrency_calib_max"), "{:.0f}",
+          todo="c_cal max")
     e.raw("resKappaMode", sizing.get("kappa_mode"), todo="kappa_mode")
     e.num("resCstar", sizing.get("concurrency"), "{:.0f}", todo="c*")
     e.num("resNminCase", sizing.get("n_min"), "{:.0f}", todo="n_min")

@@ -27,45 +27,85 @@ artefacts at \url{https://github.com/bpenyak/Resource_Normalized_Scaling_Laws_fo
 \subsection{Results}
 
 \emph{X1/X3 --- bi-factor calibration.}
-Joint OLS on the reference-quota subset yields
+Joint OLS on the $\resCalibNobs$ unsaturated fault-free runs at the reference
+quota ($\n\in\{4,\dots,16\}$, $\cc\in\{1,\dots,16\}$) yields
 $\beta=\resBeta\pm\resBetaSE$ and $\gamma=\resGamma\pm\resGammaSE$
-($R^{2}=\resRsq$; Table~\ref{tab:results}). Under \RNM{} one expects $\beta>0$
-when concurrency is held fixed. The fit confirms that expectation at $\q=0.25$
-within the evaluated deployment.
+($R^{2}=\resRsq$; Table~\ref{tab:results}) at fixed concurrency and
+$\q=0.25$, using all counts including the hold-out ones. A constant $\beta$
+averages a steepening slope: locally $\approx\resBetaLocalA$,
+$\resBetaLocalB$, $\resBetaLocalC$ over $\n=4$--$7$, $7$--$13$, $13$--$16$ at
+$\cc=16$, and refits on $\n\le\resSmallNmax$ give $\resBetaCalibMaxN$ (pooled
+quotas) and $\resBetaSmallN$ (reference quota), $\resBetaGapCalib$ and
+$\resBetaGapSmallN$ standard errors lower. We attribute this to host
+contention as $\n\q$ approaches the four host cores shared with the load
+generator ($\n\q=4$ at $\n=16$): \RNM{} removes contention only while $\n\q$
+stays below the host cores. The headline $\beta$ is conservative for $\nmax$
+but optimistic for $\kappaScale$ ($\resKappa$ vs.\ $\resKappaSmallN$ under the
+$\n\le\resSmallNmax$ refit); the window $[4,4]$ holds under either fit by
+construction.
 
 \emph{X3b --- path check of Proposition~\ref{prop:identifiability}.}
 A single-factor fit along $\lambda=1$ gives $\ahat=\resAlphaHat$ against
 $\gamma\lambda-\beta=\resAlphaPred$.
 Figure~\ref{fig:confounding} shows measured exponents tracking
-$\gamma\lambda-\beta$ within the investigated configuration --- consistency
-with the analytical prediction, not universal validity of the bi-factor form.
+$\gamma\lambda-\beta$ --- consistency with the analytical prediction, not
+universal validity of the bi-factor form. The predicted sign change
+($\lambda\approx\resLambda$) lies outside the tested $\lambda\in\{0,1,2\}$, so
+the check tests the size of the shift, not the sign flip.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.36\textwidth]{figures/fig_confounding}
+\begin{minipage}[t]{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/fig_confounding}
 \caption{Measured $\ahat$ (points) vs.\ analytical $\gamma\lambda-\beta$
-(line) in the evaluated deployment
-(Proposition~\ref{prop:identifiability}).
-Sign change at $\lambda=\beta/\gamma=\resLambda$}
+(line) (Proposition~\ref{prop:identifiability}); predicted sign change at
+$\lambda=\resLambda$, outside the tested paths}
 \label{fig:confounding}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/fig_roc}
+\caption{Measured detector ROC (AUC$\,=\,\resAuc$, near chance); the
+detection constraint is unsatisfiable with it}
+\label{fig:roc}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/fig_window}
+\caption{Scenario~A: lower PI throughput vs.\ $\n$ at
+$\kappaScale=\resKappa$; window $[\resNminCase,\resNmaxCase]$; dash-dotted:
+calibration limit $\n=\resNmaxMeasured$}
+\label{fig:window}
+\end{minipage}
 \end{figure}
 
-\emph{X2 --- quota-regime check.}
-The partial $F$-test for quota\,$\times\log\n$ interaction rejects pooling
-across $\{0.20,0.25,0.33\}$ ($p=\resQinvP$): $\beta$ drops from
-$\approx\resBetaQmid$ at $\q=0.25$ to $\resBetaQhigh$ at $\q=0.33$.
-Deployment-specific coefficients are therefore reported at the reference quota
-$\q=0.25$.
+\emph{X2 --- quota regime.}
+X2 measures $\n\in\{4,7,13\}$ at $\cc=16$. The partial $F$-test for
+quota\,$\times\log\n$ interaction rejects a common slope ($p=\resQinvP$):
+$\beta$ is $\resBetaQlow$ and $\resBetaQmid$ at $\q=0.20,0.25$ but
+$\resBetaQhigh$ at $\q=0.33$. In the $\q=0.33$ cells, throughput at $\n=4$ no
+longer grows with the quota ($\resTpsQlowNfour$, $\resTpsQmidNfour$,
+$\resTpsQhighNfour$~TPS), suggesting a non-CPU ceiling that breaks
+Assumption~\ref{as:separable}, and at $\n=13$ the reservation of $\approx4.3$
+cores exceeds the host, outside Definition~\ref{def:rnm}. \RNM{} thus
+stabilizes $\beta$ at a fixed quota in the CPU-bound regime but does not make
+it quota-free; coefficients are reported at $\q=0.25$.
 
 \emph{X4 --- latency.}
-Under elevated emulated RTT, $\beta$ rises from $\resBetaRttZero$ to
-$\resBetaRttHigh$ in this campaign. Calibration on LAN-like RTT is therefore
-optimistic for geo-distributed deployments unless re-calibrated.
+On its own grid ($\n\in\{7,13\}$, $\cc=16$, $\q=0.25$), X4 gives
+$\beta=\resBetaRttZero$ at $0$~ms and $\resBetaRttHigh$ at $200$~ms RTT
+($\Delta\beta=\resDeltaBetaRtt$). The baseline is a two-point slope from four
+runs and agrees with the joint fit $\beta=\resBeta$ within $1.3$ standard
+errors; intermediate RTTs are non-monotone (Table~\ref{tab:results}), so X4
+indicates the direction and rough size of the WAN penalty, not a latency law.
 
 \emph{X5 --- detector.}
-Omission/duplication detection yields AUC$\,=\,\resAuc$
-(Figure~\ref{fig:roc}, near chance), so the workflow defaults to the
-throughput-bound constraint under the evaluated detector.
+Over $\resDetRuns$ fault-injection runs the pooled ROC has
+AUC$\,=\,\resAuc$ (Figure~\ref{fig:roc}, near chance); $\rho$ is not
+identifiable from these runs and is set to~$0$. With these rates the detection
+constraint is unsatisfiable and is relaxed, not enforced
+(Section~\ref{sec:detection}).
 
 \begin{table}[!t]
 \centering
@@ -88,32 +128,30 @@ $\ahat$ at $\lambda=0,1,2$ &
 $\beta$ at $q=0.20,0.25,0.33$ &
   $\resBetaQlow$, $\resBetaQmid$, $\resBetaQhigh$ &
   X2, $p=\resQinvP$ \\
-$\beta$ at RTT $0$/high & $\resBetaRttZero$, $\resBetaRttHigh$ & X4 \\
-$\pd$, $\pf$, $\rho$; AUC &
-  $\resPd$, $\resPf$, $\resRho$; $\resAuc$ &
-  X5, $\thr=\resDetectorThr$ \\
-coverage $90\%$/$95\%$ & $\resCovNinety$, $\resCovNinetyFive$ &
-  hold-out $\resHoldoutN$ \\
+$\beta$ at RTT $0,25,50,100,200$~ms &
+  $\resBetaRttZero$, $\resBetaRttTwentyFive$, $\resBetaRttFifty$,
+  $\resBetaRttHundred$, $\resBetaRttHigh$ &
+  X4, $\n\in\{7,13\}$ \\
+$\hat p_{d}$, $\hat p_{f}$ (flag rates); $J$; AUC &
+  $\resPd$, $\resPf$; $\resYouden$; $\resAuc$ &
+  X5, threshold $\resDetectorThr$ \\
+coverage $90\%$/$95\%$ &
+  $\resCovHitsNinety/\resHoldoutRuns$, $\resCovHitsNinetyFive/\resHoldoutRuns$ &
+  fit $\n\le\resCalibMaxN$; hold-out $\resHoldoutN$ \\
 \headline
 \end{tabular}
 \end{table}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=0.34\textwidth]{figures/fig_roc}
-\caption{Measured detector ROC (AUC$\,=\,\resAuc$, near chance); throughput
-binds the window under the evaluated deployment}
-\label{fig:roc}
-\end{figure}
-
 \emph{X7/X8 --- coverage, comparison, and ablation.}
-Hold-out coverage meets the nominal levels in Table~\ref{tab:results} within
-the calibrated range. The fitted covariance confirms that $\hat{V}$ is
-nondecreasing for $\n\ge\resNmaxMeasured$, so~$h$ in~\eqref{eq:h} is strictly
-decreasing on the model-based extrapolation range; on the measured grid we
-evaluate~$h$ directly.
+A separate refit on the $\resCalibRuns$ fault-free runs with
+$\n\le\resCalibMaxN$, which never sees the hold-out runs, gives intervals
+covering $\resCovHitsNinety$ and $\resCovHitsNinetyFive$ of the
+$\resHoldoutRuns$ runs at $\resHoldoutN$ at the $90\%$ and $95\%$ levels. The
+check is coarse (most runs at $\n=13$, pooled X2 quotas, binomial standard
+error $\approx6$ points; $\n=11$ is not $3f+1$) and validates the interval
+procedure, not the headline $\beta$.
 Out-of-sample log-RMSE for linear / single-factor / USL~\cite{gunther2007} /
 bi-factor predictors is $\resRmseLinear$, $\resRmseSingle$, $\resRmseUsl$,
-$\resRmseOurs$. The bi-factor improvement over USL is consistent with decoupling
-concurrency from replica count under \RNM{}. Relative sizing costs:
-$\resCostLinear$, $\resCostSingle$, $\resCostUsl$, $\resCostOurs$.
+$\resRmseOurs$; single-factor is slightly better here only because all
+held-out runs share $\cc=16$. Relative sizing costs: $\resCostLinear$,
+$\resCostSingle$, $\resCostUsl$, $\resCostOurs$.

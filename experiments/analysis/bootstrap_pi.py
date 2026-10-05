@@ -120,6 +120,7 @@ def main() -> int:
         "calibrate_max_n": args.calibrate_max_n,
         "holdout_n": sorted(int(x) for x in test["n"].unique()),
         "holdout_runs": int(len(test)),
+        "calibration_runs": int(len(train)),
         "coverage": {
             str(level): {
                 "delta": float(detail[detail["level"] == level]["in_delta"].mean()),

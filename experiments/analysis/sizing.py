@@ -235,6 +235,27 @@ def main() -> int:
         args.faulty_fraction, rho, args.window, args.tau,
         args.eps_s, k_hint)
 
+    # Per-validator detection cut (paper eq. for n_min) with the threshold midway
+    # between the measured flag rates, i.e. margin (p_d - p_f)/2.
+    p_d, p_f = det.get("p_d", float("nan")), det.get("p_f", float("nan"))
+    margin = 0.5 * (p_d - p_f)
+    n_min_detector = (
+        (1.0 + max(k_hint - 1, 0) * max(rho, 0.0)) / args.faulty_fraction
+        * math.log(1.0 / args.eps_s) / (2.0 * args.window * margin ** 2)
+        if math.isfinite(margin) and margin > 0 else float("inf"))
+
+    # Sensitivity of kappa to the operating concurrency: largest c on the
+    # calibration grid instead of argmax g.
+    c_cal = float(max(fit.get("calibration_c") or [c]))
+    kappa_cal, _ = resolve_kappa(unit, c_cal, args.demand, "auto")
+
+    # Sensitivity of kappa to curvature in log n: refit on small counts only.
+    small_fit = fit.get("small_n_fit")
+    kappa_small = None
+    if small_fit and small_fit.get("beta", 0) > 0:
+        kappa_small, _ = resolve_kappa(Sizer(small_fit, args.eps_p, kappa=1.0),
+                                       c, args.demand, "auto")
+
     n_min_int = max(4, math.ceil(n_min)) if math.isfinite(n_min) else float("inf")
     feasible = (n_max is not None and math.isfinite(n_min_int)
                 and n_min_int <= n_max)
@@ -254,6 +275,11 @@ def main() -> int:
         "eps_0": eps_0,
         "n_min": float(n_min_int) if math.isfinite(n_min_int) else n_min,
         "n_min_raw": n_min,
+        "n_min_detector": n_min_detector,
+        "detector_margin": margin,
+        "concurrency_calib_max": c_cal,
+        "kappa_calib_max": kappa_cal,
+        "kappa_small_n": kappa_small,
         "n_max": n_max,
         "n_opt": n_opt,
         "feasible": bool(feasible),

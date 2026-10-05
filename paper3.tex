@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Resource-Normalized Scaling Laws for Byzantine Consensus
-%% Peniak B.O., Liubinskyj B.B.
+%% Peniak B.O., Liubinskiy B.B.
 %%
 %% COMPILE WITH pdflatex (T2A fontenc + babel). NOT xelatex / lualatex.
 %%   pdflatex paper3 && pdflatex paper3
@@ -13,6 +13,8 @@
 
 \input{macros}
 \input{numbers}
+% Line breaks after explicit hyphens make PDF text copy drop the hyphen.
+\exhyphenpenalty=10000
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (EN) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -20,7 +22,7 @@
 Scaling Laws for Byzantine Consensus: Chance-Constrained Validator-Set Sizing
 from Commodity-CI Measurements}
 
-\author[Peniak B.\,O.]{Peniak B.\,O., Liubinskyj B.\,B.}
+\author[Peniak B.\,O.]{Peniak B.\,O., Liubinskiy B.\,B.}
 
 \organization{%
 \address{1}Lviv Polytechnic National University\\
@@ -32,24 +34,17 @@ from Commodity-CI Measurements}
 \received{29 July 2026}
 
 \abstract{%
-\textbf{Problem.} Sizing a permissioned BFT validator set for e-governance
-must reconcile falling consensus throughput with rising fault-detection power
-as~$\n$ grows. Published single-factor exponents are hard to interpret as
-protocol properties unless the concurrency path is reported.
-\textbf{Contributions.}
-A reproducible engineering methodology for resource-normalized calibration and
-capacity planning:
-\emph{method} --- resource-normalized measurement separating consensus cost from
-host contention;
-\emph{analysis} --- identifiability relation
-$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ under a bi-factor model;
-\emph{engineering} --- chance-constrained sizing with feasible set
-$[\nmin,\nmax]$;
-\emph{empirics} --- coverage-checked prediction intervals on public commodity
-CI.
-\textbf{Scope.} Four-core CI ($\n\le\resNmaxMeasured$), emulated RTT, and
-omission/duplication injection; fitted coefficients are deployment-specific and
-intended for recalibration under matching conditions.
+Sizing a permissioned BFT validator set for \mbox{e-governance} trades
+consensus throughput, which falls with~$\n$, against fault-detection power,
+which rises with it. We propose resource-normalized measurement with a fixed
+per-validator CPU quota; show that, in the unsaturated bi-factor model with
+zero-mean noise, the single-factor OLS exponent tends to
+$\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
+chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
+public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
+quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
+the detection constraint is relaxed (not enforced) and throughput alone sets
+the window. Coefficients are deployment-specific.
 %
 \keywords{Byzantine fault tolerance, consensus, scaling law, capacity planning,
 chance-constrained optimization, e-governance}
@@ -70,14 +65,18 @@ chance-constrained optimization, e-governance}
 вул.~С.~Бандери, 12, 79013, Львів, Україна}
 
 \abstractUkr{%
-Відтворювана методика ресурсно-нормованого калібрування та планування
-потужності для BFT-валідаторів: пропускна здатність спадає зі зростанням~$\n$,
-а надійність виявлення відмов зростає з~$\n$. Внески: ресурсно-нормовані
-вимірювання; співвідношення ідентифікованості
-($\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$); задача з імовірнісними
-обмеженнями та вікном $[\nmin,\nmax]$; прогнозні інтервали з перевіркою
-покриття на типовій CI. Коефіцієнти специфічні для розгортання; процес
-розрахований на перекалібрування.
+Визначення розміру BFT-множини валідаторів для електронного урядування
+узгоджує пропускну здатність, що спадає з~$\n$, із силою виявлення відмов, що
+з~$\n$ зростає. Запропоновано ресурсно-нормовані вимірювання з фіксованою
+CPU-квотою валідатора; показано, що за ненасиченої двофакторної моделі з шумом
+нульового середнього однофакторний показник МНК прямує до
+$\gamma\lambda-\beta$ (зміщення через пропущену змінну); сформульовано задачу з
+імовірнісними обмеженнями та вікном $[\nmin,\nmax]$. На чотириядерній
+публічній CI ($\n\le\resNmaxMeasured$) показник стабільний за фіксованої квоти,
+але залежить від її рівня; виміряний детектор близький до випадкового
+(AUC$\,=\,\resAuc$), тож детекційне обмеження послаблено (не застосовується), і
+вікно визначає лише пропускна здатність. Коефіцієнти специфічні для
+розгортання.
 %
 \keywordsUkr{візантійська відмовостійкість, консенсус, закон масштабування,
 планування потужності, оптимізація з імовірнісними обмеженнями, електронне

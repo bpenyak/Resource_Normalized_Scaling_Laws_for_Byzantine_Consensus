@@ -27,7 +27,7 @@
 - [x] R4. Немає `Vol.x, No.x` шаблонів
 - [x] R5. `peniak2026a` — MMC accepted/to appear + URL журналу (том/сторінки після виходу);
       `peniak2026b` — **49**(2), 255--261, DOI `10.24144/2616-7700.2026.49(2).255-261`
-- [x] R6. Трансліт `Peniak` / `Liubinskyj` узгоджений
+- [x] R6. Трансліт `Peniak` / `Liubinskiy` узгоджений
 - [x] R7. Немає дубльованих джерел
 
 ## S. Структура
@@ -89,7 +89,7 @@
 - [x] U1. `\abstractUkr` стиснуто й узгоджено з EN (вичитка носієм — бажана перед подачею)
 - [x] U2. keywordsUkr ↔ keywords
 - [x] U3. udkUkr = udk
-- [x] U4. Пеняк / Любінський ↔ Peniak / Liubinskyj
+- [x] U4. Пеняк / Любінський ↔ Peniak / Liubinskiy
 - [x] U5. `\maketitleUkr` після бібліографії
 
 ## A. Метадані

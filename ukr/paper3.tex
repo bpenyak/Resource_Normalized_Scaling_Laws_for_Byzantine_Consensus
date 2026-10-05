@@ -1,0 +1,126 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Українська версія статті
+%% Resource-Normalized Scaling Laws for Byzantine Consensus
+%% Peniak B.O., Liubinskiy B.B.
+%%
+%% Каталог: ukr/  (паралельно до англійської версії в корені репозиторію)
+%%
+%% COMPILE WITH pdflatex (T2A fontenc + babel). NOT xelatex / lualatex.
+%%   cd ukr
+%%   pdflatex paper3 && pdflatex paper3
+%% Bibliography is a manual `thebibliography' environment: NO bibtex / biblatex.
+%%
+%% Спільні ресурси: MMC.sty, macros.tex, numbers.tex, figures/ скопійовано
+%% з кореня; бібліографія збережена англійською (міжнародні джерела).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+\usepackage{MMC}
+\usepackage{graphicx}
+
+\input{macros}
+\input{numbers}
+% Line breaks after explicit hyphens make PDF text copy drop the hyphen.
+\exhyphenpenalty=10000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (UKR, основна) %%%%%%%%%%%%%%%%%%%%%
+
+\title[Ресурсно-нормовані закони масштабування BFT-консенсусу]{Ресурсно-нормовані
+закони масштабування візантійського консенсусу: імовірнісно-обмежене визначення
+розміру множини валідаторів за вимірюваннями на типовій CI-інфраструктурі}
+
+\author[Пеняк Б.\,О.]{Пеняк Б.\,О., Любінський Б.\,Б.}
+
+\organization{%
+\address{1}Національний університет <<Львівська політехніка>>\\
+вул.~С.~Бандери, 12, 79013, Львів, Україна\\
+\address{2}Інститут прикладної математики та фундаментальних наук}
+
+\email{bohdan.o.peniak@lpnu.ua}
+
+\received{29 липня 2026}
+
+\abstract{%
+Визначення розміру BFT-множини валідаторів для електронного урядування
+узгоджує пропускну здатність, що спадає з~$\n$, із силою виявлення відмов, що
+з~$\n$ зростає. Запропоновано ресурсно-нормовані вимірювання з фіксованою
+CPU-квотою валідатора; показано, що за ненасиченої двофакторної моделі з шумом
+нульового середнього однофакторний показник МНК прямує до
+$\gamma\lambda-\beta$ (зміщення через пропущену змінну); сформульовано задачу з
+імовірнісними обмеженнями та вікном $[\nmin,\nmax]$. На чотириядерній
+публічній CI ($\n\le\resNmaxMeasured$) показник стабільний за фіксованої квоти,
+але залежить від її рівня; виміряний детектор близький до випадкового
+(AUC$\,=\,\resAuc$), тож детекційне обмеження послаблено (не застосовується), і
+вікно визначає лише пропускна здатність. Коефіцієнти специфічні для
+розгортання.
+%
+\keywords{візантійська відмовостійкість, консенсус, закон масштабування,
+планування потужності, оптимізація з імовірнісними обмеженнями, електронне
+урядування}
+\MSC{68M14, 68W20, 90C15, 62J02}
+\udk{004.75:519.2}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (EN, вторинна) %%%%%%%%%%%%%%%%%%%%%
+
+\titleEng[Resource-Normalized Scaling Laws for BFT Consensus]{Resource-Normalized
+Scaling Laws for Byzantine Consensus: Chance-Constrained Validator-Set Sizing
+from Commodity-CI Measurements}
+
+\authorEng[Peniak B.\,O.]{Peniak B.\,O., Liubinskiy B.\,B.}
+
+\organizationEng{%
+Lviv Polytechnic National University\\
+12 S.~Bandera str., 79013, Lviv, Ukraine}
+
+\abstractEng{%
+Sizing a permissioned BFT validator set for \mbox{e-governance} trades
+consensus throughput, which falls with~$\n$, against fault-detection power,
+which rises with it. We propose resource-normalized measurement with a fixed
+per-validator CPU quota; show that, in the unsaturated bi-factor model with
+zero-mean noise, the single-factor OLS exponent tends to
+$\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
+chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
+public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
+quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
+the detection constraint is relaxed (not enforced) and throughput alone sets
+the window. Coefficients are deployment-specific.
+%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BODY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\Ukrainian
+\maketitle
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_model}
+\input{sections/04_sizing}
+\input{sections/05_experiments}
+\input{sections/06_case_study}
+\input{sections/07_conclusions}
+
+\input{bib/references}
+
+\newpage
+\English
+\noindent\textbf{\Large Abstract (English)}\\[1ex]
+Peniak B.\,O., Liubinskiy B.\,B.\\[0.5ex]
+{\small Lviv Polytechnic National University,
+12 S.~Bandera str., 79013, Lviv, Ukraine}\\[1.5ex]
+Sizing a permissioned BFT validator set for \mbox{e-governance} trades
+consensus throughput, which falls with~$\n$, against fault-detection power,
+which rises with it. We propose resource-normalized measurement with a fixed
+per-validator CPU quota; show that, in the unsaturated bi-factor model with
+zero-mean noise, the single-factor OLS exponent tends to
+$\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
+chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
+public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
+quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
+the detection constraint is relaxed (not enforced) and throughput alone sets
+the window. Coefficients are deployment-specific.
+
+\end{document}

@@ -35,6 +35,9 @@ import pandas as pd
 from scipy import stats
 from scipy.optimize import curve_fit
 
+SMALL_N_MAX = 9
+LOCAL_SLOPE_NODES = (4, 7, 13, 16)
+
 
 # --------------------------------------------------------------------------- #
 # loading
@@ -422,9 +425,28 @@ def main() -> int:
     fit["calibration_c"] = sorted(int(x) for x in core["c"].unique())
     fit["calibration_n"] = sorted(int(x) for x in core["n"].unique())
 
+    # Curvature in log n: the same fit restricted to small counts, and local
+    # slopes between the densely sampled counts at the largest calibration c.
+    small = ref[ref["n"] <= SMALL_N_MAX]
+    small_fit = ols_logspace(unsaturated_subset(small))
+    small_fit.update(fit_saturation(small, small_fit["log_T0"],
+                                    small_fit["gamma"], small_fit["beta"]))
+    small_fit["n_max"] = SMALL_N_MAX
+    fit["small_n_fit"] = small_fit
+    c_top = core[core["c"] == core["c"].max()]
+    means = c_top.groupby("n")["log_tps"].mean()
+    nodes = [n for n in LOCAL_SLOPE_NODES if n in means.index]
+    fit["beta_local"] = {
+        f"{a}-{b}": float(-(means[b] - means[a]) / (np.log(b) - np.log(a)))
+        for a, b in zip(nodes, nodes[1:])}
+    fit["beta_local_c"] = int(core["c"].max())
+
     # beta as a function of emulated round-trip latency (experiment X4).
+    # Every RTT level, including the 0 ms baseline, is taken from the X4 runs
+    # alone so that the comparison uses one design (same n grid, c, quota).
+    x4 = df[(df["experiment"] == "X4") & (df["loss_pct"] == 0)]
     beta_by_rtt = {}
-    for rtt, d in df.groupby("rtt_ms"):
+    for rtt, d in x4.groupby("rtt_ms"):
         if d["n"].nunique() >= 2:
             slope, *_ = stats.linregress(d["log_n"], d["log_tps"])
             beta_by_rtt[str(int(rtt))] = float(-slope)
