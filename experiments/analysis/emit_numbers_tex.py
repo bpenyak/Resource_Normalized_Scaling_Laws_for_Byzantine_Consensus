@@ -120,7 +120,7 @@ def main() -> int:
         row1 = conf.loc[(conf["lambda"] - 1.0).abs().idxmin()]
         e.num("resAlphaHat", float(row1["alpha_hat"]))
         e.num("resAlphaPred", float(row1["alpha_predicted"]))
-        for lam, tag in ((0.0, "Lzero"), (1.0, "Lone"), (2.0, "Ltwo")):
+        for lam, tag in ((0.0, "Lzero"), (1.0, "Lone")):
             hit = conf.loc[(conf["lambda"] - lam).abs() < 1e-9]
             e.num(f"resAlphaHat{tag}",
                   float(hit.iloc[0]["alpha_hat"]) if len(hit) else None,
@@ -137,7 +137,7 @@ def main() -> int:
     else:
         e.num("resAlphaHat", None, todo="alpha-hat")
         e.num("resAlphaPred", None, todo="gamma*lambda-beta")
-        for tag in ("Lzero", "Lone", "Ltwo"):
+        for tag in ("Lzero", "Lone"):
             e.num(f"resAlphaHat{tag}", None, todo=f"alpha {tag}")
             e.num(f"resAlphaPred{tag}", None, todo=f"pred {tag}")
             e.num(f"resAlphaSe{tag}", None, todo=f"se {tag}")
@@ -206,6 +206,9 @@ def main() -> int:
     b0, b200 = by_rtt.get("0"), by_rtt.get("200")
     d_beta = (b200 - b0) if (b0 is not None and b200 is not None) else None
     e.num("resDeltaBetaRtt", d_beta, todo="delta beta(RTT)")
+    e.num("resBetaRttGap", None if b0 is None or not fit.get("se_beta")
+          else abs(b0 - fit["beta"]) / fit["se_beta"], "{:.1f}",
+          todo="X4 baseline vs joint fit (SE)")
 
     # -- detector --------------------------------------------------------------
     e.section("detector characterisation (X5): classifier flag rates")
@@ -216,6 +219,9 @@ def main() -> int:
     e.num("resFpr", det.get("p_f"), todo="FPR")
     e.num("resRho", det.get("rho"), todo="rho")
     e.num("resAuc", det.get("auc"), todo="AUC")
+    ci = det.get("auc_ci95") or [None, None]
+    e.num("resAucLo", ci[0], todo="AUC CI low")
+    e.num("resAucHi", ci[1], todo="AUC CI high")
     e.num("resYouden", det.get("youden"), todo="Youden J")
     e.num("resDetRuns", det.get("runs"), "{:.0f}", todo="X5 runs")
 
@@ -235,15 +241,23 @@ def main() -> int:
     e.num("resBetaCalibMaxN", (cov.get("coef") or {}).get("beta"), "{:.3f}",
           todo="beta(n<=calib max)")
     small_fit = fit.get("small_n_fit") or {}
+    full_fit = fit.get("full_n_fit") or {}
     e.num("resBetaSmallN", small_fit.get("beta"), "{:.3f}", todo="beta(small n)")
+    e.num("resBetaFull", full_fit.get("beta"), "{:.3f}", todo="beta(full n)")
+    e.num("resBetaFullSE", full_fit.get("se_beta"), "{:.3f}",
+          todo="se beta(full n)")
+    e.num("resCalibNmax", fit.get("calibration_n_max"), "{:.0f}",
+          todo="primary calibration n max")
+    e.num("resCalibNQ", None if fit.get("calibration_n_max") is None
+          else 0.25 * fit["calibration_n_max"], "{:.2f}", todo="n*q at cal. max")
 
     def gap_in_se(beta_other):
         if beta_other is None or not fit.get("se_beta"):
             return None
-        return (fit["beta"] - beta_other) / fit["se_beta"]
+        return (beta_other - fit["beta"]) / fit["se_beta"]
 
-    e.num("resBetaGapCalib", gap_in_se((cov.get("coef") or {}).get("beta")),
-          "{:.1f}", todo="gap/SE (coverage refit)")
+    e.num("resBetaGapFull", gap_in_se(full_fit.get("beta")), "{:.1f}",
+          todo="gap/SE (full-n fit)")
     e.num("resBetaGapSmallN", gap_in_se(small_fit.get("beta")), "{:.1f}",
           todo="gap/SE (small-n refit)")
     e.num("resSmallNmax", small_fit.get("n_max"), "{:.0f}", todo="small-n cut")
@@ -253,6 +267,8 @@ def main() -> int:
         e.num(name, local.get(key), "{:.1f}", todo=f"local beta {key}")
     e.num("resKappaSmallN", sizing.get("kappa_small_n"), "{:.1f}",
           todo="kappa(small-n fit)")
+    e.num("resKappaFull", sizing.get("kappa_full_n"), "{:.1f}",
+          todo="kappa(full-n fit)")
     e.num("resCovHitsNinety", None if c90 is None or runs is None
           else round(c90 * runs), "{:.0f}", todo="hits90")
     e.num("resCovHitsNinetyFive", None if c95 is None or runs is None

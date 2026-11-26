@@ -12,48 +12,45 @@ generator drives~$\cc$ concurrent submitters and records steady-state committed
 throughput after warm-up. Faults are injected with kernel traffic control
 (omission and duplication; not equivocation).
 
-\textbf{X1}/\textbf{X3} calibrate $(\beta,\gamma)$ on a factorial grid;
-\textbf{X2} checks the quota regime; \textbf{X3b} re-samples along
-concurrency paths; \textbf{X4} varies emulated RTT; \textbf{X5} reports
-detector rates; \textbf{X7}/\textbf{X8} check prediction-interval coverage and
-sizing ablation. Cross-client replication (\textbf{X9}/GoQuorum) is out of
-scope. In total $\resTotalRuns$ successful records,
-$\approx\resCoreHours$ core-hours, $\n_{\max}=\resNmaxMeasured$; the workflow
-and artefacts are public (Data availability).
+\textbf{X1}/\textbf{X3} calibrate $(\beta,\gamma)$; \textbf{X2} checks the quota
+regime; \textbf{X3b} re-samples along concurrency paths; \textbf{X4} varies
+emulated RTT; \textbf{X5} measures the detector; \textbf{X7}/\textbf{X8} check
+interval coverage and sizing ablation. Cross-client replication
+(\textbf{X9}/GoQuorum) is out of scope. In total $\resTotalRuns$ successful
+records, $\approx\resCoreHours$ core-hours, $\n_{\max}=\resNmaxMeasured$; the
+workflow and artefacts are public (Data availability).
 
 \subsection{Results}
 
 \emph{X1/X3 --- bi-factor calibration.}
-Joint OLS on the $\resCalibNobs$ unsaturated fault-free runs at the reference
-quota ($\n\in\{4,5,7,9,11,13,16\}$, $\cc\in\{1,2,4,8,16\}$) yields
+The primary fit is OLS on the $\resCalibNobs$ unsaturated fault-free runs at the
+reference quota with $\n\in\{4,5,7,9,11\}$ ($\n\q\le\resCalibNQ$, leaving at
+least one of the four cores for the generator and OS; this headroom is not
+measured) and $\cc\in\{1,2,4,8,16\}$. It gives
 $\beta=\resBeta\pm\resBetaSE$ and $\gamma=\resGamma\pm\resGammaSE$
-($R^{2}=\resRsq$; Table~\ref{tab:results}) at fixed concurrency and
-$\q=0.25$ (all counts, including the hold-out ones). A constant $\beta$
-averages a steepening slope: locally $\approx\resBetaLocalA$,
-$\resBetaLocalB$, $\resBetaLocalC$ over $\n=4$--$7$, $7$--$13$, $13$--$16$ at
-$\cc=16$, and refits on $\n\le\resSmallNmax$ give $\resBetaCalibMaxN$ (pooled
-quotas) and $\resBetaSmallN$ (reference quota), $\resBetaGapCalib$ and
-$\resBetaGapSmallN$ standard errors lower. We attribute this to host
-contention as $\n\q$ approaches the four host cores ($\n\q=4$ at $\n=16$);
-\RNM{} removes contention only while $\n\q$ stays below them. The headline
-$\beta$ is conservative for $\nmax$
-but optimistic for $\kappaScale$ ($\resKappa$ vs.\ $\resKappaSmallN$ under the
-$\n\le\resSmallNmax$ refit); the window $[\resNminCase,\resNmaxCase]$ holds under
-either fit by construction.
+($R^{2}=\resRsq$; Table~\ref{tab:results}). Adding $\n=13,16$, where $\n\q$
+reaches the host's four cores, raises $\beta$ to $\resBetaFull\pm\resBetaFullSE$
+($\resBetaGapFull$ standard errors above the primary; locally
+$\approx\resBetaLocalA$, $\resBetaLocalB$, $\resBetaLocalC$ over $\n=4$--$7$,
+$7$--$13$, $13$--$16$ at $\cc=16$), which we attribute to host contention outside
+the protocol's validity region; a refit on $\n\le\resSmallNmax$ gives
+$\resBetaSmallN$ ($\resBetaGapSmallN$ standard errors from the primary). Across
+these calibration regions $\kappaScale$ ranges from $\resKappaFull$ (all counts)
+through $\resKappa$ (primary) to $\resKappaSmallN$ ($\n\le\resSmallNmax$); the
+window $[\resNminCase,\resNmaxCase]$ holds under each by construction.
 
 \emph{X3b --- path check of Proposition~\ref{prop:identifiability}.}
-Single-factor fits along $\lambda=0,1,2$ give
-$\ahat=\resAlphaHatLzero\pm\resAlphaSeLzero$,
-$\resAlphaHatLone\pm\resAlphaSeLone$,
-$\resAlphaHatLtwo\pm\resAlphaSeLtwo$ ($\resAlphaPtsLzero$, $\resAlphaPtsLone$,
-$\resAlphaPtsLtwo$ points) against
-$\gamma\lambda-\beta=\resAlphaPredLzero$, $\resAlphaPredLone$,
-$\resAlphaPredLtwo$, each within one standard error
-(Figure~\ref{fig:confounding}). The check has low power: at $\lambda\ge1$ the
-standard errors exceed the predicted shift $\gamma\lambda$, so it cannot
-separate $\gamma\lambda-\beta$ from $-\beta$. It is a consistency check, not a
-confirmation or evidence that the bi-factor form holds universally; the
-predicted sign change ($\lambda\approx\resLambda$) lies outside the tested range.
+On the primary region, single-factor fits along $\lambda=0,1$ give
+$\ahat=\resAlphaHatLzero\pm\resAlphaSeLzero$ and
+$\resAlphaHatLone\pm\resAlphaSeLone$ ($\resAlphaPtsLzero$, $\resAlphaPtsLone$
+points) against $\gamma\lambda-\beta=\resAlphaPredLzero$ and
+$\resAlphaPredLone$, each within one standard error
+(Figure~\ref{fig:confounding}); larger $\lambda$ leave too few points. The
+check has low power: at $\lambda=1$ the standard error exceeds the predicted
+shift $\gamma\lambda$, so it cannot separate $\gamma\lambda-\beta$ from $-\beta$.
+It is a consistency check, not a confirmation or evidence that the bi-factor
+form holds universally; the predicted sign change ($\lambda\approx\resLambda$)
+lies outside the tested range.
 
 \begin{figure}[!tb]
 \centering
@@ -68,7 +65,7 @@ $\lambda=\resLambda$ is outside the tested paths}
 \begin{minipage}[t]{0.31\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/fig_roc}
-\caption{Detector ROC (AUC$\,=\,\resAuc$, near chance)}
+\caption{Detector ROC (AUC$\,=\,\resAuc$, 95\,\% CI $[\resAucLo,\resAucHi]$)}
 \label{fig:roc}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.32\textwidth}
@@ -76,7 +73,7 @@ $\lambda=\resLambda$ is outside the tested paths}
 \includegraphics[width=\textwidth]{figures/fig_window}
 \caption{Scenario~A: lower PI throughput at
 $\kappaScale=\resKappa$; window $[\resNminCase,\resNmaxCase]$; dash-dotted:
-calibration limit $\n=\resNmaxMeasured$}
+calibration limit $\n=\resCalibNmax$}
 \label{fig:window}
 \end{minipage}
 \end{figure}
@@ -97,13 +94,14 @@ coefficients are reported at $\q=0.25$.
 On its own grid ($\n\in\{7,13\}$, $\cc=16$, $\q=0.25$), X4 gives
 $\beta=\resBetaRttZero$ at $0$~ms and $\resBetaRttHigh$ at $200$~ms RTT
 ($\Delta\beta=\resDeltaBetaRtt$). The baseline is a two-point slope from four
-runs, within $1.3$ standard errors of the joint fit; intermediate RTTs are
+runs, within $\resBetaRttGap$ standard errors of the primary fit; intermediate RTTs are
 non-monotone (Table~\ref{tab:results}), so X4 indicates the direction and rough
 size of the WAN penalty, not a latency law.
 
 \emph{X5 --- detector.}
 Over $\resDetRuns$ fault-injection runs the pooled ROC has
-AUC$\,=\,\resAuc$ (Figure~\ref{fig:roc}, near chance); $\rho$ is not
+AUC$\,=\,\resAuc$ (95\,\% bootstrap interval over runs
+$[\resAucLo,\resAucHi]$; Figure~\ref{fig:roc}), i.e.\ near chance; $\rho$ is not
 identifiable and is set to~$0$ (Section~\ref{sec:detection}).
 
 \begin{table}[!tb]
@@ -141,7 +139,7 @@ $\n\le\resCalibMaxN$, blind to the hold-out runs, gives intervals
 covering $\resCovHitsNinety$ and $\resCovHitsNinetyFive$ of the
 $\resHoldoutRuns$ runs at $\resHoldoutN$ at the $90\%$ and $95\%$ levels. The
 check is coarse (most runs at $\n=13$, pooled X2 quotas, binomial standard
-error $\approx6$ points; $\n=11$ is not $3f+1$) and validates the interval
+error $\approx6$ points) and validates the interval
 procedure, not the headline $\beta$.
 Out-of-sample log-RMSE for linear / single-factor / USL~\cite{gunther2007} /
 bi-factor predictors is $\resRmseLinear$, $\resRmseSingle$, $\resRmseUsl$,

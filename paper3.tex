@@ -46,7 +46,8 @@ per-validator CPU cap; show that, in the unsaturated bi-factor model with
 zero-mean noise, the single-factor OLS exponent tends to
 $\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
 chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
-public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
+public CI, calibrated where the aggregate CPU cap leaves host headroom
+($\n\le\resCalibNmax$), the exponent is stable at a fixed quota but
 quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
 the detection constraint cannot be evaluated and is relaxed. The window is
 degenerate, and the informative output is a hardware scale-up estimate that

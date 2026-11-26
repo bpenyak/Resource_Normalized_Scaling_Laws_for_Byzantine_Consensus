@@ -10,8 +10,9 @@ $(\pd,\pf,\rho)$ plugs in.
 \begin{Def}[Fault class and detector]
 \label{def:faults}
 A subset $B$ of size $\kf$ is \emph{faulty} if each member fails a proposal
-round independently with probability~$\pd$, while honest validators fail with
-probability $\pf<\pd$ (omission class; equivocation excluded). The detector
+round with marginal probability~$\pd$, while honest validators fail with
+probability $\pf<\pd$ (omission class; equivocation excluded); dependence within
+$B$ is governed by Assumption~\ref{as:rho}. The detector
 flags validator~$i$ when its failure rate over $\w$ rounds exceeds
 $\thr\in(\pf,\pd)$; detection succeeds when at least one member of~$B$ is
 flagged.
@@ -19,9 +20,9 @@ flagged.
 
 \begin{Assumption}[Exchangeable correlation]
 \label{as:rho}
-Participation indicators in~$B$ are exchangeable with pairwise correlation
-$\rho\in[0,1)$, so the mean carries design effect $1+(\kf-1)\rho$ in the sense
-of Kish~\cite{kish1965}.
+Failure indicators in~$B$ are exchangeable with pairwise correlation
+$\rho\in[0,1)$; the effective sample size of their mean is reduced by the design
+effect $1+(\kf-1)\rho$ in the sense of Kish~\cite{kish1965}.
 \end{Assumption}
 
 \subsection{Prediction intervals and detection bound}
@@ -31,43 +32,46 @@ With regressor $\mathbf{z}=(1,\log\cc,-\log\n)^{\!\top}$ and
 $\hat\vartheta=(\log\Tzero,\gamma,\beta)^{\!\top}$, the delta
 method~\cite{seber2003} gives predictive variance
 $\hat{V}=\mathbf{z}^{\!\top}\widehat{\Cov}(\hat\vartheta)\mathbf{z}+\hat\sigma^{2}$.
-An approximate $(1-\epsp)$ prediction interval for $\TPS(\n,\cc)$ is then
-$\exp\{\log\widehat{\TPS}\mp\zq_{1-\epsp/2}\hat{V}^{1/2}\}$;\label{st:pi}
-the one-sided lower endpoint $\underline{\TPS}_{1-\epsp}$ uses $\zq_{1-\epsp}$.
+An approximate $(1-\epsp)$ prediction interval for $\TPSn(\n,\cc)$ is then
+$\exp\{\log\widehat{\TPSn}\mp\zq_{1-\epsp/2}\hat{V}^{1/2}\}$;\label{st:pi}
+the one-sided lower endpoint $\underline{\TPSn}_{1-\epsp}$ uses $\zq_{1-\epsp}$.
 The interval is conditional on $(\csat,\theta)$: $\hat V$ carries only the OLS
 covariance, so sizing evaluates it inside the OLS grid, where $(\csat,\theta)$ do
 not enter. A residual bootstrap~\cite{efron1993} supplies empirical quantiles
 when residual normality is doubtful; coverage is checked on held-out validator
 counts (Section~\ref{sec:exp}).
 
-With $\kf=\lceil\phi\n\rceil$, a design-effect heuristic yields the approximate
-miss probability\label{st:rho}
+With $\kf=\lceil\phi\n\rceil$, a miss means that no member of $B$ is flagged, so
+the mean failure rate over $B$ stays at or below $\thr$; $\pd$ is the per-round
+failure probability of a faulty validator and $\thr$ the detector threshold on
+the failure rate. For independent members ($\rho=0$), Hoeffding's
+inequality~\cite{hoeffding1963} bounds this by $\exp\{-2\w\kf(\pd-\thr)^{2}\}$.
+For $\rho>0$ we replace $\w\kf$ by $\neff=\kf\w/(1+(\kf-1)\rho)$ following
+Kish~\cite{kish1965}:\label{st:rho}
 \begin{equation}
-\pmiss(\n,\w)\lesssim\exp\!\Bigl\{-\frac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\Bigr\},
+\pmiss(\n,\w)\lesssim\exp\!\Bigl\{-\frac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\Bigr\}.
 \label{eq:pmiss}
 \end{equation}
-where $\pd$ is the per-round failure probability of a faulty validator and
-$\thr$ the detector threshold on the failure rate. A miss implies that the mean
-failure rate over $B$ stays below $\thr$, so Hoeffding's bound applies to that
-mean; $1+(\kf-1)\rho$ inflates its variance, but a pairwise correlation does not
-fix the joint law, so~\eqref{eq:pmiss} is a heuristic, nonincreasing in $\n$ and
-$\w$. The cut $\pmiss\le\epss$ gives
+This step is a heuristic, not a consequence of Hoeffding's inequality, which
+needs independence, and a pairwise correlation does not fix the joint law;
+\eqref{eq:pmiss} is an engineering approximation, not a bound or a probabilistic
+certificate. Its exponent is nondecreasing in $\n$ and $\w$. Since
+$\kf=\lceil\phi\n\rceil$ depends on~$\n$, the cut $\pmiss\le\epss$ is
 \begin{equation}
-\nmin=\left\lceil
-\frac{1+(\kf-1)\rho}{\phi}\cdot
-\frac{\log(1/\epss)}{2\w(\pd-\thr)^{2}}\right\rceil .
+\nmin=\min\Bigl\{\n\in\mathbb{N}:\;
+\exp\!\Bigl[-\tfrac{2\w\kf(\pd-\thr)^{2}}{1+(\kf-1)\rho}\Bigr]\le\epss,\;
+\kf=\lceil\phi\n\rceil\Bigr\},
 \label{eq:nmin}
 \end{equation}
-It adapts Hoeffding~\cite{hoeffding1963} via Kish~\cite{kish1965}
-($\neff=\kf\w/(1+(\kf-1)\rho)$) and is an engineering approximation, not an
-exact bound or a probabilistic certificate.
+found by scanning~$\n$.
 
 \paragraph{Measured detector.}
 Equation~\eqref{eq:nmin} needs per-round failure probabilities, which X5 does
 not measure. It measures the flag rates of a classifier at one operating point
 (participation threshold~$\resDetectorThr$, Youden-optimal):
 $\TPR=\resTpr$ for faulty and $\FPR=\resFpr$ for honest validators
-($J=\TPR-\FPR=\resYouden$, AUC$\,=\,\resAuc$). A flag is almost as likely on an
+($J=\TPR-\FPR=\resYouden$, AUC$\,=\,\resAuc$, 95\,\% bootstrap interval
+$[\resAucLo,\resAucHi]$ over runs). A flag is almost as likely on an
 honest validator as on a faulty one, and these rates are not $\pd,\pf$, so no
 $\nmin$ is derived from X5: the detection constraint cannot be evaluated and is
 relaxed (not enforced). Reported windows use $\nmin=\resNminCase$ ($3f+1$ with
@@ -96,7 +100,7 @@ h(\n)\eqdef\log(\kappaScale\,\Tzero\,\gfun(\cc^{\star})/\Dpk)
 -\beta\log\n-\zq_{1-\epsp}\hat{V}^{1/2}(\n,\cc^{\star})\ge0.
 \label{eq:h}
 \end{equation}
-On the model-based extrapolation range ($\n\ge\resNmaxMeasured$) the fitted
+On the model-based extrapolation range ($\n\ge\resCalibNmax$) the fitted
 covariance makes $\hat{V}$ nondecreasing in $\log\n$, so with
 $\beta>0$ the map $h$ is strictly decreasing there; on the measured grid we
 evaluate~$h$ directly.

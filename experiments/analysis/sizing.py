@@ -260,13 +260,17 @@ def main() -> int:
     c_arg = c_star(fit)
     kappa_arg, _ = resolve_kappa(unit, c_arg, args.demand, "auto")
 
-    # Sensitivity of kappa to curvature in log n: refit on small counts only.
-    small_fit = fit.get("small_n_fit")
-    kappa_small = None
-    if small_fit and small_fit.get("beta", 0) > 0:
-        kappa_small, _ = resolve_kappa(
-            Sizer(small_fit, args.eps_p, kappa=1.0, c_cal=c_cal),
-                                       c, args.demand, "auto")
+    # Sensitivity of kappa to the calibration region: refits on small counts
+    # only, and on all counts up to n_max_measured (host saturated at n*q = 4).
+    def kappa_of(sub_fit):
+        if sub_fit and sub_fit.get("beta", 0) > 0:
+            return resolve_kappa(
+                Sizer(sub_fit, args.eps_p, kappa=1.0, c_cal=c_cal),
+                c, args.demand, "auto")[0]
+        return None
+
+    kappa_small = kappa_of(fit.get("small_n_fit"))
+    kappa_full = kappa_of(fit.get("full_n_fit"))
 
     feasible = (n_max is not None and math.isfinite(n_min) and n_min <= n_max)
     n_opt = int(n_min) if feasible else None
@@ -290,6 +294,7 @@ def main() -> int:
         "concurrency_argmax_g": c_arg,
         "kappa_argmax_g": kappa_arg,
         "kappa_small_n": kappa_small,
+        "kappa_full_n": kappa_full,
         "n_max": n_max,
         "n_opt": n_opt,
         "feasible": bool(feasible),

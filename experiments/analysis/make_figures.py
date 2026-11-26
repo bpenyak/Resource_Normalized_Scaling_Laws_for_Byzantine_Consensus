@@ -129,7 +129,7 @@ def fig_window(proc: Path, out: Path) -> None:
     n_cal = None
     if fit_path.exists():
         fit = json.loads(fit_path.read_text(encoding="utf-8"))
-        n_cal = fit.get("n_max_measured")
+        n_cal = fit.get("calibration_n_max") or fit.get("n_max_measured")
 
     fig, ax = plt.subplots(figsize=(4.6, 3.0))
     ax.semilogy(curve["n"], curve["lower_tps"], "-",

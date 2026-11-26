@@ -36,6 +36,7 @@ from scipy import stats
 from scipy.optimize import curve_fit
 
 SMALL_N_MAX = 9
+CALIB_N_MAX = 11
 LOCAL_SLOPE_NODES = (4, 7, 13, 16)
 
 
@@ -332,6 +333,7 @@ def characterize_detector(raw_dir: Path, df: pd.DataFrame) -> dict:
     (sizing treats non-finite rho as 0).
     """
     by_tau: dict[float, list[tuple[float, float]]] = {}
+    per_run: list[dict[float, tuple[float, float]]] = []
     base_rows = df[df["p_d"].notna()]
     for path in sorted(raw_dir.glob("*.json")):
         rec = json.loads(path.read_text(encoding="utf-8"))
@@ -340,10 +342,14 @@ def characterize_detector(raw_dir: Path, df: pd.DataFrame) -> dict:
         if float(rec.get("loss_pct") or 0.0) <= 0:
             continue
         det = rec.get("detector") or {}
+        run_pts: dict[float, tuple[float, float]] = {}
         for pt in det.get("roc") or []:
             thr = float(pt["tau"])
             by_tau.setdefault(thr, []).append(
                 (float(pt["p_d"]), float(pt["p_f"])))
+            run_pts[thr] = (float(pt["p_d"]), float(pt["p_f"]))
+        if run_pts:
+            per_run.append(run_pts)
 
     if not by_tau:
         return {
@@ -365,14 +371,28 @@ def characterize_detector(raw_dir: Path, df: pd.DataFrame) -> dict:
     youden, thr, pd_, pf_, npts = scored[0]
 
     # Trapezoidal AUC over the mean ROC ordered by false-positive rate.
-    roc_mean = sorted(
-        ((float(np.mean([b for _, b in pts])),
-          float(np.mean([a for a, _ in pts])))
-         for pts in by_tau.values()),
-        key=lambda x: x[0])
-    xs = [0.0] + [p for p, _ in roc_mean] + [1.0]
-    ys = [0.0] + [r for _, r in roc_mean] + [1.0]
-    auc = float(np.trapezoid(ys, xs)) if len(xs) >= 2 else float("nan")
+    def auc_of(groups: list[list[tuple[float, float]]]) -> float:
+        roc = sorted(((float(np.mean([b for _, b in pts])),
+                       float(np.mean([a for a, _ in pts])))
+                      for pts in groups), key=lambda x: x[0])
+        xs = [0.0] + [p for p, _ in roc] + [1.0]
+        ys = [0.0] + [r for _, r in roc] + [1.0]
+        return float(np.trapezoid(ys, xs))
+
+    auc = auc_of(list(by_tau.values()))
+
+    # Percentile bootstrap over runs (the unit of replication) for the AUC.
+    rng = np.random.default_rng(20260101)
+    boots = []
+    for _ in range(2000):
+        pick = rng.integers(0, len(per_run), len(per_run))
+        groups: dict[float, list[tuple[float, float]]] = {}
+        for i in pick:
+            for thr, pt in per_run[i].items():
+                groups.setdefault(thr, []).append(pt)
+        boots.append(auc_of(list(groups.values())))
+    auc_lo, auc_hi = (float(np.percentile(boots, 2.5)),
+                      float(np.percentile(boots, 97.5)))
 
     rho = float(base_rows["rho"].mean()) if len(base_rows) else float("nan")
     if not np.isfinite(rho):
@@ -385,6 +405,7 @@ def characterize_detector(raw_dir: Path, df: pd.DataFrame) -> dict:
         "p_f": pf_,
         "rho": rho,
         "auc": auc,
+        "auc_ci95": [auc_lo, auc_hi],
         "thr": float(thr),
         "youden": float(youden),
         "runs": int(npts),
@@ -400,6 +421,10 @@ def main() -> int:
     ap.add_argument("--out", dest="out", type=Path, required=True)
     ap.add_argument("--holdout-n", default="13,16",
                     help="validator counts held out of calibration")
+    ap.add_argument("--calib-n-max", type=int, default=CALIB_N_MAX,
+                    help="largest validator count in the primary RNM "
+                         "calibration (n*q must leave headroom on the host "
+                         "for the load generator and the OS)")
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
 
@@ -407,39 +432,51 @@ def main() -> int:
     df.to_csv(args.out / "dataset.csv", index=False)
 
     clean = df[(df["loss_pct"] == 0) & (df["rtt_ms"] == 0)]
-    # Main bi-factor calibration at the RNM reference quota (q-invariance is
+    # Bi-factor calibration at the RNM reference quota (q-invariance is
     # tested separately on the full clean set including X2 quota levels).
+    # The PRIMARY fit uses only n <= calib_n_max, where n*q leaves headroom
+    # on the 4-core host; the full n <= 16 fit is kept as a saturation study.
     ref = reference_quota_subset(clean, quota=0.25)
-    core = unsaturated_subset(ref)
+    ref_cal = ref[ref["n"] <= args.calib_n_max]
+    core = unsaturated_subset(ref_cal)
     fit = ols_logspace(core)
     if fit["beta"] <= 0:
         raise SystemExit(
             f"calibrated beta={fit['beta']:.4f} <= 0 on {fit['n_obs']} points; "
             "replicated-state-machine semantics require beta > 0 — check that "
             "the n-sweep survived unsaturated_subset")
-    fit.update(fit_saturation(ref, fit["log_T0"], fit["gamma"], fit["beta"]))
+    fit.update(fit_saturation(ref_cal, fit["log_T0"], fit["gamma"],
+                              fit["beta"]))
     fit["T0"] = float(np.exp(fit["log_T0"]))
     fit["n_max_measured"] = int(df["n"].max())
+    fit["calibration_n_max"] = int(args.calib_n_max)
     fit["total_runs"] = int(len(df))
     fit["calibration_n_obs"] = int(fit["n_obs"])
     fit["calibration_c"] = sorted(int(x) for x in core["c"].unique())
     fit["calibration_n"] = sorted(int(x) for x in core["n"].unique())
 
-    # Curvature in log n: the same fit restricted to small counts, and local
-    # slopes between the densely sampled counts at the largest calibration c.
+    # Saturation study: the same fit on all counts up to n_max_measured, and
+    # on small counts only, plus local slopes between the densely sampled
+    # counts at the largest calibration c.
+    core_full = unsaturated_subset(ref)
+    full_fit = ols_logspace(core_full)
+    full_fit.update(fit_saturation(ref, full_fit["log_T0"], full_fit["gamma"],
+                                   full_fit["beta"]))
+    full_fit["n_max"] = int(df["n"].max())
+    fit["full_n_fit"] = full_fit
     small = ref[ref["n"] <= SMALL_N_MAX]
     small_fit = ols_logspace(unsaturated_subset(small))
     small_fit.update(fit_saturation(small, small_fit["log_T0"],
                                     small_fit["gamma"], small_fit["beta"]))
     small_fit["n_max"] = SMALL_N_MAX
     fit["small_n_fit"] = small_fit
-    c_top = core[core["c"] == core["c"].max()]
+    c_top = core_full[core_full["c"] == core_full["c"].max()]
     means = c_top.groupby("n")["log_tps"].mean()
     nodes = [n for n in LOCAL_SLOPE_NODES if n in means.index]
     fit["beta_local"] = {
         f"{a}-{b}": float(-(means[b] - means[a]) / (np.log(b) - np.log(a)))
         for a, b in zip(nodes, nodes[1:])}
-    fit["beta_local_c"] = int(core["c"].max())
+    fit["beta_local_c"] = int(core_full["c"].max())
 
     # beta as a function of emulated round-trip latency (experiment X4).
     # Every RTT level, including the 0 ms baseline, is taken from the X4 runs
@@ -462,7 +499,8 @@ def main() -> int:
     (args.out / "qinvariance.json").write_text(
         json.dumps(q_invariance(clean), indent=2), encoding="utf-8")
 
-    conf = confounding_check(clean, fit["gamma"], fit["beta"])
+    conf = confounding_check(clean[clean["n"] <= args.calib_n_max],
+                             fit["gamma"], fit["beta"])
     conf.to_csv(args.out / "confounding.csv", index=False)
 
     holdout = [int(x) for x in args.holdout_n.split(",") if x.strip()]

@@ -11,33 +11,29 @@
 
 
 %--- bi-factor calibration (X1, X3) ----------------------------------------------
-\newcommand{\resBeta}{1.651}
-\newcommand{\resBetaSE}{0.151}
-\newcommand{\resGamma}{0.178}
-\newcommand{\resGammaSE}{0.070}
-\newcommand{\resCsat}{67.9}
-\newcommand{\resTheta}{2.542}
-\newcommand{\resTzero}{2016.5}
-\newcommand{\resRsq}{0.727}
-\newcommand{\resSigmaRes}{0.404}
-\newcommand{\resCalibNobs}{48}
+\newcommand{\resBeta}{1.209}
+\newcommand{\resBetaSE}{0.242}
+\newcommand{\resGamma}{0.210}
+\newcommand{\resGammaSE}{0.069}
+\newcommand{\resCsat}{58.5}
+\newcommand{\resTheta}{2.217}
+\newcommand{\resTzero}{848.4}
+\newcommand{\resRsq}{0.529}
+\newcommand{\resSigmaRes}{0.385}
+\newcommand{\resCalibNobs}{35}
 
 %--- confounding check (Theorem 1) -----------------------------------------------
-\newcommand{\resLambda}{9.29}
-\newcommand{\resAlphaHat}{-1.362}
-\newcommand{\resAlphaPred}{-1.473}
-\newcommand{\resAlphaHatLzero}{-1.548}
-\newcommand{\resAlphaPredLzero}{-1.651}
-\newcommand{\resAlphaSeLzero}{0.14}
-\newcommand{\resAlphaPtsLzero}{49}
-\newcommand{\resAlphaHatLone}{-1.362}
-\newcommand{\resAlphaPredLone}{-1.473}
-\newcommand{\resAlphaSeLone}{0.58}
+\newcommand{\resLambda}{5.75}
+\newcommand{\resAlphaHat}{-1.608}
+\newcommand{\resAlphaPred}{-0.999}
+\newcommand{\resAlphaHatLzero}{-1.259}
+\newcommand{\resAlphaPredLzero}{-1.209}
+\newcommand{\resAlphaSeLzero}{0.22}
+\newcommand{\resAlphaPtsLzero}{30}
+\newcommand{\resAlphaHatLone}{-1.608}
+\newcommand{\resAlphaPredLone}{-0.999}
+\newcommand{\resAlphaSeLone}{0.65}
 \newcommand{\resAlphaPtsLone}{21}
-\newcommand{\resAlphaHatLtwo}{-0.661}
-\newcommand{\resAlphaPredLtwo}{-1.295}
-\newcommand{\resAlphaSeLtwo}{0.96}
-\newcommand{\resAlphaPtsLtwo}{5}
 
 %--- model comparison holdout log-RMSE -------------------------------------------
 \newcommand{\resRmseLinear}{1.329}
@@ -57,7 +53,7 @@
 \newcommand{\resTpsMaxN}{7}
 \newcommand{\resTpsMaxC}{16}
 \newcommand{\resTpsMaxQ}{0.25}
-\newcommand{\resKappaQuotaRatio}{50}
+\newcommand{\resKappaQuotaRatio}{58}
 
 %--- WAN degradation (X4) --------------------------------------------------------
 \newcommand{\resBetaRttZero}{1.459}
@@ -66,12 +62,15 @@
 \newcommand{\resBetaRttHundred}{2.011}
 \newcommand{\resBetaRttHigh}{2.708}
 \newcommand{\resDeltaBetaRtt}{1.248}
+\newcommand{\resBetaRttGap}{1.0}
 
 %--- detector characterisation (X5): classifier flag rates -----------------------
 \newcommand{\resTpr}{0.397}
 \newcommand{\resFpr}{0.376}
 \newcommand{\resRho}{0.000}
 \newcommand{\resAuc}{0.506}
+\newcommand{\resAucLo}{0.485}
+\newcommand{\resAucHi}{0.524}
 \newcommand{\resYouden}{0.021}
 \newcommand{\resDetRuns}{13}
 
@@ -83,24 +82,29 @@
 \newcommand{\resCalibMaxN}{9}
 \newcommand{\resBetaCalibMaxN}{1.300}
 \newcommand{\resBetaSmallN}{1.196}
-\newcommand{\resBetaGapCalib}{2.3}
-\newcommand{\resBetaGapSmallN}{3.0}
+\newcommand{\resBetaFull}{1.651}
+\newcommand{\resBetaFullSE}{0.151}
+\newcommand{\resCalibNmax}{11}
+\newcommand{\resCalibNQ}{2.75}
+\newcommand{\resBetaGapFull}{1.8}
+\newcommand{\resBetaGapSmallN}{-0.1}
 \newcommand{\resSmallNmax}{9}
 \newcommand{\resBetaLocalA}{1.4}
 \newcommand{\resBetaLocalB}{1.7}
 \newcommand{\resBetaLocalC}{2.8}
 \newcommand{\resKappaSmallN}{15.2}
+\newcommand{\resKappaFull}{12.6}
 \newcommand{\resCovHitsNinety}{20}
 \newcommand{\resCovHitsNinetyFive}{21}
 \newcommand{\resHoldoutN}{n \in \{11, 13, 16\}}
 
 %--- sizing ablation (X8) --------------------------------------------------------
-\newcommand{\resKappa}{12.6}
+\newcommand{\resKappa}{14.5}
 \newcommand{\resDemand}{2100}
-\newcommand{\resKappaDoubled}{25.2}
-\newcommand{\resKappaWan}{71.2}
-\newcommand{\resKappaArgmaxC}{13.0}
-\newcommand{\resArgmaxC}{32}
+\newcommand{\resKappaDoubled}{29.0}
+\newcommand{\resKappaWan}{81.8}
+\newcommand{\resKappaArgmaxC}{14.5}
+\newcommand{\resArgmaxC}{16}
 \newcommand{\resCalibCmax}{16}
 \newcommand{\resKappaMode}{auto_min_admissible}
 \newcommand{\resCstar}{16}
@@ -110,7 +114,7 @@
 \newcommand{\resDetectorThr}{0.90}
 \newcommand{\resCostLinear}{4.00}
 \newcommand{\resCostSingle}{1.50}
-\newcommand{\resCostUsl}{1.25}
+\newcommand{\resCostUsl}{1.50}
 \newcommand{\resCostOurs}{1.00}
 
 %--- campaign metadata -----------------------------------------------------------

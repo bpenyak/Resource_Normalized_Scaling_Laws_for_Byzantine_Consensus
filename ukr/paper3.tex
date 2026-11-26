@@ -53,7 +53,8 @@ CPU-обмеженням валідатора; показано, що за не�
 нульового середнього однофакторний показник МНК прямує до
 $\gamma\lambda-\beta$ (зміщення через пропущену змінну); сформульовано задачу з
 імовірнісними обмеженнями та вікном $[\nmin,\nmax]$. На чотириядерній
-публічній CI ($\n\le\resNmaxMeasured$) показник стабільний за фіксованої квоти,
+публічній CI, відкаліброваній там, де сумарне обмеження CPU лишає запас хосту
+($\n\le\resCalibNmax$), показник стабільний за фіксованої квоти,
 але залежить від її рівня; виміряний детектор близький до випадкового
 (AUC$\,=\,\resAuc$), тож детекційне обмеження неможливо оцінити, і його
 послаблено. Вікно вироджене, а інформативним результатом є оцінка потрібного
@@ -87,7 +88,8 @@ per-validator CPU cap; show that, in the unsaturated bi-factor model with
 zero-mean noise, the single-factor OLS exponent tends to
 $\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
 chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
-public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
+public CI, calibrated where the aggregate CPU cap leaves host headroom
+($\n\le\resCalibNmax$), the exponent is stable at a fixed quota but
 quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
 the detection constraint cannot be evaluated and is relaxed. The window is
 degenerate, and the informative output is a hardware scale-up estimate that
@@ -126,7 +128,8 @@ per-validator CPU cap; show that, in the unsaturated bi-factor model with
 zero-mean noise, the single-factor OLS exponent tends to
 $\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
 chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
-public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
+public CI, calibrated where the aggregate CPU cap leaves host headroom
+($\n\le\resCalibNmax$), the exponent is stable at a fixed quota but
 quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
 the detection constraint cannot be evaluated and is relaxed. The window is
 degenerate, and the informative output is a hardware scale-up estimate that

@@ -24,34 +24,31 @@ $\approx\resCoreHours$ core-годин, $\n_{\max}=\resNmaxMeasured$; робоч
 \subsection{Результати}
 
 \emph{X1/X3 --- двофакторне калібрування.}
-Спільний МНК на $\resCalibNobs$ ненасичених прогонах без відмов при опорній
-квоті ($\n\in\{4,5,7,9,11,13,16\}$, $\cc\in\{1,2,4,8,16\}$) дає
+Основна підгонка --- МНК на $\resCalibNobs$ ненасичених прогонах без відмов при
+опорній квоті з $\n\in\{4,5,7,9,11\}$ ($\n\q\le\resCalibNQ$, тож щонайменше одне
+з чотирьох ядер лишається генератору та ОС; цей запас не виміряно) і
+$\cc\in\{1,2,4,8,16\}$. Вона дає
 $\beta=\resBeta\pm\resBetaSE$ і $\gamma=\resGamma\pm\resGammaSE$
-($R^{2}=\resRsq$; табл.~\ref{tab:results}) за фіксованої конкурентності та
-$\q=0.25$ (усі~$\n$, включно з відкладеними). Сталий
-$\beta$ --- усереднення: локальні нахили при $\cc=16$ дорівнюють
-$\approx\resBetaLocalA$, $\resBetaLocalB$, $\resBetaLocalC$ на $\n=4$--$7$,
-$7$--$13$, $13$--$16$, а переоцінки на $\n\le\resSmallNmax$ дають
-$\beta=\resBetaCalibMaxN$ (об'єднані квоти) і $\resBetaSmallN$ (опорна квота),
-на $\resBetaGapCalib$ і $\resBetaGapSmallN$ стандартної похибки менше.
-Посилення спаду пояснюємо залишковою конкуренцією на хості, коли сумарне
-обмеження $\n\q$ наближається до чотирьох ядер хоста ($\n\q=4$ при $\n=16$);
-\RNM{} усуває конкуренцію лише доки $\n\q$ менше за них.
-Основне $\beta$ консервативне щодо $\nmax$, але оптимістичне щодо
-$\kappaScale$: вікно $[\resNminCase,\resNmaxCase]$ за побудовою однакове для обох підгонок, а
-переоцінка на $\n\le\resSmallNmax$ підвищує $\kappaScale$ з $\resKappa$ до
-$\resKappaSmallN$.
+($R^{2}=\resRsq$; табл.~\ref{tab:results}). Додавання $\n=13,16$, де $\n\q$
+досягає чотирьох ядер хоста, піднімає $\beta$ до
+$\resBetaFull\pm\resBetaFullSE$ (на $\resBetaGapFull$ стандартної похибки вище
+за основне; локально $\approx\resBetaLocalA$, $\resBetaLocalB$, $\resBetaLocalC$
+на $\n=4$--$7$, $7$--$13$, $13$--$16$ при $\cc=16$), що пояснюємо конкуренцією
+на хості поза областю чинності протоколу; переоцінка на $\n\le\resSmallNmax$
+дає $\resBetaSmallN$ ($\resBetaGapSmallN$ стандартної похибки від основної).
+Між цими областями калібрування $\kappaScale$ змінюється від $\resKappaFull$
+(усі $\n$) через $\resKappa$ (основна) до $\resKappaSmallN$
+($\n\le\resSmallNmax$); вікно $[\resNminCase,\resNmaxCase]$ за побудовою
+однакове для кожної.
 
 \emph{X3b --- перевірка шляху Пропозиції~\ref{prop:identifiability}.}
-Однофакторні підгонки вздовж $\lambda=0,1,2$ дають
-$\ahat=\resAlphaHatLzero\pm\resAlphaSeLzero$,
-$\resAlphaHatLone\pm\resAlphaSeLone$,
-$\resAlphaHatLtwo\pm\resAlphaSeLtwo$ ($\resAlphaPtsLzero$, $\resAlphaPtsLone$,
-$\resAlphaPtsLtwo$ точок) проти
-$\gamma\lambda-\beta=\resAlphaPredLzero$, $\resAlphaPredLone$,
-$\resAlphaPredLtwo$, кожне в межах однієї стандартної похибки
-(рис.~\ref{fig:confounding}). Перевірка має низьку потужність: при $\lambda\ge1$
-стандартні похибки перевищують передбачений зсув $\gamma\lambda$, тож вона не
+На основній області однофакторні підгонки вздовж $\lambda=0,1$ дають
+$\ahat=\resAlphaHatLzero\pm\resAlphaSeLzero$ і
+$\resAlphaHatLone\pm\resAlphaSeLone$ ($\resAlphaPtsLzero$, $\resAlphaPtsLone$
+точок) проти $\gamma\lambda-\beta=\resAlphaPredLzero$ і $\resAlphaPredLone$,
+кожне в межах однієї стандартної похибки (рис.~\ref{fig:confounding}); більші
+$\lambda$ лишають замало точок. Перевірка має низьку потужність: при $\lambda=1$
+стандартна похибка перевищує передбачений зсув $\gamma\lambda$, тож вона не
 розрізняє $\gamma\lambda-\beta$ і $-\beta$. Це перевірка узгодженості, а не
 підтвердження чи доказ універсальності двофакторної форми; передбачена зміна
 знака ($\lambda\approx\resLambda$) лежить поза перевіреним діапазоном.
@@ -69,7 +66,7 @@ $\lambda=\resLambda$ поза перевіреними шляхами}
 \begin{minipage}[t]{0.31\textwidth}
 \centering
 \includegraphics[width=\textwidth]{figures/fig_roc}
-\caption{ROC детектора (AUC$\,=\,\resAuc$, майже випадковий рівень)}
+\caption{ROC детектора (AUC$\,=\,\resAuc$, 95\,\% ДІ $[\resAucLo,\resAucHi]$)}
 \label{fig:roc}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.32\textwidth}
@@ -77,7 +74,7 @@ $\lambda=\resLambda$ поза перевіреними шляхами}
 \includegraphics[width=\textwidth]{figures/fig_window}
 \caption{Сценарій~A: нижня межа PI пропускної здатності при
 $\kappaScale=\resKappa$; вікно $[\resNminCase,\resNmaxCase]$; штрихпунктир:
-межа калібрування $\n=\resNmaxMeasured$}
+межа калібрування $\n=\resCalibNmax$}
 \label{fig:window}
 \end{minipage}
 \end{figure}
@@ -98,14 +95,16 @@ $\resTpsQhighNfour$~TPS), що вказує на не-CPU стелю, яка п�
 На власній сітці ($\n\in\{7,13\}$, $\cc=16$, $\q=0.25$) X4 дає
 $\beta=\resBetaRttZero$ при $0$~мс і $\resBetaRttHigh$ при $200$~мс RTT
 ($\Delta\beta=\resDeltaBetaRtt$). Базове значення --- двоточковий нахил за
-чотирма прогонами, у межах $1.3$ стандартної похибки від спільної підгонки.
+чотирма прогонами, у межах $\resBetaRttGap$ стандартної похибки від основної підгонки.
 Проміжні RTT немонотонні (табл.~\ref{tab:results}), тож X4 показує напрям і
 приблизну величину WAN-штрафу, а не закон залежності від затримки.
 
 \emph{X5 --- детектор.}
 За $\resDetRuns$ прогонами з ін'єкцією відмов об'єднана ROC має
-AUC$\,=\,\resAuc$ (рис.~\ref{fig:roc}, майже випадковий рівень); $\rho$ не
-ідентифікується і покладається рівним~$0$ (підрозділ~\ref{sec:detection}).
+AUC$\,=\,\resAuc$ (95\,\% бутстреп-інтервал за прогонами
+$[\resAucLo,\resAucHi]$; рис.~\ref{fig:roc}), тобто майже випадковий рівень;
+$\rho$ не ідентифікується і покладається рівним~$0$
+(підрозділ~\ref{sec:detection}).
 
 \begin{table}[!t]
 \centering
@@ -122,8 +121,8 @@ $\Tzero$; $\beta$; $\gamma$ &
   двофакторна \\
 $\csat$, $\theta$; $\hat\sigma$ & $\resCsat$, $\resTheta$; $\resSigmaRes$ &
   насичення / залишок \\
-$\ahat$ при $\lambda=0,1,2$ &
-  $\resAlphaHatLzero$, $\resAlphaHatLone$, $\resAlphaHatLtwo$ &
+$\ahat$ при $\lambda=0,1$ &
+  $\resAlphaHatLzero$, $\resAlphaHatLone$ &
   X3b \\
 $\beta$ при $q=0.20,0.25,0.33$ &
   $\resBetaQlow$, $\resBetaQmid$, $\resBetaQhigh$ &

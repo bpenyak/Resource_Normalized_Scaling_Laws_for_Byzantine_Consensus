@@ -8,10 +8,8 @@ twelve hours: a mean of $\approx694$~TPS and, with an assumed peak-to-mean
 factor of $\approx3$ (not a measured profile), a peak $\Dpk=\resDemand$~TPS.
 The detection requirement --- a coordinated omission fault of fraction
 $\phi=0.2$ within one epoch --- cannot be evaluated with the measured detector
-and is relaxed (Section~\ref{sec:detection}), so $\nmin=\resNminCase$.
-Fault-free CI runs without emulated latency commit at most
-$\approx\resTpsMaxMeasured$~TPS (at $\n=\resTpsMaxN$, $\cc=\resTpsMaxC$,
-$\q=\resTpsMaxQ$); the model works in \RNM{} units $\TPSn=\TPS/\q$, and under
+and is relaxed (Section~\ref{sec:detection}), so $\nmin=\resNminCase$. The model
+works in \RNM{} units $\TPSn=\TPS/\q$, and under
 Assumption~\ref{as:separable} the scale-up $\kappaScale$ is the per-validator
 core count of the target hardware class. Linearity of throughput in the quota is
 the key assumption and the main extrapolation risk:
@@ -36,9 +34,10 @@ $[\resNminCase,\resNmaxCase]$ with $\nopt=\resNoptCase$
 by construction: $\kappaScale$ is the smallest scale admitting $\n=4$, so
 $h(4)=0$ and, with $\beta>0$, $\nmax=4$; the informative output is
 $\kappaScale$, and no nontrivial window is demonstrated. The operating
-concurrency $\cc^{\star}=\resCstar$ is the largest calibrated level; the grid
-maximum of the fitted $\gfun$ ($\cc=\resArgmaxC$, beyond the OLS grid and
-dependent on $(\csat,\theta)$) would give $\kappaScale=\resKappaArgmaxC$.
+concurrency $\cc^{\star}=\resCstar$ is the largest calibrated level and the grid
+maximum of the fitted $\gfun$ (also $\cc=\resArgmaxC$), so no extrapolation in
+$\cc$ is needed. Across calibration regions (Section~\ref{sec:exp}) $\kappaScale$
+ranges from $\resKappaFull$ to $\resKappaSmallN$.
 
 \paragraph{Scenarios B and C (fixed hardware class).}
 Hold $\kappaScale=\resKappa$. Doubling $\Dpk$ gives $h(4)=-\log2<0$; raising
@@ -50,10 +49,9 @@ $\kappaScale=\resKappaDoubled$ and $\approx\resKappaWan$, respectively.
 
 \paragraph{Implications.}
 A fitted $(\beta,\gamma)$ is Besu/QBFT- and deployment-specific; the \RNM{}
-protocol and workflow transfer via recalibration. Benchmarks should report
-$\lambda$, per-validator quota and RTT class (Corollary~\ref{cor:sign}). Binding
-elections on a blockchain remain outside the recommendation
-\cite{springall2014,specter2020,park2021}.
+protocol and workflow transfer via recalibration, and benchmarks should report
+$\lambda$, quota and RTT class (Corollary~\ref{cor:sign}); binding blockchain
+elections stay out of scope \cite{springall2014,specter2020,park2021}.
 
 \subsection{Limitations}
 \label{sec:limitations}
@@ -63,6 +61,8 @@ omission/duplication and the detector is near chance, so the detection side is
 not exercised; demonstrating the throughput--detection trade-off needs a
 detector with $J$ bounded away from zero and calibrated per-round parameters.
 
-\emph{Infrastructure.} Four-core CI with $\n\le\resNmaxMeasured$ is the
-intended substrate; at $\n=\resNmaxMeasured$ the aggregate cap equals the four
-host cores. Beyond measured counts, predictions are model-based.
+\emph{Infrastructure.} The primary calibration uses $\n\le\resCalibNmax$
+($\n\q\le\resCalibNQ$ on four cores); the generator's and the OS's CPU
+consumption is not measured, so the headroom is assumed. At $\n=\resNmaxMeasured$
+the aggregate cap equals the four host cores, and beyond $\n=\resCalibNmax$
+predictions are model-based.
