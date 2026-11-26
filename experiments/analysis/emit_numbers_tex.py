@@ -120,18 +120,28 @@ def main() -> int:
         row1 = conf.loc[(conf["lambda"] - 1.0).abs().idxmin()]
         e.num("resAlphaHat", float(row1["alpha_hat"]))
         e.num("resAlphaPred", float(row1["alpha_predicted"]))
-        for lam, macro in ((0.0, "resAlphaHatLzero"), (1.0, "resAlphaHatLone"),
-                           (2.0, "resAlphaHatLtwo")):
+        for lam, tag in ((0.0, "Lzero"), (1.0, "Lone"), (2.0, "Ltwo")):
             hit = conf.loc[(conf["lambda"] - lam).abs() < 1e-9]
-            e.num(macro,
+            e.num(f"resAlphaHat{tag}",
                   float(hit.iloc[0]["alpha_hat"]) if len(hit) else None,
                   todo=f"alpha(lambda={lam:g})")
+            e.num(f"resAlphaPred{tag}",
+                  float(hit.iloc[0]["alpha_predicted"]) if len(hit) else None,
+                  todo=f"gamma*lambda-beta (lambda={lam:g})")
+            e.num(f"resAlphaSe{tag}",
+                  float(hit.iloc[0]["alpha_se"]) if len(hit) else None,
+                  "{:.2f}", todo=f"SE alpha (lambda={lam:g})")
+            e.num(f"resAlphaPts{tag}",
+                  float(hit.iloc[0]["points"]) if len(hit) else None,
+                  "{:.0f}", todo=f"points (lambda={lam:g})")
     else:
         e.num("resAlphaHat", None, todo="alpha-hat")
         e.num("resAlphaPred", None, todo="gamma*lambda-beta")
-        e.num("resAlphaHatLzero", None, todo="alpha(lambda=0)")
-        e.num("resAlphaHatLone", None, todo="alpha(lambda=1)")
-        e.num("resAlphaHatLtwo", None, todo="alpha(lambda=2)")
+        for tag in ("Lzero", "Lone", "Ltwo"):
+            e.num(f"resAlphaHat{tag}", None, todo=f"alpha {tag}")
+            e.num(f"resAlphaPred{tag}", None, todo=f"pred {tag}")
+            e.num(f"resAlphaSe{tag}", None, todo=f"se {tag}")
+            e.num(f"resAlphaPts{tag}", None, todo=f"pts {tag}")
 
     # Model-comparison holdout log-RMSE (X8 ablation costs are separate).
     e.section("model comparison holdout log-RMSE")
@@ -198,18 +208,16 @@ def main() -> int:
     e.num("resDeltaBetaRtt", d_beta, todo="delta beta(RTT)")
 
     # -- detector --------------------------------------------------------------
-    e.section("detector characterisation (X5)")
+    e.section("detector characterisation (X5): classifier flag rates")
     det = fit.get("detector", {}) or {}
-    e.num("resPd", det.get("p_d"), todo="p_d")
-    e.num("resPf", det.get("p_f"), todo="p_f")
+    # fit.json keeps the legacy keys p_d/p_f; they are TPR/FPR of the flagging
+    # classifier at one threshold, NOT per-round failure probabilities.
+    e.num("resTpr", det.get("p_d"), todo="TPR")
+    e.num("resFpr", det.get("p_f"), todo="FPR")
     e.num("resRho", det.get("rho"), todo="rho")
     e.num("resAuc", det.get("auc"), todo="AUC")
     e.num("resYouden", det.get("youden"), todo="Youden J")
     e.num("resDetRuns", det.get("runs"), "{:.0f}", todo="X5 runs")
-    e.num("resDetMargin", sizing.get("detector_margin"), "{:.4f}",
-          todo="detector margin")
-    e.num("resNminDet", sizing.get("n_min_detector"), "{:.0f}",
-          todo="n_min(detector)")
 
     # -- coverage --------------------------------------------------------------
     e.section("prediction-interval coverage (X7)")
@@ -267,12 +275,14 @@ def main() -> int:
           "{:.1f}", todo="kappa(2D)")
     e.num("resKappaWan", None if kappa is None or d_beta is None
           else kappa * 4.0 ** d_beta, "{:.1f}", todo="kappa(WAN)")
-    e.num("resKappaCalibC", sizing.get("kappa_calib_max"), "{:.2f}",
-          todo="kappa(c_cal)")
+    e.num("resKappaArgmaxC", sizing.get("kappa_argmax_g"), "{:.1f}",
+          todo="kappa(argmax g)")
+    e.num("resArgmaxC", sizing.get("concurrency_argmax_g"), "{:.0f}",
+          todo="argmax g")
     e.num("resCalibCmax", sizing.get("concurrency_calib_max"), "{:.0f}",
           todo="c_cal max")
     e.raw("resKappaMode", sizing.get("kappa_mode"), todo="kappa_mode")
-    e.num("resCstar", sizing.get("concurrency"), "{:.0f}", todo="c*")
+    e.num("resCstar", sizing.get("concurrency"), "{:.0f}", todo="c operating")
     e.num("resNminCase", sizing.get("n_min"), "{:.0f}", todo="n_min")
     e.num("resNmaxCase", sizing.get("n_max"), "{:.0f}", todo="n_max")
     e.num("resNoptCase", sizing.get("n_opt"), "{:.0f}", todo="n*")

@@ -1,9 +1,6 @@
 \section{Resource-normalized measurement and the bi-factor law}
 \label{sec:model}
 
-We introduce an isolation protocol, a bi-factor characterization, and an
-identifiability result under stated assumptions.
-
 \subsection{Resource-normalized measurement as an isolation tool}
 
 If $\n$ validators share a host of $Q$ cores, each receives $Q/\n$ cores, so
@@ -14,24 +11,31 @@ measured throughput mixes algorithmic cost with a shrinking compute budget.
 \label{def:rnm}
 A campaign follows the \emph{\RNM{} protocol} with quota~$\q$ if every validator
 container receives the same CPU quota and memory limit independently of~$\n$,
-with aggregate reservation $\n\q$ not exceeding host capacity. Normalized
+with aggregate cap $\n\q$ not exceeding host capacity. Normalized
 throughput is
 $\TPSn\eqdef\TPS/\q$.
 \end{Def}
 
+A CFS quota is an upper bound on CPU time, not a guaranteed allocation, and
+consumed CPU is not verified here; \RNM{} is therefore a controlled-cap
+protocol, and what it isolates is a hypothesis tested below.
+
 \begin{Assumption}[Separable compute budget]
 \label{as:separable}
 On the operating range of quotas in the campaign,
-$\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+r)$ with $|r|\le C\q$ for a
-constant~$C$ independent of~$(\n,\cc)$ there.
+$\TPS(\n,\cc,\q)=\q\cdot\Phi(\n,\cc)\cdot(1+r)$, where the remainder
+$r=r(\n,\cc,\q)$ satisfies $|r|\le C\q\le\tfrac12$ for a
+constant~$C$ independent of~$(\n,\cc)$.
 \end{Assumption}
 
-\paragraph{Assumption check.}
-Under Assumption~\ref{as:separable} and a power-law factor
-$\Phi\propto\n^{-\beta}$, the OLS slope of $\log\TPSn$ on $\log\n$ at fixed
-concurrency is independent of~$\q$: the relative remainder is absorbed by the
-intercept. Section~\ref{sec:exp} tests this invariance across
-$\q\in\{0.20,0.25,0.33\}$ and rejects it at $\q=0.33$: \RNM{} stabilizes
+\paragraph{What the assumption implies.}
+Let $s_x$ be the standard deviation of $\log\n$ over the design. For a power-law
+factor $\Phi\propto\n^{-\beta}$, the OLS slope of $\log\TPSn$ on $\log\n$ at
+fixed concurrency shifts with the quota by at most $2C\q/s_x$
+(Cauchy--Schwarz); it is exactly quota-free only if $r$ does not depend
+on~$\n$, which the bound $|r|\le C\q$ does not imply. Quota invariance is thus
+a testable property, not a consequence. Section~\ref{sec:exp} tests it across
+$\q\in\{0.20,0.25,0.33\}$ and rejects it: \RNM{} stabilizes
 $\beta$ at a fixed quota rather than making it quota-free. The calibrated model
 is reported at $\q=0.25$; outside that regime the coefficients must be re-fit.
 
@@ -49,49 +53,46 @@ In the unsaturated regime $\cc\ll\csat$ this is log-linear:
 $\log\TPS=\log\Tzero+\gamma\log\cc-\beta\log\n$.
 \end{Def}
 
-The form separates concurrency from validator-count scaling, reduces to a
-power law for $\cc\ll\csat$, saturates at large~$\cc$, and contains the
-classical single-factor fit as the case $\gamma=0$ (or $\lambda=0$ with
-$\alpha=-\beta$).
+The form separates concurrency from validator-count scaling, saturates at large
+$\cc$, and contains the classical single-factor fit as the case $\gamma=0$.
 
 \subsection{Identifiability}
 
-Proposition~\ref{prop:identifiability} is the textbook \mbox{omitted-variable} bias of
-regressing $\log\TPS$ on $\log\n$ while omitting $\log\cc$~\cite{wooldridge2010},
-valid under the unsaturated bi-factor model and the stated path and noise
-assumptions. Its value is interpretive: it shows how to read a measured
-single-factor exponent under a stated concurrency path. Section~\ref{sec:exp}
-checks consistency within the evaluated deployment only.
+Proposition~\ref{prop:identifiability} is the textbook \mbox{omitted-variable}
+bias of regressing $\log\TPS$ on $\log\n$ while omitting
+$\log\cc$~\cite{wooldridge2010}. Its value is interpretive: it shows how to read
+a measured single-factor exponent under a stated concurrency path;
+Section~\ref{sec:exp} checks consistency in the evaluated deployment only.
 
 \begin{Proposition}[Identifiability of the consensus exponent]
 \label{prop:identifiability}
-Let observations follow the unsaturated bi-factor law with additive noise of
-mean zero and finite variance, along a concurrency path
-$\log\cc_{i}=\lambda\log\n_{i}+\mu+\eta_{i}$
-($\E[\eta_{i}\mid\n_{i}]=0$). If the empirical second moment of
-$x_{i}=\log\n_{i}$ converges to a positive limit, the OLS slope $\ahat_{m}$ of
+Let $(x_{i},\eta_{i},\varepsilon_{i})$, $i=1,\dots,m$, be independent, with
+$x_{i}=\log\n_{i}$ and
+$\log\cc_{i}=\lambda x_{i}+\mu+\eta_{i}$,
+$\log\TPS_{i}=\log\Tzero+\gamma\log\cc_{i}-\beta x_{i}+\varepsilon_{i}$
+(unsaturated law), where $\E[\eta_{i}\mid x_{i}]=0$,
+$\E[\varepsilon_{i}\mid x_{i},\eta_{i}]=0$ and the variances of
+$\eta_{i},\varepsilon_{i}$ are bounded. If the sample variance of $x_{i}$
+converges to a limit $s^{2}>0$, the OLS slope $\ahat_{m}$ of
 $\log\TPS_{i}$ on $x_{i}$ alone satisfies
-$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$.
+$\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$ as $m\to\infty$.
 In particular $\ahat>0\iff\lambda>\beta/\gamma$, and $\ahat=-\beta\iff\lambda=0$.
 \end{Proposition}
 
 \begin{Proof}
-With $x_{i}=\log\n_{i}$, the path reduces the unsaturated law to
-$\log\TPS_{i}=a+\alpha x_{i}+\varepsilon_{i}$, $\E[\varepsilon_{i}\mid x_{i}]=0$,
-finite variance, and
-$\alpha=\underbrace{-\beta}_{\text{protocol}}
-+\underbrace{\gamma\lambda}_{\text{measurement}}$.
-OLS consistency under the second-moment condition gives
-$\ahat_{m}\xrightarrow{\Prob}\alpha$~\cite{wooldridge2010}; signs follow from
-$\gamma>0$.
+Substitution gives $\log\TPS_{i}=a+\alpha x_{i}+u_{i}$ with
+$\alpha=\gamma\lambda-\beta$ and $u_{i}=\varepsilon_{i}+\gamma\eta_{i}$, so
+$\E[u_{i}\mid x_{i}]=0$ and the $u_{i}$ are conditionally uncorrelated with
+variance at most $\bar\sigma^{2}$ given $x=(x_{1},\dots,x_{m})$. The OLS slope
+is $\alpha+\sum_{i}(x_{i}-\bar x)u_{i}/\sum_{i}(x_{i}-\bar x)^{2}$; the second
+term has conditional mean $0$ and variance at most
+$\bar\sigma^{2}/\sum_{i}(x_{i}-\bar x)^{2}=O(1/m)$, so it vanishes in
+probability by Chebyshev's inequality.
 \end{Proof}
 
-Under the stated model, only a factorial design ($\lambda=0$) makes the
-single-factor slope a consistent estimate of~$-\beta$. For illustration,
-hypothetical values $\gamma=0.8$, $\beta=0.5$ and $\lambda=1$ (not the fitted
-ones) yield $\ahat=+0.3$, and extrapolating from $\n=5$ to $\n=60$ differs by a
-factor $\approx7$, matching the order of the discrepancy
-in~\cite{peniak2026a}.
+Here $m\to\infty$ means more replicated runs over the measured design, not a
+wider range of~$\n$. Only a factorial design ($\lambda=0$) makes the
+single-factor slope a consistent estimate of~$-\beta$.
 
 \begin{Corollary}[Non-transferability of single-factor exponents]
 \label{cor:sign}
@@ -101,8 +102,3 @@ $\gamma(\lambda_{1}-\lambda_{2})$. Without reporting~$\lambda$, published
 single-factor exponents should not be treated as transferable protocol
 properties across measurement designs.
 \end{Corollary}
-
-\paragraph{Implementation.}
-On a factorial grid ($\lambda=0$) we estimate $(\log\Tzero,\gamma,\beta)$ by
-OLS in log-space and $(\csat,\theta)$ by nonlinear least squares on the full
-$\cc$-sweep (Section~\ref{sec:exp}).

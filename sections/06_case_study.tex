@@ -6,19 +6,19 @@
 We instantiate Problem~\ref{prob:sizing} on $\approx3\times10^{7}$ ballots over
 twelve hours: a mean of $\approx694$~TPS and, with an assumed peak-to-mean
 factor of $\approx3$ (not a measured profile), a peak $\Dpk=\resDemand$~TPS.
-The detection requirement --- a coordinated transaction-omission fault of
-fraction $\phi=0.2$ within one epoch --- is unsatisfiable and is relaxed, not
-enforced (Section~\ref{sec:detection}), so $\nmin=\resNminCase$. Fault-free CI runs
-without emulated latency commit at most $\approx\resTpsMaxMeasured$~TPS (at
-$\n=\resTpsMaxN$, $\cc=\resTpsMaxC$, $\q=\resTpsMaxQ$); the model works in
-\RNM{} units $\TPSn=\TPS/\q$ (throughput per core of per-validator quota), and
-under Assumption~\ref{as:separable} the scale-up $\kappaScale$ is the
-per-validator core count of the target hardware class. Linearity of throughput
-in the quota is the key assumption and the main extrapolation risk:
+The detection requirement --- a coordinated omission fault of fraction
+$\phi=0.2$ within one epoch --- cannot be evaluated with the measured detector
+and is relaxed (Section~\ref{sec:detection}), so $\nmin=\resNminCase$.
+Fault-free CI runs without emulated latency commit at most
+$\approx\resTpsMaxMeasured$~TPS (at $\n=\resTpsMaxN$, $\cc=\resTpsMaxC$,
+$\q=\resTpsMaxQ$); the model works in \RNM{} units $\TPSn=\TPS/\q$, and under
+Assumption~\ref{as:separable} the scale-up $\kappaScale$ is the per-validator
+core count of the target hardware class. Linearity of throughput in the quota is
+the key assumption and the main extrapolation risk:
 $\kappaScale=\resKappa$ cores is $\approx\resKappaQuotaRatio$ times the
 calibrated $\q=0.25$, whereas X2 already shows throughput ceasing to grow at
-$\q=0.33$. $\kappaScale$ is therefore a hardware requirement to verify on the
-target hardware, not a measured capability. With free $\kappaScale$, Problem~\ref{prob:sizing} takes
+$\q=0.33$. $\kappaScale$ is therefore a hardware requirement to verify, not a
+measured capability. With free $\kappaScale$, Problem~\ref{prob:sizing} takes
 \begin{equation}
 \kappaScale^{\star}
 =\frac{\Dpk}{\underline{\TPSn}_{1-\epsp}(4,\cc^{\star})},
@@ -35,40 +35,34 @@ $[\resNminCase,\resNmaxCase]$ with $\nopt=\resNoptCase$
 (Proposition~\ref{prop:window}; Figure~\ref{fig:window}). The single count is
 by construction: $\kappaScale$ is the smallest scale admitting $\n=4$, so
 $h(4)=0$ and, with $\beta>0$, $\nmax=4$; the informative output is
-$\kappaScale$. ($\cc^{\star}$ maximizes the fitted $\gfun$ beyond the OLS grid
-$\cc\le\resCalibCmax$; at $\cc=\resCalibCmax$, $\kappaScale=\resKappaCalibC$.)
+$\kappaScale$, and no nontrivial window is demonstrated. The operating
+concurrency $\cc^{\star}=\resCstar$ is the largest calibrated level; the grid
+maximum of the fitted $\gfun$ ($\cc=\resArgmaxC$, beyond the OLS grid and
+dependent on $(\csat,\theta)$) would give $\kappaScale=\resKappaArgmaxC$.
 
 \paragraph{Scenarios B and C (fixed hardware class).}
 Hold $\kappaScale=\resKappa$. Doubling $\Dpk$ gives $h(4)=-\log2<0$; raising
 $\beta$ by the within-X4 WAN increment $\Delta\beta=\resDeltaBetaRtt$ lowers
 $h(4)$ by $\Delta\beta\log4$. Both windows are empty
 (Corollary~\ref{cor:infeasible}), and adding validators cannot help because
-predicted throughput falls with~$\n$. Both follow from the zero margin of
-Scenario~A; their content is the required scale-up: $\kappaScale=\resKappaDoubled$
-and $\approx\resKappaWan$ for doubled demand and WAN, respectively.
+predicted throughput falls with~$\n$; the content is the required scale-up,
+$\kappaScale=\resKappaDoubled$ and $\approx\resKappaWan$, respectively.
 
-The same workflow applies to registry and identity sizing after recalibration;
-binding elections on a blockchain remain outside the recommendation
+\paragraph{Implications.}
+A fitted $(\beta,\gamma)$ is Besu/QBFT- and deployment-specific; the \RNM{}
+protocol and workflow transfer via recalibration. Benchmarks should report
+$\lambda$, per-validator quota and RTT class (Corollary~\ref{cor:sign}). Binding
+elections on a blockchain remain outside the recommendation
 \cite{springall2014,specter2020,park2021}.
-
-\subsection{What this implies}
-\label{sec:discussion}
-
-A fitted $(\beta,\gamma)$ is Besu/QBFT- and deployment-specific; transfer is
-appropriate only when concurrency path, quota regime, and RTT class match the
-calibration, while the \RNM{} protocol and the workflow transfer via
-recalibration. Benchmarks should report $\lambda$ (or $\lambda=0$),
-per-validator quota, and RTT class (Corollary~\ref{cor:sign}).
 
 \subsection{Limitations}
 \label{sec:limitations}
 
 \emph{Fault class and detection.} Encrypted transport limits X5 to
-omission/duplication, and the resulting detector is near chance; the detection
-side is therefore not exercised empirically, and demonstrating the
-throughput--detection trade-off needs a detector with $J$ bounded away from
-zero.
+omission/duplication and the detector is near chance, so the detection side is
+not exercised; demonstrating the throughput--detection trade-off needs a
+detector with $J$ bounded away from zero and calibrated per-round parameters.
 
 \emph{Infrastructure.} Four-core CI with $\n\le\resNmaxMeasured$ is the
-intended substrate; at $\n=\resNmaxMeasured$ the reservation equals the four
+intended substrate; at $\n=\resNmaxMeasured$ the aggregate cap equals the four
 host cores. Beyond measured counts, predictions are model-based.

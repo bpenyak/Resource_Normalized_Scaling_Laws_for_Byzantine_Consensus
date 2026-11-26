@@ -27,8 +27,17 @@
 \newcommand{\resAlphaHat}{-1.362}
 \newcommand{\resAlphaPred}{-1.473}
 \newcommand{\resAlphaHatLzero}{-1.548}
+\newcommand{\resAlphaPredLzero}{-1.651}
+\newcommand{\resAlphaSeLzero}{0.14}
+\newcommand{\resAlphaPtsLzero}{49}
 \newcommand{\resAlphaHatLone}{-1.362}
+\newcommand{\resAlphaPredLone}{-1.473}
+\newcommand{\resAlphaSeLone}{0.58}
+\newcommand{\resAlphaPtsLone}{21}
 \newcommand{\resAlphaHatLtwo}{-0.661}
+\newcommand{\resAlphaPredLtwo}{-1.295}
+\newcommand{\resAlphaSeLtwo}{0.96}
+\newcommand{\resAlphaPtsLtwo}{5}
 
 %--- model comparison holdout log-RMSE -------------------------------------------
 \newcommand{\resRmseLinear}{1.329}
@@ -48,7 +57,7 @@
 \newcommand{\resTpsMaxN}{7}
 \newcommand{\resTpsMaxC}{16}
 \newcommand{\resTpsMaxQ}{0.25}
-\newcommand{\resKappaQuotaRatio}{52}
+\newcommand{\resKappaQuotaRatio}{50}
 
 %--- WAN degradation (X4) --------------------------------------------------------
 \newcommand{\resBetaRttZero}{1.459}
@@ -58,15 +67,13 @@
 \newcommand{\resBetaRttHigh}{2.708}
 \newcommand{\resDeltaBetaRtt}{1.248}
 
-%--- detector characterisation (X5) ----------------------------------------------
-\newcommand{\resPd}{0.397}
-\newcommand{\resPf}{0.376}
+%--- detector characterisation (X5): classifier flag rates -----------------------
+\newcommand{\resTpr}{0.397}
+\newcommand{\resFpr}{0.376}
 \newcommand{\resRho}{0.000}
 \newcommand{\resAuc}{0.506}
 \newcommand{\resYouden}{0.021}
 \newcommand{\resDetRuns}{13}
-\newcommand{\resDetMargin}{0.0107}
-\newcommand{\resNminDet}{3329}
 
 %--- prediction-interval coverage (X7) -------------------------------------------
 \newcommand{\resCovNinety}{90.9\,\%}
@@ -82,27 +89,28 @@
 \newcommand{\resBetaLocalA}{1.4}
 \newcommand{\resBetaLocalB}{1.7}
 \newcommand{\resBetaLocalC}{2.8}
-\newcommand{\resKappaSmallN}{16.7}
+\newcommand{\resKappaSmallN}{15.2}
 \newcommand{\resCovHitsNinety}{20}
 \newcommand{\resCovHitsNinetyFive}{21}
 \newcommand{\resHoldoutN}{n \in \{11, 13, 16\}}
 
 %--- sizing ablation (X8) --------------------------------------------------------
-\newcommand{\resKappa}{13.0}
+\newcommand{\resKappa}{12.6}
 \newcommand{\resDemand}{2100}
-\newcommand{\resKappaDoubled}{26.0}
-\newcommand{\resKappaWan}{73.4}
-\newcommand{\resKappaCalibC}{12.94}
+\newcommand{\resKappaDoubled}{25.2}
+\newcommand{\resKappaWan}{71.2}
+\newcommand{\resKappaArgmaxC}{13.0}
+\newcommand{\resArgmaxC}{32}
 \newcommand{\resCalibCmax}{16}
 \newcommand{\resKappaMode}{auto_min_admissible}
-\newcommand{\resCstar}{32}
+\newcommand{\resCstar}{16}
 \newcommand{\resNminCase}{4}
 \newcommand{\resNmaxCase}{4}
 \newcommand{\resNoptCase}{4}
 \newcommand{\resDetectorThr}{0.90}
 \newcommand{\resCostLinear}{4.00}
 \newcommand{\resCostSingle}{1.50}
-\newcommand{\resCostUsl}{1.50}
+\newcommand{\resCostUsl}{1.25}
 \newcommand{\resCostOurs}{1.00}
 
 %--- campaign metadata -----------------------------------------------------------

@@ -13,14 +13,19 @@
 
 \input{macros}
 \input{numbers}
+% MMC.sty ships 2017 / Vol. x / No. x placeholders. The year is the submission
+% year; volume and issue are assigned by the editorial office.
+\renewcommand{\rik}{2026}
+\renewcommand{\tom}{\textendash}
+\renewcommand{\nomer}{\textendash}
 % Line breaks after explicit hyphens make PDF text copy drop the hyphen.
 \exhyphenpenalty=10000
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (EN) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title[Resource-Normalized Scaling Laws for BFT Consensus]{Resource-Normalized
-Scaling Laws for Byzantine Consensus: Chance-Constrained Validator-Set Sizing
-from Commodity-CI Measurements}
+\title[Resource-Normalized Calibration of BFT Consensus Throughput]{Resource-Normalized
+Calibration of Byzantine Consensus Throughput: Chance-Constrained Capacity
+Planning from Commodity-CI Measurements}
 
 \author[Peniak B.\,O.]{Peniak B.\,O., Liubinskiy B.\,B.}
 
@@ -37,14 +42,16 @@ from Commodity-CI Measurements}
 Sizing a permissioned BFT validator set for \mbox{e-governance} trades
 consensus throughput, which falls with~$\n$, against fault-detection power,
 which rises with it. We propose resource-normalized measurement with a fixed
-per-validator CPU quota; show that, in the unsaturated bi-factor model with
+per-validator CPU cap; show that, in the unsaturated bi-factor model with
 zero-mean noise, the single-factor OLS exponent tends to
 $\gamma\lambda-\beta$ (an \mbox{omitted-variable} bias); and formulate
 chance-constrained sizing with feasible set $[\nmin,\nmax]$. On four-core
 public CI ($\n\le\resNmaxMeasured$) the exponent is stable at a fixed quota but
 quota-dependent; the measured detector is near chance (AUC$\,=\,\resAuc$), so
-the detection constraint is relaxed (not enforced) and throughput alone sets
-the window. Coefficients are deployment-specific.
+the detection constraint cannot be evaluated and is relaxed. The window is
+degenerate, and the informative output is a hardware scale-up estimate that
+extrapolates far beyond the calibrated quota. Coefficients are
+deployment-specific.
 %
 \keywords{Byzantine fault tolerance, consensus, scaling law, capacity planning,
 chance-constrained optimization, e-governance}
@@ -54,9 +61,9 @@ chance-constrained optimization, e-governance}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METADATA (UKR) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\titleUkr[Ресурсно-нормовані закони масштабування BFT-консенсусу]{РЕСУРСНО-НОРМОВАНІ
-ЗАКОНИ МАСШТАБУВАННЯ BFT-КОНСЕНСУСУ: ІМОВІРНІСНО-ОБМЕЖЕНЕ ВИЗНАЧЕННЯ РОЗМІРУ
-МНОЖИНИ ВАЛІДАТОРІВ ЗА ВИМІРЮВАННЯМИ НА ТИПОВІЙ CI-ІНФРАСТРУКТУРІ}
+\titleUkr[Ресурсно-нормоване калібрування пропускної здатності BFT-консенсусу]{РЕСУРСНО-НОРМОВАНЕ
+КАЛІБРУВАННЯ ПРОПУСКНОЇ ЗДАТНОСТІ BFT-КОНСЕНСУСУ: ІМОВІРНІСНО-ОБМЕЖЕНЕ
+ПЛАНУВАННЯ ПОТУЖНОСТІ ЗА ВИМІРЮВАННЯМИ НА ТИПОВІЙ CI-ІНФРАСТРУКТУРІ}
 
 \authorUkr[Пеняк Б.\,О.]{Пеняк Б.\,О., Любінський Б.\,Б.}
 
@@ -68,15 +75,16 @@ chance-constrained optimization, e-governance}
 Визначення розміру BFT-множини валідаторів для електронного урядування
 узгоджує пропускну здатність, що спадає з~$\n$, із силою виявлення відмов, що
 з~$\n$ зростає. Запропоновано ресурсно-нормовані вимірювання з фіксованою
-CPU-квотою валідатора; показано, що за ненасиченої двофакторної моделі з шумом
+CPU-обмеженням валідатора; показано, що за ненасиченої двофакторної моделі з шумом
 нульового середнього однофакторний показник МНК прямує до
 $\gamma\lambda-\beta$ (зміщення через пропущену змінну); сформульовано задачу з
 імовірнісними обмеженнями та вікном $[\nmin,\nmax]$. На чотириядерній
 публічній CI ($\n\le\resNmaxMeasured$) показник стабільний за фіксованої квоти,
 але залежить від її рівня; виміряний детектор близький до випадкового
-(AUC$\,=\,\resAuc$), тож детекційне обмеження послаблено (не застосовується), і
-вікно визначає лише пропускна здатність. Коефіцієнти специфічні для
-розгортання.
+(AUC$\,=\,\resAuc$), тож детекційне обмеження неможливо оцінити, і його
+послаблено. Вікно вироджене, а інформативним результатом є оцінка потрібного
+масштабування апаратури, що далеко виходить за відкалібрований рівень квоти.
+Коефіцієнти специфічні для розгортання.
 %
 \keywordsUkr{візантійська відмовостійкість, консенсус, закон масштабування,
 планування потужності, оптимізація з імовірнісними обмеженнями, електронне

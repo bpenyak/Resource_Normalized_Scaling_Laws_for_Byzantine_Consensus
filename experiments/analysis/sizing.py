@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
-"""Algorithm 2: chance-constrained validator-set sizing, and the X8 ablation.
+"""Chance-constrained validator-set sizing (Problem 1) and the X8 ablation.
 
 Two constraints:
 
   (P)  Pr( kappa * TPS_RNM(n, c) >= D_peak ) >= 1 - eps_p
-       deterministic equivalent (Lemma 1):
+       deterministic equivalent:
            log kappa + log T0 + log g(c) - beta log n
              - z_{1-eps_p} s(n, c) >= log D
 
-  (S)  p_miss(n, w) <= eps_s
-       with p_miss <= exp(-2 n_eff w eps_0^2), n_eff = n / (1 + (k-1) rho)
-       giving  n >= n_min = (1 + (k-1) rho) ln(1/eps_s) / (2 w eps_0^2)
+  (S)  p_miss(n, w) <= eps_s   (design-effect heuristic, paper eq. (nmin))
+       with p_miss <~ exp(-2 w k (p_d - tau)^2 / (1 + (k-1) rho)),  k = ceil(phi n)
+       where p_d, tau are PER-ROUND failure probabilities of a faulty validator
+       and the detector threshold on the failure rate. They are NOT the flag
+       rates (TPR/FPR) measured by X5, which are properties of a classifier at
+       one operating point. (S) is therefore evaluated only when per-round
+       parameters are supplied (--round-pd, --round-tau); otherwise it is
+       relaxed and n_min = 4 (= 3f+1 with f = 1).
 
 kappa is the production scale-up from RNM-normalized throughput (TPS/q) to the
 absolute units of D_peak. Default ``auto`` sets kappa so that the lower
 prediction bound at n=4 just meets demand — the minimal hardware class that
 admits any validator set — and then n_max follows by bisection.
 
-Theorem 2 states the feasible set is the closed interval [n_min, n_max]; an
-empty interval is a certificate that no validator-set size meets the
-requirement.
+The operating concurrency defaults to the largest calibrated level, so the
+prediction needs no extrapolation in c. The grid argmax of the fitted g(c)
+(which uses the saturation parameters) is reported only as a sensitivity.
 """
 
 from __future__ import annotations
@@ -35,8 +40,11 @@ from scipy import stats
 from scipy.optimize import curve_fit
 
 
-def g_of_c(c: float, gamma: float, c_sat: float, theta: float) -> float:
-    if not math.isfinite(c_sat) or not math.isfinite(theta):
+def g_of_c(c: float, gamma: float, c_sat: float, theta: float,
+           c_cal: float = 0.0) -> float:
+    """Concurrency factor. Within the OLS grid (c <= c_cal) the fitted
+    log-linear form c**gamma is used, so (c_sat, theta) enter only beyond it."""
+    if c <= c_cal or not math.isfinite(c_sat) or not math.isfinite(theta):
         return c ** gamma
     return c ** gamma / (1.0 + (c / c_sat) ** theta)
 
@@ -53,7 +61,8 @@ def c_star(fit: dict, candidates: list[float] | None = None) -> float:
 
 
 class Sizer:
-    def __init__(self, fit: dict, eps_p: float, kappa: float = 1.0):
+    def __init__(self, fit: dict, eps_p: float, kappa: float = 1.0,
+                 c_cal: float | None = None):
         if kappa <= 0 or not math.isfinite(kappa):
             raise ValueError(f"kappa must be positive and finite, got {kappa}")
         if fit["beta"] <= 0:
@@ -66,6 +75,8 @@ class Sizer:
         self.cov = np.array(fit["cov"], dtype=float)
         self.c_sat = fit.get("c_sat", float("nan"))
         self.theta = fit.get("theta", float("nan"))
+        self.c_cal = (float(c_cal) if c_cal is not None
+                      else float(max(fit.get("calibration_c") or [0.0])))
         self.kappa = float(kappa)
         self.z = stats.norm.ppf(1.0 - eps_p)
 
@@ -75,8 +86,8 @@ class Sizer:
 
     def log_mean_norm(self, n: float, c: float) -> float:
         return (self.log_T0
-                + math.log(max(g_of_c(c, self.gamma, self.c_sat, self.theta),
-                               1e-300))
+                + math.log(max(g_of_c(c, self.gamma, self.c_sat, self.theta,
+                                      self.c_cal), 1e-300))
                 - self.beta * math.log(n))
 
     def h(self, n: float, c: float, demand: float) -> float:
@@ -122,19 +133,16 @@ def resolve_kappa(sizer_unit: Sizer, c: float, demand: float,
     return float(demand / lb * (1.0 + 1e-9)), "auto_min_admissible"
 
 
-def n_min_from_safety(p_d: float, p_f: float, faulty_fraction: float,
-                      rho: float, w: int, tau: float,
-                      eps_s: float, k_hint: int = 1) -> tuple[float, float]:
-    """B-hat alarm form. Returns (n_min, eps_0)."""
-    if not math.isfinite(p_d) or not math.isfinite(p_f):
-        return float("inf"), float("nan")
-    mu_b = p_d * faulty_fraction + p_f * (1.0 - faulty_fraction)
-    eps_0 = mu_b - tau
-    if eps_0 <= 0:
-        return float("inf"), eps_0
+def n_min_per_round(round_pd: float, tau: float, faulty_fraction: float,
+                    rho: float, w: int, eps_s: float, k_hint: int) -> float:
+    """Detection cut from per-round failure probability ``round_pd`` of a
+    faulty validator and detector threshold ``tau`` (paper eq. (nmin))."""
+    margin = round_pd - tau
+    if not (math.isfinite(margin) and margin > 0):
+        return float("inf")
     design_effect = 1.0 + max(k_hint - 1, 0) * max(rho, 0.0)
-    return (design_effect * math.log(1.0 / eps_s)
-            / (2.0 * w * eps_0 ** 2)), eps_0
+    return (design_effect / faulty_fraction * math.log(1.0 / eps_s)
+            / (2.0 * w * margin ** 2))
 
 
 def ablation(dataset: pd.DataFrame, fit: dict, demand: float, c: float,
@@ -150,7 +158,8 @@ def ablation(dataset: pd.DataFrame, fit: dict, demand: float, c: float,
             fit["log_T0"]
             + math.log(max(g_of_c(c, fit["gamma"],
                                   fit.get("c_sat", float("nan")),
-                                  fit.get("theta", float("nan"))),
+                                  fit.get("theta", float("nan")),
+                                  float(max(fit.get("calibration_c") or [0.0]))),
                            1e-300))
             - fit["beta"] * math.log(n))
 
@@ -200,13 +209,16 @@ def main() -> int:
     ap.add_argument("--demand", type=float, default=2100.0,
                     help="peak demand in absolute transactions per second")
     ap.add_argument("--concurrency", type=float, default=None,
-                    help="operating concurrency; default = argmax g(c)")
+                    help="operating concurrency; default = largest calibrated "
+                         "level (no extrapolation in c)")
     ap.add_argument("--eps-p", type=float, default=0.05)
     ap.add_argument("--eps-s", type=float, default=0.01)
     ap.add_argument("--window", type=int, default=30)
-    ap.add_argument("--tau", type=float, default=0.10,
-                    help="alarm threshold on the estimated faulty fraction B̂ "
-                         "(distinct from the detector participation threshold)")
+    ap.add_argument("--round-pd", type=float, default=None,
+                    help="per-round failure probability of a faulty validator; "
+                         "enables the detection constraint (needs --round-tau)")
+    ap.add_argument("--round-tau", type=float, default=None,
+                    help="detector threshold on the per-round failure rate")
     ap.add_argument("--faulty-fraction", type=float, default=0.20)
     ap.add_argument("--cost-per-node", type=float, default=1.0)
     ap.add_argument("--scale", default="auto",
@@ -219,8 +231,8 @@ def main() -> int:
     dataset = pd.read_csv(args.inp / "dataset.csv")
     det = fit.get("detector", {})
 
-    c = (float(args.concurrency) if args.concurrency is not None
-         else c_star(fit))
+    c_cal = float(max(fit.get("calibration_c") or [16]))
+    c = float(args.concurrency) if args.concurrency is not None else c_cal
     unit = Sizer(fit, args.eps_p, kappa=1.0)
     kappa, kappa_mode = resolve_kappa(unit, c, args.demand, args.scale)
     sizer = Sizer(fit, args.eps_p, kappa=kappa)
@@ -230,36 +242,34 @@ def main() -> int:
     rho = det.get("rho", 0.0)
     if rho is None or (isinstance(rho, float) and not math.isfinite(rho)):
         rho = 0.0
-    n_min, eps_0 = n_min_from_safety(
-        det.get("p_d", float("nan")), det.get("p_f", float("nan")),
-        args.faulty_fraction, rho, args.window, args.tau,
-        args.eps_s, k_hint)
 
-    # Per-validator detection cut (paper eq. for n_min) with the threshold midway
-    # between the measured flag rates, i.e. margin (p_d - p_f)/2.
-    p_d, p_f = det.get("p_d", float("nan")), det.get("p_f", float("nan"))
-    margin = 0.5 * (p_d - p_f)
-    n_min_detector = (
-        (1.0 + max(k_hint - 1, 0) * max(rho, 0.0)) / args.faulty_fraction
-        * math.log(1.0 / args.eps_s) / (2.0 * args.window * margin ** 2)
-        if math.isfinite(margin) and margin > 0 else float("inf"))
+    # Detection constraint: evaluated only from PER-ROUND parameters. The X5
+    # flag rates (TPR/FPR) do not identify them, so by default it is relaxed.
+    detection_enforced = (args.round_pd is not None
+                          and args.round_tau is not None)
+    n_min_detector = (n_min_per_round(args.round_pd, args.round_tau,
+                                      args.faulty_fraction, rho, args.window,
+                                      args.eps_s, k_hint)
+                      if detection_enforced else None)
+    n_min = float(max(4, math.ceil(n_min_detector))
+                  if detection_enforced and math.isfinite(n_min_detector)
+                  else (float("inf") if detection_enforced else 4))
 
-    # Sensitivity of kappa to the operating concurrency: largest c on the
-    # calibration grid instead of argmax g.
-    c_cal = float(max(fit.get("calibration_c") or [c]))
-    kappa_cal, _ = resolve_kappa(unit, c_cal, args.demand, "auto")
+    # Sensitivity of kappa to the operating concurrency: grid argmax of the
+    # fitted g(c), which lies beyond the OLS grid and uses (c_sat, theta).
+    c_arg = c_star(fit)
+    kappa_arg, _ = resolve_kappa(unit, c_arg, args.demand, "auto")
 
     # Sensitivity of kappa to curvature in log n: refit on small counts only.
     small_fit = fit.get("small_n_fit")
     kappa_small = None
     if small_fit and small_fit.get("beta", 0) > 0:
-        kappa_small, _ = resolve_kappa(Sizer(small_fit, args.eps_p, kappa=1.0),
+        kappa_small, _ = resolve_kappa(
+            Sizer(small_fit, args.eps_p, kappa=1.0, c_cal=c_cal),
                                        c, args.demand, "auto")
 
-    n_min_int = max(4, math.ceil(n_min)) if math.isfinite(n_min) else float("inf")
-    feasible = (n_max is not None and math.isfinite(n_min_int)
-                and n_min_int <= n_max)
-    n_opt = int(n_min_int) if feasible else None
+    feasible = (n_max is not None and math.isfinite(n_min) and n_min <= n_max)
+    n_opt = int(n_min) if feasible else None
 
     result = {
         "demand": args.demand,
@@ -269,16 +279,16 @@ def main() -> int:
         "eps_p": args.eps_p,
         "eps_s": args.eps_s,
         "window": args.window,
-        "tau": args.tau,
         "detector_thr": det.get("thr"),
         "faulty_fraction": args.faulty_fraction,
-        "eps_0": eps_0,
-        "n_min": float(n_min_int) if math.isfinite(n_min_int) else n_min,
-        "n_min_raw": n_min,
+        "detection_enforced": bool(detection_enforced),
+        "round_pd": args.round_pd,
+        "round_tau": args.round_tau,
+        "n_min": n_min,
         "n_min_detector": n_min_detector,
-        "detector_margin": margin,
         "concurrency_calib_max": c_cal,
-        "kappa_calib_max": kappa_cal,
+        "concurrency_argmax_g": c_arg,
+        "kappa_argmax_g": kappa_arg,
         "kappa_small_n": kappa_small,
         "n_max": n_max,
         "n_opt": n_opt,

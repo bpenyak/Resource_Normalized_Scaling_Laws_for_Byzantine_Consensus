@@ -2,28 +2,27 @@
 \label{sec:conclusions}
 
 \paragraph{Analytical results.}
-Under the unsaturated bi-factor model with zero-mean, finite-variance noise and
-the stated path assumptions, the single-factor OLS exponent satisfies
+Under the unsaturated bi-factor model with the stated noise and path
+conditions, the single-factor OLS exponent satisfies
 $\ahat_{m}\xrightarrow{\Prob}\gamma\lambda-\beta$
-(Proposition~\ref{prop:identifiability}), an \mbox{omitted-variable} bias. Opposing
-monotone constraints yield a closed integer feasibility window
+(Proposition~\ref{prop:identifiability}), an \mbox{omitted-variable} bias.
+Opposing monotone constraints yield a closed integer feasibility window
 (Proposition~\ref{prop:window}).
 
 \paragraph{Experimentally supported observations.}
 Under \RNM{} on four-core commodity CI, $\beta=\resBeta\pm\resBetaSE$ and
 $\gamma=\resGamma\pm\resGammaSE$ at $\q=0.25$; $\beta$ is stable at a fixed
-quota but quota-dependent; path re-sampling agrees with $\gamma\lambda-\beta$.
-The detector is near chance, so the window is throughput-only. Doubled demand
-or WAN $\beta$ requires $\kappaScale=\resKappaDoubled$ or $\approx\resKappaWan$,
-respectively, instead of $\resKappa$; these values rest on the untested
-linearity of throughput in the quota. Numerical results are deployment-specific.
+quota but quota-dependent, and path re-sampling is consistent with
+$\gamma\lambda-\beta$ but has low power. The detector is near chance, so the
+window is throughput-only and degenerate. Doubled demand
+or WAN $\beta$ requires $\kappaScale=\resKappaDoubled$ or $\approx\resKappaWan$
+instead of $\resKappa$; these scenario estimates rest on the untested
+linearity of throughput in the quota. Results are deployment-specific.
 
 \paragraph{Engineering implications.}
 We contribute a reproducible methodology for calibration and capacity planning
 under resource normalization; the throughput--detection trade-off is
-formulated but, with the measured detector, not demonstrated. Other
-deployments require recalibration of $(\beta,\gamma)$ and $(\pd,\pf,\rho)$
-while reusing the same workflow and public artefacts.
+formulated but, with the measured detector, not demonstrated.
 
 \subsection*{Conflict of interest}
 The authors declare no conflict of interest.

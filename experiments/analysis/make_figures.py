@@ -110,8 +110,8 @@ def fig_roc(raw: Path, out: Path) -> None:
         d = d.groupby("tau")[["p_f", "p_d"]].mean().sort_values("p_f")
         ax.plot(d["p_f"], d["p_d"], "o-", ms=3, label=rf"$\ell={loss:g}\%$")
     ax.plot([0, 1], [0, 1], "k--", lw=0.8, label="chance")
-    ax.set_xlabel(r"false-positive rate $p_f$")
-    ax.set_ylabel(r"detection probability $p_d$")
+    ax.set_xlabel(r"false-positive rate (FPR)")
+    ax.set_ylabel(r"true-positive rate (TPR)")
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.legend(frameon=False, fontsize=8, loc="lower right")
@@ -133,14 +133,15 @@ def fig_window(proc: Path, out: Path) -> None:
 
     fig, ax = plt.subplots(figsize=(4.6, 3.0))
     ax.semilogy(curve["n"], curve["lower_tps"], "-",
-                label=r"$\underline{TPS}_{1-\varepsilon_p}(n)$")
+                label=r"lower PI bound $TPS_{lb}(n)$")
     ax.axhline(s["demand"], color="C3", ls="--",
                label=rf"demand $D_{{peak}}={s['demand']:g}$")
     if s["n_max"]:
         ax.axvline(s["n_max"], color="C2", ls=":", label=rf"$n_{{max}}={s['n_max']}$")
     if math.isfinite(s["n_min"]):
         ax.axvline(s["n_min"], color="C4", ls=":",
-                   label=rf"$n_{{min}}={s['n_min']:.0f}$")
+                   label=rf"$n_{{min}}={s['n_min']:.0f}$"
+                   + ("" if s.get("detection_enforced") else " (relaxed)"))
         if s["n_max"] and s["n_min"] <= s["n_max"]:
             ax.axvspan(s["n_min"], s["n_max"], color="C0", alpha=0.12)
     if n_cal is not None:
@@ -166,13 +167,16 @@ def fig_sensitivity(proc: Path, out: Path) -> None:
         return
     s = json.loads(path.read_text(encoding="utf-8"))
     fit = json.loads((proc / "fit.json").read_text(encoding="utf-8"))
-    if not s["n_max"] or not math.isfinite(s["n_min"]) or s["eps_0"] <= 0:
+    if not s["n_max"] or not s.get("detection_enforced"):
         return
 
+    # Illustrative only: the detection cut as a function of rho for the
+    # per-round parameters supplied to sizing.py.
     rhos = np.linspace(0.0, 0.9, 50)
     k = max(int(round(s["faulty_fraction"] * s["n_max"])), 1)
-    n_min_rho = ((1 + (k - 1) * rhos) * math.log(1 / s["eps_s"])
-                 / (2 * s["window"] * s["eps_0"] ** 2))
+    margin = s["round_pd"] - s["round_tau"]
+    n_min_rho = ((1 + (k - 1) * rhos) / s["faulty_fraction"]
+                 * math.log(1 / s["eps_s"]) / (2 * s["window"] * margin ** 2))
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 2.6))
     ax1.plot(rhos, s["n_max"] - n_min_rho)
