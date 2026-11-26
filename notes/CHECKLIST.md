@@ -2,7 +2,7 @@
 
 Фінальна перевірка перед подачею. Кожен пункт — або `[x]`, або пояснення чому ні.
 
-Оновлено: Фаза 5 (2026-07-29).
+Оновлено: Фаза 6 / v16 (2026-11-26); початкова вичитка — Фаза 5 (2026-07-29).
 
 ---
 
@@ -16,12 +16,13 @@
 - [x] L6. Немає `\TODO` у `numbers.tex` / секціях / PDF (єдиний був `peniak2026a` — закрито як accepted)
 - [x] L7. Немає заглушок `\rule{...}{...}`
 - [x] L8. Рисунки: `fig_confounding`, `fig_roc`, `fig_window` + `tab:results`
-- [x] L9. Обсяг: **10 EN+refs + 1 UKR = 11 PDF**
+- [x] L9. Обсяг: **10 EN+refs + 1 UKR = 11 PDF** (у v16 refs виходили на с. 11 на 2 рядки;
+      виправлено в Фазі 6)
 
 ## R. Джерела
 
-- [x] R1. ≥ 25 джерел (27 `\bibitem`)
-- [x] R2. Кожен `\bibitem` цитований ≥1 раз (27/27)
+- [x] R1. ≥ 25 джерел (29 `\bibitem`)
+- [x] R2. Кожен `\bibitem` цитований ≥1 раз (29/29)
 - [x] R3. Кожен запис має `\url{...}` (DOI та/або відкритий PDF/arXiv/hdl); перевірено GET
       для відкритих URL; ACM/IEEE DOI лишаються канонічними `https://doi.org/...`
 - [x] R4. Немає `Vol.x, No.x` шаблонів
@@ -41,20 +42,21 @@
 
 ## M. Математика
 
-- [x] M1. Thm.1 і Thm.2 мають Proof; Statement/Lemma теж
+- [x] M1. Proposition 1 і 2 мають Proof; Statement/Lemma теж (у v16 «Thm.» → «Proposition»)
 - [x] M2. Assumptions (separable, rho) — у Limitations
 - [x] M3. Немає non-sequitur α=+0.5 з n^(−2)
 - [x] M4. β>0 = спадання TPS з n (експліцитно)
 - [x] M5. Ключові позначення введені в §3–4
 - [x] M6. `\cc` для concurrency
 - [x] M7. `neff = kf w / (1+(kf−1)ρ)` у `st:rho` (design effect на faulty subset)
-- [x] M8. Thm.window спирається на lem:detequiv + st:rho
+- [x] M8. Prop.window (`prop:window`) спирається на design-effect наближення `st:rho` (`eq:nmin`)
 
 ## N. Числа
 
-- [x] N1. Числа через `numbers.tex`
+- [x] N1. Числа через `numbers.tex`; вікно `[\resNminCase,\resNmaxCase]`, `\resNminCase`,
+      `\resDetectorThr` — макроси (вручну вписані `[4,4]`, `4`, `0.90` прибрано в Фазі 6)
 - [x] N2. Перегенерований (`\resCoreHours=27.2`)
-- [x] N3. Abstract якісний (без hardcode); діапазон через `\resNmaxMeasured`
+- [x] N3. Abstract без вписаних чисел: `AUC` через `\resAuc`, діапазон через `\resNmaxMeasured`
 - [x] N4. Conclusions узгоджені з результатами (без суперечливих чисел)
 - [x] N5. `\resNmaxMeasured=16`
 
@@ -64,7 +66,7 @@
 - [x] H2. Зашифрований транспорт / не-equivocation — Limitations
 - [x] H3. X6 явно «simulation… not as a measurement»
 - [x] H4. Absolute TPS виключені (intro Scope + Limitations)
-- [x] H5. Розбіжність статей 1/2 через Thm.1
+- [x] H5. Розбіжність статей 1/2 через Prop.1 (omitted-variable bias)
 - [x] H6. Нейтрально («including our own» / earlier studies)
 - [x] H7. Remark про e-voting + springall/specter/park
 

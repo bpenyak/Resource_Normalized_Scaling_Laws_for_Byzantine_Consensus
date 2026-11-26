@@ -15,7 +15,7 @@
 | — | Титул + анотація EN | `paper3.tex` | 0.5 | ~1 (с.1) |
 | 1 | Introduction | `01_introduction.tex` | 1.0 | ~1 (с.1) |
 | 2 | Related work | `02_related_work.tex` | 1.0 | ~0.5 (с.2) |
-| 3 | RNM + bi-factor + Thm.1 | `03_model.tex` | 2.5 | ~2 (с.2–4) |
+| 3 | RNM + bi-factor + Prop.1 | `03_model.tex` | 2.5 | ~2 (с.2–4) |
 | 4 | PI + detection + sizing | `04_sizing.tex` | 2.0 | ~1.5 (с.4–5) |
 | 5 | Experiments + results | `05_experiments.tex` | 1.5 | ~1.5 (с.5–7; 2 fig + tab) |
 | 6 | Case study + Limitations | `06_case_study.tex` | 0.8 | ~1 (с.6–8; fig_window) |
@@ -72,8 +72,8 @@ case / conclusions; додано `fig_roc` (тепер 3 рисунки + 1 та
 
 | Елемент | Чому |
 |---|---|
-| `Theorem~\ref{thm:identifiability}` + повне доведення | Це вся новизна статті |
-| `Theorem~\ref{thm:window}` + повне доведення | Другий стовп новизни |
+| `Proposition~\ref{prop:identifiability}` + повне доведення | Це вся новизна статті |
+| `Proposition~\ref{prop:window}` + повне доведення | Другий стовп новизни |
 | `06_case_study.tex` (Limitations) | Чесність щодо класу відмов — критично для рецензування |
 | Кількість джерел (≥ 25) | Вимога користувача |
 | Український `\abstractUkr` | Вимога видання |

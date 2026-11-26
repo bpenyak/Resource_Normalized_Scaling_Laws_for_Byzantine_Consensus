@@ -8,7 +8,7 @@ twelve hours: a mean of $\approx694$~TPS and, with an assumed peak-to-mean
 factor of $\approx3$ (not a measured profile), a peak $\Dpk=\resDemand$~TPS.
 The detection requirement --- a coordinated transaction-omission fault of
 fraction $\phi=0.2$ within one epoch --- is unsatisfiable and is relaxed, not
-enforced (Section~\ref{sec:detection}), so $\nmin=4$. Fault-free CI runs
+enforced (Section~\ref{sec:detection}), so $\nmin=\resNminCase$. Fault-free CI runs
 without emulated latency commit at most $\approx\resTpsMaxMeasured$~TPS (at
 $\n=\resTpsMaxN$, $\cc=\resTpsMaxC$, $\q=\resTpsMaxQ$); the model works in
 \RNM{} units $\TPSn=\TPS/\q$ (throughput per core of per-validator quota), and

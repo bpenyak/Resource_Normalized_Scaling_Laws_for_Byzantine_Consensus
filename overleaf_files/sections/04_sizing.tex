@@ -56,14 +56,15 @@ Hoeffding~\cite{hoeffding1963} via Kish~\cite{kish1965}
 
 \paragraph{Measured detector.}
 X5 reports per-validator flag rates at the Youden-optimal participation
-threshold~$0.90$: $\hat p_{d}=\resPd$ for faulty and $\hat p_{f}=\resPf$ for
+threshold~$\resDetectorThr$: $\hat p_{d}=\resPd$ for faulty and $\hat p_{f}=\resPf$ for
 honest validators ($J=\resYouden$). Plugging them into~\eqref{eq:nmin} with
 $\thr$ at their midpoint, $\rho=0$, $\phi=0.2$, $\w=30$ and $\epss=0.01$ gives
 $\nmin\approx\resNminDet$, far above any throughput-feasible~$\n$. With this
 detector the detection constraint is unsatisfiable, so the formal feasible set
-is empty; we relax it (do not enforce it): reported windows use $\nmin=4$
-($3f+1$ with $f=1$) and are set by throughput alone. The two-constraint program applies to detectors with $J$
-bounded away from zero; its trade-off is not demonstrated here.
+is empty; we relax it (do not enforce it): reported windows use $\nmin=\resNminCase$
+($3f+1$ with $f=1$) and are set by throughput alone. The two-constraint program
+applies to detectors with $J$ bounded away from zero; its trade-off is not
+demonstrated here.
 
 \subsection{The sizing program}
 
